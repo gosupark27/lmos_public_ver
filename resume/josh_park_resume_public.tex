@@ -1,0 +1,199 @@
+%-------------------------
+% Resume in LaTeX -- Josh Park (DRAFT for review, Oct 2026)
+% Template: Jake's Resume by Jake Gutierrez (MIT License)
+%   https://github.com/jakegut/resume  (commit 3e64a93)
+%   https://www.overleaf.com/latex/templates/jakes-resume/syzfjbzwjncs
+% Based off of: https://github.com/sb2nov/resume
+% License : MIT
+% Changes from the template: content; pdfTeX-only glyphtounicode lines guarded
+% so the file also compiles with XeTeX/Tectonic; phone toggle; one-line mission.
+%------------------------
+
+\documentclass[letterpaper,11pt]{article}
+
+\usepackage{latexsym}
+\usepackage[empty]{fullpage}
+\usepackage{titlesec}
+\usepackage{marvosym}
+\usepackage[usenames,dvipsnames]{color}
+\usepackage{verbatim}
+\usepackage{enumitem}
+\usepackage[hidelinks]{hyperref}
+\usepackage{fancyhdr}
+\usepackage[english]{babel}
+\usepackage{tabularx}
+\ifdefined\pdfgentounicode
+  \input{glyphtounicode}
+\fi
+
+%----------PRIVACY TOGGLE----------
+% Phone number: set \showphonetrue for the private copy you send,
+% \showphonefalse for any copy committed to a public repo.
+\newif\ifshowphone
+\showphonefalse
+\newcommand{\phonenumber}{}  % removed in public copy
+
+%----------TARGET TOGGLE----------
+% Plan A = Riot Games. For Plan B (Claude Corps), edit \targetline only.
+\newcommand{\missionline}{I ship code with soul.}
+\newcommand{\targetline}{Engineer who makes AI agents reliable for others: specs, invariant tests, approval gates, cross-model evaluation.}
+
+\pagestyle{fancy}
+\fancyhf{} % clear all header and footer fields
+\fancyfoot{}
+\renewcommand{\headrulewidth}{0pt}
+\renewcommand{\footrulewidth}{0pt}
+
+% Adjust margins
+\addtolength{\oddsidemargin}{-0.5in}
+\addtolength{\evensidemargin}{-0.5in}
+\addtolength{\textwidth}{1in}
+\addtolength{\topmargin}{-.5in}
+\addtolength{\textheight}{1.0in}
+
+\urlstyle{same}
+
+\raggedbottom
+\raggedright
+\setlength{\tabcolsep}{0in}
+
+% Sections formatting
+\titleformat{\section}{
+  \vspace{-4pt}\scshape\raggedright\large
+}{}{0em}{}[\color{black}\titlerule \vspace{-5pt}]
+
+% Ensure that generate pdf is machine readable/ATS parsable
+\ifdefined\pdfgentounicode
+  \pdfgentounicode=1
+\fi
+
+%-------------------------
+% Custom commands
+\newcommand{\resumeItem}[1]{
+  \item\small{
+    {#1 \vspace{-2pt}}
+  }
+}
+
+\newcommand{\resumeSubheading}[4]{
+  \vspace{-2pt}\item
+    \begin{tabular*}{0.97\textwidth}[t]{l@{\extracolsep{\fill}}r}
+      \textbf{#1} & #2 \\
+      \textit{\small#3} & \textit{\small #4} \\
+    \end{tabular*}\vspace{-7pt}
+}
+
+\newcommand{\resumeSubSubheading}[2]{
+    \item
+    \begin{tabular*}{0.97\textwidth}{l@{\extracolsep{\fill}}r}
+      \textit{\small#1} & \textit{\small #2} \\
+    \end{tabular*}\vspace{-7pt}
+}
+
+\newcommand{\resumeProjectHeading}[2]{
+    \item
+    \begin{tabular*}{0.97\textwidth}{l@{\extracolsep{\fill}}r}
+      \small#1 & #2 \\
+    \end{tabular*}\vspace{-7pt}
+}
+
+\newcommand{\resumeSubItem}[1]{\resumeItem{#1}\vspace{-4pt}}
+
+\renewcommand\labelitemii{$\vcenter{\hbox{\tiny$\bullet$}}$}
+
+\newcommand{\resumeSubHeadingListStart}{\begin{itemize}[leftmargin=0.15in, label={}]}
+\newcommand{\resumeSubHeadingListEnd}{\end{itemize}}
+\newcommand{\resumeItemListStart}{\begin{itemize}}
+\newcommand{\resumeItemListEnd}{\end{itemize}\vspace{-5pt}}
+
+% Visible placeholder for facts Josh still has to supply
+\newcommand{\todo}[1]{\textbf{[TODO: #1]}}
+
+%-------------------------------------------
+%%%%%%  RESUME STARTS HERE  %%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+\begin{document}
+
+%----------HEADING----------
+\begin{center}
+    \textbf{\Huge \scshape Josh Park} \\ \vspace{1pt}
+    \small Phoenix, AZ $|$
+    \href{mailto:gosupark27@gmail.com}{\underline{gosupark27@gmail.com}} $|$
+    \ifshowphone \phonenumber{} $|$ \fi
+    \href{https://github.com/gosupark27}{\underline{github.com/gosupark27}} \\ \vspace{3pt}
+    \textit{\missionline}
+\end{center}
+\vspace{-6pt}
+{\small \targetline}
+
+%-----------TECHNICAL SKILLS-----------
+\section{Technical Skills}
+ \begin{itemize}[leftmargin=0.15in, label={}]
+    \small{\item{
+     \textbf{Languages \& Frameworks}{: JavaScript, React, Python; SQL (PostgreSQL) for data modeling} \\
+     \textbf{AI-Native Engineering}{: prompt design (one-shot accuracy as the bar), multi-model one-shot loop, cross-model evaluation, human-gated agent orchestration, agent-readable specs and invariant tests} \\
+     \textbf{Models \& Agents}{: Claude Opus 5.5 (Claude Code), GPT-6 Astra, Gemini 4 Argon, Grok 4.7 (Grok Build); Hessa (a background agent I configured to monitor my GitHub repos and versioning)} \\
+     \textbf{Learning}{: Rust, Go (in progress)}
+    }}
+ \end{itemize}
+
+%-----------EXPERIENCE-----------
+\section{Experience}
+  \resumeSubHeadingListStart
+
+    \resumeSubheading
+      {Lee's Shoe \& Luggage Repair}{July 2024 -- Present}
+      {Web Application Development (family business, serving the West Valley since 1994)}{Peoria, AZ}
+      \resumeItemListStart
+        \resumeItem{Turned a paper-and-pen shop's intake and service workflow into requirements for a site and ticketing app \todo{tickets/mo}}
+        \resumeItem{Shipped the public site in vanilla \textbf{JavaScript} on Cloudflare (no libraries, to test prompt quality): services drawn from past ticket data, filterable gallery, quote email \todo{URL / quotes}}
+        \resumeItem{Designed the ticket app's \textbf{PostgreSQL} data model (customers, tickets, items, repairs, payments; indexed foreign keys, updated-at triggers, calculated balances) behind \textbf{React} intake forms and a \textbf{Python}/Flask API: one source of truth for workflow, scheduling, revenue, and KPIs}
+        \resumeItem{Direct Claude Code inside explicit task boundaries; I review and approve every change before commit or push}
+      \resumeItemListEnd
+
+    \resumeSubheading
+      {FAST Enterprises}{Mar 2024 -- June 2024}
+      {Solutions Engineer}{Atlanta, GA}
+      \resumeItemListStart
+        \resumeItem{Monitored overnight state-tax batch runs; investigated and resolved failed data transactions with \textbf{SQL} \todo{volume}}
+        \resumeItem{Maintained taxpayer web forms and the validation rules applied before data reached Microsoft SQL Server}
+        \resumeItem{Gathered requirements and secured cross-functional stakeholder approval before implementing software changes}
+      \resumeItemListEnd
+
+  \resumeSubHeadingListEnd
+
+%-----------PROJECTS-----------
+\section{Projects: Living Mirror OS (LMOS)}
+    \resumeSubHeadingListStart
+      \resumeProjectHeading
+          {\textbf{Handshake, LMOS public multiplayer game} $|$ \emph{React, TypeScript, PostgreSQL} $|$ \href{https://github.com/gosupark27/lmos-public-grok}{\underline{source}}}{Oct 2026 -- Present}
+          \resumeItemListStart
+            \resumeItem{Phone-first social-deduction game (room codes, no login) built from my spec for a Handshake AI challenge}
+            \resumeItem{Multi-model loop: Grok drafts the prompt and predicts the result; Claude builds; I diff the two. GPT, Gemini, and Claude rerun the revision, Grok merges, and any unanimous answer is inverted as a blind-spot check (3-round cap)}
+            \resumeItem{Server-authoritative design: clients send intents, never state; secrets (saboteur, ``secret elo'' truthfulness score) never reach the phone; append-only ledger; idempotent actions; server-owned clock, enforced by 9 invariant tests}
+            \resumeItem{Impact goal: 5--10 real games fully played \todo{games played / unique players}. \textit{Planned:} TDD and training-data agents, RAG-assisted CI/CD, and community voting weighted by secret elo}
+          \resumeItemListEnd
+      \resumeProjectHeading
+          {\textbf{LMOS Platform} $|$ \emph{in design}}{In progress}
+          \resumeItemListStart
+            \resumeItem{A foundation for other builders to create games inside my guardrails (locked invariants, approval gates, governance): \textit{narrative- and relationship-driven development, not skill-based development}}
+            \resumeItem{Append-only prompt-version ledger: diffs between versions become the agents' curriculum; cross-model snapshots tracked in \href{https://github.com/gosupark27/lmos_public_ver}{\underline{lmos\_public\_ver}} (in setup)}
+          \resumeItemListEnd
+      \resumeProjectHeading
+          {\textbf{LMOS Data-Flow Layer} $|$ \emph{concept stage}}{Planned}
+          \resumeItemListStart
+            \resumeItem{Vision: a middle layer and plain-language dashboard for data handoffs across siloed departments at large companies}
+          \resumeItemListEnd
+    \resumeSubHeadingListEnd
+
+%-----------EDUCATION-----------
+\section{Education}
+  \resumeSubHeadingListStart
+    \resumeProjectHeading{\textbf{CodePath} $|$ \emph{WEB 102: Intermediate Web Development; CYB 102: Cybersecurity}}{Fall 2026 (in progress)}
+    \resumeProjectHeading{\textbf{Arizona State University} $|$ \emph{Master's in Business Management}}{Spring 2022}
+    \resumeProjectHeading{\textbf{Western Governors University} $|$ \emph{Bachelor's in Computer Science}}{Fall 2019}
+  \resumeSubHeadingListEnd
+
+%-------------------------------------------
+\end{document}
