@@ -1,0 +1,1100 @@
+{
+  "baseline": false,
+  "baseline_path": null,
+  "branch": "main",
+  "captured_at": "2026-10-27T02:19:02.998Z",
+  "commit": {
+    "author": "JJ Park",
+    "committed_at": "2026-10-27T02:18:34Z",
+    "sha": "e5f7e8d1b232f5167b4d2056607141307018019c",
+    "subject": "Add original source (batch-17.json)",
+    "url": "https://github.com/gosupark27/lmos_public_grok/commit/e5f7e8d1b232f5167b4d2056607141307018019c"
+  },
+  "completeness": "partial",
+  "delta": {
+    "files_added": 41,
+    "files_modified": 0,
+    "files_removed": 0,
+    "lines_added": 7784,
+    "lines_removed": 0
+  },
+  "file_count": 67,
+  "files": [
+    {
+      "band": "other",
+      "binary": false,
+      "lines": 8,
+      "path": ".gitignore",
+      "sha256": "sha256:687bc2e1dcb6c2e34a8606d1c4a29f3ca8931eb4a46eccd7f8d614594bd02f43",
+      "size": 62
+    },
+    {
+      "band": "other",
+      "binary": false,
+      "lines": 6,
+      "path": ".prettierrc",
+      "sha256": "sha256:d5f90f76c5b68ce7be5ba077813f97e1983511b8c314764537345a538c1261f4",
+      "size": 90
+    },
+    {
+      "band": "other",
+      "binary": false,
+      "lines": 12,
+      "path": "README.md",
+      "sha256": "sha256:8361daa2a7a21e4d4d3295fd4272a79d4307e4af17bcbe9c873188d6bd305a33",
+      "size": 256
+    },
+    {
+      "band": "spec_copy",
+      "binary": false,
+      "lines": 155,
+      "path": "docs/lmos_public.md",
+      "sha256": "sha256:1e2c01b465b9b3e62fa898e75d6b829291e5f24a0f0bf8ae89db1a336ee10b88",
+      "size": 5739
+    },
+    {
+      "band": "other",
+      "binary": false,
+      "lines": 47,
+      "path": "eslint.config.mjs",
+      "sha256": "sha256:9c79df07c33ff6aa13876bdd1e7e6652aa1ecb377c7b7f029f7915d215ee4488",
+      "size": 1277
+    },
+    {
+      "band": "other",
+      "binary": false,
+      "lines": 6,
+      "path": "migrations/0002_rooms.sql",
+      "sha256": "sha256:62003a919fae3cda6dfafef7b1d2bf8f12036a7c34f43075c5a9e2a6b7bac515",
+      "size": 172
+    },
+    {
+      "band": "harness",
+      "binary": false,
+      "lines": 67,
+      "path": "migrations/auth/0001_auth.sql",
+      "sha256": "sha256:f953cacc448c0c81ae4fe63e66b0e59569e840782ad279fdee201dff529363e9",
+      "size": 2739
+    },
+    {
+      "band": "other",
+      "binary": false,
+      "lines": 97,
+      "path": "package.json",
+      "sha256": "sha256:c138a44993e23d255bdc0d2054f692f0ef61df5718deb44701d756fa3b99cb50",
+      "size": 3542
+    },
+    {
+      "band": "harness",
+      "binary": false,
+      "lines": 13,
+      "path": "public/__grok/install/assets/homescreen/glass-puzzle.svg",
+      "sha256": "sha256:a677c9356c23d1e699559ddbffac97cd135c2782cd893fb34f3738f6d11bee17",
+      "size": 1811
+    },
+    {
+      "band": "harness",
+      "binary": false,
+      "lines": 10,
+      "path": "public/__grok/install/assets/homescreen/glass-share.svg",
+      "sha256": "sha256:efad1b4b507a68c1f1af4aad2c93e8c24076224aa593da86677697f543d026d6",
+      "size": 2388
+    },
+    {
+      "band": "harness",
+      "binary": false,
+      "lines": 6,
+      "path": "public/__grok/install/assets/homescreen/logo-grok.svg",
+      "sha256": "sha256:0654e3e59cce69856f38525cbfe4ab3a9ef52d4b64c8532dd0bc1a3f34fcb5b1",
+      "size": 1059
+    },
+    {
+      "band": "harness",
+      "binary": false,
+      "lines": 6,
+      "path": "public/__grok/install/assets/homescreen/plus.svg",
+      "sha256": "sha256:c2c94be46aa2c3c2fda95d7c6f2fc6d0b656d1f5847828d5d95b5a81a6f4f20d",
+      "size": 2401
+    },
+    {
+      "band": "harness",
+      "binary": false,
+      "lines": 375,
+      "path": "public/__grok/install/styles.css",
+      "sha256": "sha256:7e8e881302f58e54a9c07e7be395692d3de20fdaa27ce358531cc8dcca472cb6",
+      "size": 6717
+    },
+    {
+      "band": "other",
+      "binary": false,
+      "lines": 6,
+      "path": "public/favicon.svg",
+      "sha256": "sha256:44f09753c1535943fab35571b3299259a9621c6566d23709c359e85248d75c89",
+      "size": 361
+    },
+    {
+      "band": "other",
+      "binary": false,
+      "lines": 34,
+      "path": "scripts/app-env-plugin.mjs",
+      "sha256": "sha256:92962d2361a98413c0cef80b31266d49b063cf4ecf6421bb99f57f6eef4ed7b6",
+      "size": 1278
+    },
+    {
+      "band": "other",
+      "binary": false,
+      "lines": 227,
+      "path": "scripts/brand-check.mjs",
+      "sha256": "sha256:318f33ce7b29b55c386cc8847084068777880f795a5082043229bb06686be035",
+      "size": 9609
+    },
+    {
+      "band": "other",
+      "binary": false,
+      "lines": 373,
+      "path": "scripts/brand-check.test.mjs",
+      "sha256": "sha256:3dada9e907cf63d4127588268f38987e72108639e65a2694aebf4ee35aa9f309",
+      "size": 15084
+    },
+    {
+      "band": "other",
+      "binary": false,
+      "lines": 47,
+      "path": "scripts/browser-guard.mjs",
+      "sha256": "sha256:c6fb865defe5a37bd94e3805b00311d4e8267daf92812e39f62b1213d947265e",
+      "size": 1724
+    },
+    {
+      "band": "other",
+      "binary": false,
+      "lines": 128,
+      "path": "scripts/browser-smoke-verdict.mjs",
+      "sha256": "sha256:5699614f7fa62515e25ba9cca6397db2770cf6feb9b973f3c19f2915874c53de",
+      "size": 4663
+    },
+    {
+      "band": "other",
+      "binary": false,
+      "lines": 416,
+      "path": "scripts/browser-smoke-verdict.test.mjs",
+      "sha256": "sha256:48b3924b41d606f94a9b8faae47ff350b84978fdd5ab3f6ca01640ed4c7087d7",
+      "size": 15643
+    },
+    {
+      "band": "other",
+      "binary": false,
+      "lines": 177,
+      "path": "scripts/browser-smoke.mjs",
+      "sha256": "sha256:2e1cc3136f33bd74b73b4b3dba812e74ac299c24893b9a7c406e9bbeaf46571f",
+      "size": 6042
+    },
+    {
+      "band": "other",
+      "binary": false,
+      "lines": 109,
+      "path": "scripts/check-auth-invariant.mjs",
+      "sha256": "sha256:d712203c4bc92c197c342e5c91660fc5a141a31171f22f35c505a0bff45f98ee",
+      "size": 4203
+    },
+    {
+      "band": "other",
+      "binary": false,
+      "lines": 110,
+      "path": "scripts/check-auth-invariant.test.mjs",
+      "sha256": "sha256:75a58f44dffb2fc77eb47473638646f607dba26a68a6900156031c7b6227cf3c",
+      "size": 4218
+    },
+    {
+      "band": "harness",
+      "binary": false,
+      "lines": 190,
+      "path": "scripts/grok-pwa-plugin.mjs",
+      "sha256": "sha256:36331d0bc0664debb5068bd6869d3089dc41555b7770c9ccb577d8845958835c",
+      "size": 6615
+    },
+    {
+      "band": "harness",
+      "binary": false,
+      "lines": 541,
+      "path": "scripts/grok-pwa-plugin.test.mjs",
+      "sha256": "sha256:816c6b867c7230d739f69598202c0903e4332632293d548bde74c8d875ed8e5c",
+      "size": 21850
+    },
+    {
+      "band": "harness",
+      "binary": false,
+      "lines": 81,
+      "path": "scripts/grok-pwa-shared.d.mts",
+      "sha256": "sha256:f4db33fcf35ef3f25fca05d1b42494b6f607c44a4d728ed3e989e65a3a1ea9d0",
+      "size": 3206
+    },
+    {
+      "band": "harness",
+      "binary": false,
+      "lines": 541,
+      "path": "scripts/grok-pwa-shared.mjs",
+      "sha256": "sha256:99bf3caab5e4c2a30fe748a196cfa4074a9e039efec16f57c83efe325bcadd9e",
+      "size": 18225
+    },
+    {
+      "band": "other",
+      "binary": false,
+      "lines": 147,
+      "path": "scripts/install-page.html",
+      "sha256": "sha256:5f8fe91f837db8d74d68db5e057948918bd9299e097700e0bd18f1cf5f94e586",
+      "size": 5658
+    },
+    {
+      "band": "other",
+      "binary": false,
+      "lines": 90,
+      "path": "scripts/migrate.mjs",
+      "sha256": "sha256:e1a31c8046a099df37b4bcbcafa4f4f7d7d18b1f1f0dc6d79676d41c4be976be",
+      "size": 3181
+    },
+    {
+      "band": "other",
+      "binary": false,
+      "lines": 46,
+      "path": "scripts/migration-plan.mjs",
+      "sha256": "sha256:9305d8cfe8cdad73671065d675c89d0f20075d18c756f9aba5043b72e7c19a0d",
+      "size": 1525
+    },
+    {
+      "band": "other",
+      "binary": false,
+      "lines": 90,
+      "path": "scripts/migration-plan.test.mjs",
+      "sha256": "sha256:9787b5f5f1a7057db94f0a5a8c89abf6ec569fd22d26f99be1c248a2a9f0c082",
+      "size": 3558
+    },
+    {
+      "band": "other",
+      "binary": false,
+      "lines": 42,
+      "path": "scripts/preview-thumbnail.mjs",
+      "sha256": "sha256:fd7263a1dd76f788c2b51e9381e1f1de1a58993fd94e01040285556cd38c0c40",
+      "size": 1762
+    },
+    {
+      "band": "other",
+      "binary": false,
+      "lines": 343,
+      "path": "scripts/preview.mjs",
+      "sha256": "sha256:b366b1c28844cda81d21e36a88af5f548bdec6a5a4b3000aac12be3ec99cf605",
+      "size": 11074
+    },
+    {
+      "band": "other",
+      "binary": false,
+      "lines": 257,
+      "path": "scripts/preview.test.mjs",
+      "sha256": "sha256:0105fe41d056ecc22c586a191a9cbd7d0e838b7c878d6993c8c9573c7ea708b1",
+      "size": 9207
+    },
+    {
+      "band": "other",
+      "binary": false,
+      "lines": 160,
+      "path": "scripts/sign-out-plan.mjs",
+      "sha256": "sha256:32ae072de23b5138bf849c344caf72ab2dab6cb4617ab9915db4e4f5b9c7e2f0",
+      "size": 5971
+    },
+    {
+      "band": "other",
+      "binary": false,
+      "lines": 248,
+      "path": "scripts/sign-out-plan.test.mjs",
+      "sha256": "sha256:1942e32f4b6a9d8b62733338b0f0e1a7d84ed278b4e6c4f24fa7616a3abc694e",
+      "size": 8659
+    },
+    {
+      "band": "other",
+      "binary": false,
+      "lines": 130,
+      "path": "scripts/with-app-env.mjs",
+      "sha256": "sha256:a846b68bd3645299c23eef965d9ef226df3a500d345d7576c23f7a2b2ff643c7",
+      "size": 4601
+    },
+    {
+      "band": "other",
+      "binary": false,
+      "lines": 128,
+      "path": "scripts/with-app-env.test.mjs",
+      "sha256": "sha256:384ea7d0d20f980f733ee38d8f48b0bedd8a4ad39c80ca4792b9aeebcb275851",
+      "size": 4466
+    },
+    {
+      "band": "other",
+      "binary": false,
+      "lines": 94,
+      "path": "scripts/write-atomic.mjs",
+      "sha256": "sha256:650b62e8aa38697e1b931049025afe3aac829e6761a8aadf428712faef8b1544",
+      "size": 3607
+    },
+    {
+      "band": "other",
+      "binary": false,
+      "lines": 201,
+      "path": "scripts/write-atomic.test.mjs",
+      "sha256": "sha256:e266ac99149651c368715317820934f0e8942db0fc763725ca4a096bf169ad3b",
+      "size": 7505
+    },
+    {
+      "band": "harness",
+      "binary": false,
+      "lines": 111,
+      "path": "server/middleware/grok-pwa.ts",
+      "sha256": "sha256:340f1fed44355a61fefdaf29a752c524ac029afb00bea3f40cc996cdb289d2f8",
+      "size": 3606
+    },
+    {
+      "band": "other",
+      "binary": false,
+      "lines": 13,
+      "path": "server/virtual-grok-og-identity.d.ts",
+      "sha256": "sha256:74847f2b2bade154ac07dabb239c4718a745c095df530e78b8f1ef9f053edfa2",
+      "size": 262
+    },
+    {
+      "band": "game",
+      "binary": false,
+      "lines": 938,
+      "path": "src/components/handshake/play.tsx",
+      "sha256": "sha256:40d3af68cb8762896bef11ffa33ce57c1807ff32dfc9f30abd811e234643126d",
+      "size": 34585
+    },
+    {
+      "band": "game",
+      "binary": false,
+      "lines": 97,
+      "path": "src/components/handshake/rating.ts",
+      "sha256": "sha256:4650f14f45c3ff256148a262d0d93a9627abb76d0154126280a86fb47d1dd78d",
+      "size": 2601
+    },
+    {
+      "band": "game",
+      "binary": false,
+      "lines": 57,
+      "path": "src/components/handshake/sound.ts",
+      "sha256": "sha256:995b87e25e23a30eb1809023a00254c40ec31cbb37d61ccee9a47c81d351436b",
+      "size": 1613
+    },
+    {
+      "band": "harness",
+      "binary": false,
+      "lines": 26,
+      "path": "src/components/preview-host-bridge.tsx",
+      "sha256": "sha256:e4277e80ce127e7305057fb280d03d0703c5c7115b17d2e2aecf000e4867555e",
+      "size": 668
+    },
+    {
+      "band": "game",
+      "binary": false,
+      "lines": 197,
+      "path": "src/game/content.ts",
+      "sha256": "sha256:fafad317a738fadf37ae82eb1e006630ef34373581762326550443beb3c83d0a",
+      "size": 5427
+    },
+    {
+      "band": "game",
+      "binary": false,
+      "lines": 232,
+      "path": "src/game/engine.server.test.ts",
+      "sha256": "sha256:994135fe55eb76f4e69db22934944eb9bcd6b8392e7b040cdea3a71daeccfd68",
+      "size": 8885
+    },
+    {
+      "band": "game",
+      "binary": false,
+      "lines": 931,
+      "path": "src/game/engine.server.ts",
+      "sha256": "sha256:0d2f433f155d3fd989891b03c0359c07cceb99fb0dcd815400e28c83381f0c7c",
+      "size": 30805
+    },
+    {
+      "band": "game",
+      "binary": false,
+      "lines": 323,
+      "path": "src/game/room.ts",
+      "sha256": "sha256:cd61e444234ce595e5f959cd554ad0fc7f85bc64052fbe14bc4f5eb7cf0e57ca",
+      "size": 11431
+    },
+    {
+      "band": "game",
+      "binary": false,
+      "lines": 75,
+      "path": "src/game/view.ts",
+      "sha256": "sha256:7bdc86e935bf7cb98a5e24eccba836ad4fdf4cfb10c10cc132263e3f059ddf4b",
+      "size": 2034
+    },
+    {
+      "band": "harness",
+      "binary": false,
+      "lines": 498,
+      "path": "src/lib/app-data/app-data.test.ts",
+      "sha256": "sha256:ec0c40fdaafb4e3d551086de9f9b4a745da7c252f7fbbc5c51a8b1b0a541391e",
+      "size": 15944
+    },
+    {
+      "band": "harness",
+      "binary": false,
+      "lines": 427,
+      "path": "src/lib/app-data/client.server.ts",
+      "sha256": "sha256:ab544af8b5b96e16248fdcf7ce634c132ccd3659c33cf0daa22f6e74ef5a5da0",
+      "size": 11867
+    },
+    {
+      "band": "harness",
+      "binary": false,
+      "lines": 78,
+      "path": "src/lib/app-data/errors.ts",
+      "sha256": "sha256:8e0dd8d761b2a5a1cafcb7523e2063151f0b6677837b19c3f6d494af148f3889",
+      "size": 1994
+    },
+    {
+      "band": "harness",
+      "binary": false,
+      "lines": 21,
+      "path": "src/lib/app-data/index.ts",
+      "sha256": "sha256:72cf57dc1a863f9693d34c11772ba4bae790cc17d9efb1e8619b8a2e6247a7fa",
+      "size": 598
+    },
+    {
+      "band": "harness",
+      "binary": false,
+      "lines": 33,
+      "path": "src/lib/app-data/login.ts",
+      "sha256": "sha256:fbc723841bb67148dd9de12ed614ba6c095d799a533309857cc4d202d6be5ad9",
+      "size": 856
+    },
+    {
+      "band": "harness",
+      "binary": false,
+      "lines": 36,
+      "path": "src/lib/app-data/readiness-schedule.test.ts",
+      "sha256": "sha256:97c87401c474b9f87f2e21152fb377744f353736848f0044466ba2e260b06745",
+      "size": 1146
+    },
+    {
+      "band": "harness",
+      "binary": false,
+      "lines": 18,
+      "path": "src/lib/app-data/readiness-schedule.ts",
+      "sha256": "sha256:3ea7f192220446b08747f3ef76c7d2fe150356470621f2220738b23e7976f683",
+      "size": 506
+    },
+    {
+      "band": "harness",
+      "binary": false,
+      "lines": 10,
+      "path": "src/lib/app-data/readiness.ts",
+      "sha256": "sha256:377786c1cf739eb9dc7c8b2bdcd09991686a700375a67a0c6e73b4334d394da1",
+      "size": 366
+    },
+    {
+      "band": "harness",
+      "binary": false,
+      "lines": 11,
+      "path": "src/lib/app-data/server-only.ts",
+      "sha256": "sha256:82821474088face6b9fcadad49793629e5f07a16386402b816262a1c070a3210",
+      "size": 476
+    },
+    {
+      "band": "harness",
+      "binary": false,
+      "lines": 50,
+      "path": "src/lib/app-data/types.ts",
+      "sha256": "sha256:65f3c7566db12661ee9d3633eaae66a85505e00f57a61c258fa72bd22881489f",
+      "size": 1361
+    },
+    {
+      "band": "harness",
+      "binary": false,
+      "lines": 120,
+      "path": "src/lib/app-data/use-connector-readiness.ts",
+      "sha256": "sha256:57e6d2b3709be83ac2eed9c42eaa822a067fb5aa44a6098c982892c43f3a4f2f",
+      "size": 3892
+    },
+    {
+      "band": "harness",
+      "binary": false,
+      "lines": 236,
+      "path": "src/lib/auth/client.ts",
+      "sha256": "sha256:4bca649afb627b11231a7b31acfcffe9323efddebc05944b2d769d2b8589294f",
+      "size": 9714
+    },
+    {
+      "band": "harness",
+      "binary": false,
+      "lines": 10,
+      "path": "src/lib/auth/email-password.ts",
+      "sha256": "sha256:9b1da7c786e48adfa9a6f7c485bcf5817cf2075a601d8726a965f11171910354",
+      "size": 442
+    },
+    {
+      "band": "harness",
+      "binary": false,
+      "lines": 206,
+      "path": "src/lib/auth/gate-identity.server.ts",
+      "sha256": "sha256:96546b8b6910a01163c36c34a0d417d803bec222b93304be764d810838764159",
+      "size": 5706
+    },
+    {
+      "band": "harness",
+      "binary": false,
+      "lines": 495,
+      "path": "src/lib/auth/gate-identity.test.ts",
+      "sha256": "sha256:21202fb2b56ffd10cb9b5bb7d9f305be88cce3902b858f73cea914df05ce2652",
+      "size": 14346
+    },
+    {
+      "band": "harness",
+      "binary": false,
+      "lines": 18,
+      "path": "src/lib/auth/gate-session-marker.ts",
+      "sha256": "sha256:3dbf8cb789b0288f9d5c53b1515a3e87d265fcb22e11fe28dc3289c4bd7c06eb",
+      "size": 879
+    }
+  ],
+  "model": "grok",
+  "node_id": "R_kgDOVYpOKg",
+  "parent_snapshot_id": "2026-10-27T02-00-18.087Z__ece2c05acc8eb099b7ff9449b9a7eaf50f71ac51",
+  "partial_detail": {
+    "batch_numbers": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15,
+      16,
+      17
+    ],
+    "latest_batch": 17,
+    "missing_batches": [],
+    "reason": "HEAD is still an Add original source batch commit; the batch numbers repeat or skip",
+    "repeated_batches": [
+      8
+    ],
+    "status": "partial"
+  },
+  "repo": "gosupark27/lmos_public_grok",
+  "repo_id": "1435127338",
+  "repo_url": "https://github.com/gosupark27/lmos_public_grok",
+  "schema": "lmos.snapshot.v1",
+  "snapshot_id": "2026-10-27T02-19-02.998Z__e5f7e8d1b232f5167b4d2056607141307018019c",
+  "spec": {
+    "concepts": [
+      {
+        "count": null,
+        "covered": true,
+        "evidence": [
+          "README.md"
+        ],
+        "id": "anonymous_room_codes",
+        "label": "Anonymous play addressed by room code",
+        "section": "Handshake"
+      },
+      {
+        "count": null,
+        "covered": true,
+        "evidence": [
+          "public/__grok/install/styles.css"
+        ],
+        "id": "phone_first",
+        "label": "Phone-first layout",
+        "section": "Handshake"
+      },
+      {
+        "count": null,
+        "covered": true,
+        "evidence": [
+          "src/game/content.ts",
+          "src/game/content.ts",
+          "src/game/content.ts",
+          "src/game/content.ts"
+        ],
+        "id": "four_archetypes",
+        "label": "Four archetypes: Kingmaker, Populist, Shadow Broker, Idealist",
+        "section": "Archetypes"
+      },
+      {
+        "count": null,
+        "covered": true,
+        "evidence": [
+          "src/game/content.ts"
+        ],
+        "id": "relinquish",
+        "label": "Each archetype gives something up",
+        "section": "Archetypes"
+      },
+      {
+        "count": 12,
+        "covered": true,
+        "evidence": [
+          "src/game/content.ts"
+        ],
+        "id": "twelve_characters",
+        "label": "Twelve characters, slots filled at build time",
+        "section": "Characters"
+      },
+      {
+        "count": null,
+        "covered": true,
+        "evidence": [
+          "src/components/handshake/play.tsx",
+          "src/components/handshake/play.tsx",
+          "src/components/handshake/play.tsx"
+        ],
+        "id": "three_tiers",
+        "label": "Beginner, intermediate, and advanced tiers",
+        "section": "Scenarios"
+      },
+      {
+        "count": 12,
+        "covered": true,
+        "evidence": [
+          "src/game/content.ts",
+          "src/game/engine.server.ts"
+        ],
+        "id": "nine_titled_beats",
+        "label": "At least nine titled scenario beats",
+        "section": "Scenarios"
+      },
+      {
+        "count": null,
+        "covered": false,
+        "evidence": [],
+        "id": "canon_66",
+        "label": "66-event canon with 57 parked and nine loaded",
+        "section": "Scenarios"
+      },
+      {
+        "count": null,
+        "covered": true,
+        "evidence": [
+          "src/components/handshake/play.tsx"
+        ],
+        "id": "lever_heat",
+        "label": "Heat lever",
+        "section": "Levers"
+      },
+      {
+        "count": null,
+        "covered": true,
+        "evidence": [
+          "src/components/handshake/play.tsx"
+        ],
+        "id": "lever_boundary",
+        "label": "Boundary lever",
+        "section": "Levers"
+      },
+      {
+        "count": null,
+        "covered": true,
+        "evidence": [
+          "src/components/handshake/play.tsx"
+        ],
+        "id": "lever_power",
+        "label": "Power lever, who is treated as leading",
+        "section": "Levers"
+      },
+      {
+        "count": null,
+        "covered": true,
+        "evidence": [
+          "src/game/engine.server.ts"
+        ],
+        "id": "lever_silence",
+        "label": "Silence lever",
+        "section": "Levers"
+      },
+      {
+        "count": null,
+        "covered": true,
+        "evidence": [
+          "src/components/handshake/play.tsx"
+        ],
+        "id": "lever_influence",
+        "label": "Influence lever",
+        "section": "Levers"
+      },
+      {
+        "count": null,
+        "covered": true,
+        "evidence": [
+          "src/components/handshake/play.tsx"
+        ],
+        "id": "lever_hidden",
+        "label": "Hidden lever",
+        "section": "Levers"
+      },
+      {
+        "count": null,
+        "covered": true,
+        "evidence": [
+          "src/components/handshake/play.tsx"
+        ],
+        "id": "lever_presence",
+        "label": "Presence as a visible state",
+        "section": "Levers"
+      },
+      {
+        "count": null,
+        "covered": true,
+        "evidence": [
+          "src/components/handshake/play.tsx"
+        ],
+        "id": "presence_not_an_action",
+        "label": "Presence cannot be targeted, voted, or accused",
+        "section": "Levers"
+      },
+      {
+        "count": null,
+        "covered": true,
+        "evidence": [
+          "src/game/engine.server.ts"
+        ],
+        "id": "secret_elo",
+        "label": "Secret Elo as truthfulness, words against hands",
+        "section": "Secret Elo"
+      },
+      {
+        "count": null,
+        "covered": false,
+        "evidence": [],
+        "id": "trinity_names",
+        "label": "Trinity names for Elo, narrator, and steward",
+        "section": "Secret Elo"
+      },
+      {
+        "count": null,
+        "covered": true,
+        "evidence": [
+          "src/game/engine.server.ts",
+          "src/components/handshake/play.tsx"
+        ],
+        "id": "saboteur_prodigal",
+        "label": "Mid-game saboteur and a prodigal seat",
+        "section": "Saboteur"
+      },
+      {
+        "count": null,
+        "covered": true,
+        "evidence": [
+          "README.md"
+        ],
+        "id": "clients_send_intents",
+        "label": "Clients send intents, not state",
+        "section": "State boundaries"
+      },
+      {
+        "count": null,
+        "covered": true,
+        "evidence": [
+          "src/game/engine.server.ts"
+        ],
+        "id": "server_clock",
+        "label": "Clock is server-owned",
+        "section": "State boundaries"
+      },
+      {
+        "count": null,
+        "covered": true,
+        "evidence": [
+          "src/game/engine.server.ts"
+        ],
+        "id": "secrets_stay_off_client",
+        "label": "Server-only secrets stay off the client view",
+        "section": "State boundaries"
+      },
+      {
+        "count": null,
+        "covered": true,
+        "evidence": [
+          "src/components/handshake/play.tsx"
+        ],
+        "id": "bot_on_disconnect",
+        "label": "A bot takes a live seat that disconnects",
+        "section": "State boundaries"
+      },
+      {
+        "count": null,
+        "covered": false,
+        "evidence": [],
+        "id": "outbreak",
+        "label": "Outbreak is a simultaneous broadcast",
+        "section": "State boundaries"
+      },
+      {
+        "count": null,
+        "covered": false,
+        "evidence": [],
+        "id": "delta_sync",
+        "label": "Refresh is a public snapshot plus a private delta",
+        "section": "State boundaries"
+      },
+      {
+        "count": null,
+        "covered": true,
+        "evidence": [
+          "src/game/content.ts"
+        ],
+        "id": "imposter_cap",
+        "label": "Imposter count starts at one and stacks to a cap",
+        "section": "Invariants"
+      },
+      {
+        "count": null,
+        "covered": true,
+        "evidence": [
+          "src/game/engine.server.ts"
+        ],
+        "id": "sacrifice_idempotent",
+        "label": "Sacrifice is idempotent",
+        "section": "Invariants"
+      },
+      {
+        "count": null,
+        "covered": true,
+        "evidence": [
+          "src/game/room.ts"
+        ],
+        "id": "unguessable_codes",
+        "label": "Room codes are not guessable",
+        "section": "Invariants"
+      },
+      {
+        "count": null,
+        "covered": true,
+        "evidence": [
+          "src/game/engine.server.ts"
+        ],
+        "id": "ledger_append_only",
+        "label": "Ledger appends and does not mutate",
+        "section": "Ledger"
+      },
+      {
+        "count": null,
+        "covered": true,
+        "evidence": [
+          "src/game/engine.server.ts"
+        ],
+        "id": "heat_does_not_flash",
+        "label": "Heat simmers and cannot flash",
+        "section": "Levers"
+      },
+      {
+        "count": null,
+        "covered": true,
+        "evidence": [
+          "src/components/handshake/rating.ts",
+          "src/components/handshake/rating.ts"
+        ],
+        "id": "rating_ladder",
+        "label": "Rating ladder from A-minus through S-plus, decimals to hundredths",
+        "section": "Rating"
+      },
+      {
+        "count": null,
+        "covered": true,
+        "evidence": [
+          "src/components/handshake/rating.ts"
+        ],
+        "id": "sealed_x",
+        "label": "X is sealed and discoverable, not climbed",
+        "section": "Rating"
+      },
+      {
+        "count": null,
+        "covered": true,
+        "evidence": [
+          "src/components/handshake/play.tsx"
+        ],
+        "id": "sunrise_screen",
+        "label": "Sunrise loading screen",
+        "section": "Sunrise"
+      },
+      {
+        "count": null,
+        "covered": true,
+        "evidence": [
+          "src/components/handshake/play.tsx"
+        ],
+        "id": "tier_colors",
+        "label": "Yellow, red, blue, and pink tier colors",
+        "section": "Sunrise"
+      },
+      {
+        "count": null,
+        "covered": true,
+        "evidence": [
+          "src/components/handshake/rating.ts"
+        ],
+        "id": "fracture_or_desync",
+        "label": "Desync or a Rome-to-1775 fracture",
+        "section": "Sunrise"
+      },
+      {
+        "count": null,
+        "covered": true,
+        "evidence": [
+          "src/game/engine.server.ts"
+        ],
+        "id": "sees_you",
+        "label": "The game admits it sees the player",
+        "section": "Sunrise"
+      },
+      {
+        "count": null,
+        "covered": true,
+        "evidence": [
+          "src/game/engine.server.ts"
+        ],
+        "id": "host_only",
+        "label": "Only the host creates and configures the room",
+        "section": "Entrance"
+      },
+      {
+        "count": null,
+        "covered": true,
+        "evidence": [
+          "src/components/handshake/play.tsx"
+        ],
+        "id": "flashlight",
+        "label": "Flashlight cursor",
+        "section": "Entrance"
+      },
+      {
+        "count": null,
+        "covered": true,
+        "evidence": [
+          "src/components/handshake/sound.ts"
+        ],
+        "id": "bells",
+        "label": "Bells stack when someone joins",
+        "section": "Entrance"
+      },
+      {
+        "count": null,
+        "covered": true,
+        "evidence": [
+          "src/components/handshake/play.tsx"
+        ],
+        "id": "builder_marks",
+        "label": "Builder checkmarks learned by playing",
+        "section": "Entrance"
+      },
+      {
+        "count": null,
+        "covered": true,
+        "evidence": [
+          "src/components/handshake/play.tsx",
+          "src/components/handshake/play.tsx",
+          "src/game/engine.server.ts"
+        ],
+        "id": "trail_economy",
+        "label": "Weight, sacrifice, trade, and a destination",
+        "section": "Oregon"
+      },
+      {
+        "count": null,
+        "covered": false,
+        "evidence": [],
+        "id": "oregon_named",
+        "label": "Names the Oregon Trail frame",
+        "section": "Oregon"
+      },
+      {
+        "count": null,
+        "covered": true,
+        "evidence": [
+          "src/game/engine.server.ts"
+        ],
+        "id": "peace_four",
+        "label": "Peace victory from four independent sacrifices",
+        "section": "Milestones"
+      },
+      {
+        "count": null,
+        "covered": false,
+        "evidence": [],
+        "id": "dupr_five",
+        "label": "Five DUPR-mapped tiers",
+        "section": "Entrance"
+      },
+      {
+        "count": null,
+        "covered": false,
+        "evidence": [],
+        "id": "invite_leave_on_read",
+        "label": "Invitees accept or leave the invite on read",
+        "section": "Entrance"
+      },
+      {
+        "count": null,
+        "covered": true,
+        "evidence": [
+          "src/game/engine.server.ts"
+        ],
+        "id": "edge_conflicts",
+        "label": "Conflicting intents or a stale round are rejected",
+        "section": "Edge cases"
+      }
+    ],
+    "coverage": 0.8478,
+    "covered": 39,
+    "extra_surfaces": [
+      {
+        "evidence": [
+          "package.json"
+        ],
+        "id": "auth_login_stack",
+        "label": "A login or auth toolkit is in the tree. The spec says no login.",
+        "severity": "tension"
+      },
+      {
+        "evidence": [
+          "scripts/brand-check.mjs"
+        ],
+        "id": "grok_pwa_harness",
+        "label": "Grok PWA install shell is in the tree.",
+        "severity": "harness"
+      },
+      {
+        "evidence": [
+          "src/components/preview-host-bridge.tsx"
+        ],
+        "id": "preview_host_bridge",
+        "label": "Preview-host bridge or path-prefix tooling is in the tree.",
+        "severity": "harness"
+      },
+      {
+        "evidence": [
+          "src/components/handshake/sound.ts"
+        ],
+        "id": "bell_sound_shipped",
+        "label": "A bell sound ships. The spec parks the bell sound cue.",
+        "severity": "parked_built"
+      }
+    ],
+    "gap_score": 15.2,
+    "rubric_sha256": "sha256:8aeb68c400f809a9a609b9f67caac430344f6ebd2a9832c94edcae5d7e3bdb02",
+    "spec_sha256": "sha256:1e2c01b465b9b3e62fa898e75d6b829291e5f24a0f0bf8ae89db1a336ee10b88",
+    "total": 46
+  },
+  "total_bytes": 383758,
+  "total_lines": 11031,
+  "tree_sha256": "sha256:10c861fc1b1fb4abd33bdbfbe2225cff3404e54222b521f62cb630f3a235e12e"
+}

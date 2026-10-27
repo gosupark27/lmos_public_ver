@@ -93,6 +93,8 @@ class Tree:
     repo_id: str | None = None
     node_id: str | None = None
     files: dict[str, Rec] = field(default_factory=dict)
+    completeness: str | None = None
+    partial_detail: dict | None = None
 
 
 def utc_now() -> str:
@@ -1156,6 +1158,8 @@ def capture_model(root: Path, tree: Tree, captured_at: str, known_ids: set[str])
         "total_lines": total_lines,
         "total_bytes": total_bytes,
         "tree_sha256": fingerprint(tree.files),
+        "completeness": tree.completeness or "complete",
+        "partial_detail": tree.partial_detail,
         "delta": {
             "files_added": added,
             "files_removed": removed,
@@ -1176,6 +1180,7 @@ def capture_model(root: Path, tree: Tree, captured_at: str, known_ids: set[str])
     print(
         f"sealed {tree.model} {tree.commit[:12]} files={count} lines={total_lines} "
         f"baseline={str(baseline).lower()} spec_gap={spec.get('gap_score')}"
+        + (" PARTIAL" if tree.completeness == "partial" else "")
     )
     return {"snapshot_id": snapshot_id, "skipped": False, "manifest": manifest, "tree": tree}
 
@@ -1213,6 +1218,7 @@ def snapshot_events(tree: Tree, manifest: dict, per_file: list[dict], captured_a
             message=(
                 f"Sealed {tree.model} at {sha[:12]} "
                 f"({manifest['file_count']} files, {manifest['total_lines']} lines)"
+                + (" PARTIAL" if manifest.get("completeness") == "partial" else "")
             ),
             detail={
                 "baseline": manifest["baseline"],
@@ -1225,6 +1231,8 @@ def snapshot_events(tree: Tree, manifest: dict, per_file: list[dict], captured_a
                 "files_modified": delta["files_modified"],
                 "committed_at": tree.committed_at,
                 "subject": tree.subject,
+                "completeness": manifest.get("completeness") or "complete",
+                "partial_detail": manifest.get("partial_detail"),
             },
             **common,
         )
@@ -1636,6 +1644,9 @@ def write_cross(root: Path, captured_at: str, placeholders: list[Source], known_
                 f"{pair['identical_count']} shared paths match and {missing} paths exist only in {larger}. "
                 "The score is missing files, not conflicting edits."
             )
+        partial_models = [item["model"] for item in latest if item.get("completeness") == "partial"]
+        if partial_models:
+            summary += " PARTIAL: " + ", ".join(partial_models) + " is still receiving batch commits."
     model_rows = []
     for manifest in latest:
         model_rows.append(
@@ -1828,6 +1839,25 @@ def write_trends(root: Path) -> None:
             )
         )
     md.append("")
+    for manifest in manifests:
+        if manifest.get("completeness") != "partial":
+            continue
+        detail = manifest.get("partial_detail") or {}
+        batches = detail.get("batch_numbers") or []
+        span = f"{batches[0]}–{batches[-1]}" if batches else "unknown"
+        extra = []
+        if detail.get("repeated_batches"):
+            extra.append(f"repeated batches {detail['repeated_batches']}")
+        if detail.get("missing_batches"):
+            extra.append(f"missing batches {detail['missing_batches']}")
+        md.append(
+            f"`{manifest['model']}` `{manifest['commit']['sha'][:12]}` is PARTIAL. "
+            "HEAD is still an Add original source batch commit. "
+            f"Batches seen: {span}."
+            + ((" " + "; ".join(extra) + ".") if extra else "")
+        )
+    if any(item.get("completeness") == "partial" for item in manifests):
+        md.append("")
     pair_summary = latest_pair_summary(root)
     if pair_summary:
         md.append(pair_summary)
@@ -1904,7 +1934,7 @@ def identity_lines(root: Path) -> list[str]:
             [
                 "## Model slots",
                 "",
-                "A slot counts a repository when `attribution=confirmed` on that repo id. A pending slot stays empty until a different repo id is confirmed.",
+                "A slot counts a repository when its source line says `attribution=confirmed` or `attribution=assigned` on that repo id. A pending slot stays empty.",
                 "",
                 "| model | state | repos | repo_id |",
                 "| --- | --- | --- | --- |",
@@ -2248,6 +2278,41 @@ def claim_sources(enabled: list[Source], identities: dict[str, dict | None]) -> 
         claimed[actual] = source.model
         keepers.append(source)
     return keepers, dupes
+
+
+BATCH_SUBJECT = re.compile(r"Add original source \(batch-(\d+)\.json\)", re.IGNORECASE)
+
+
+def partial_upload(subjects: list[str]) -> dict | None:
+    """A batch-NN upload is partial while HEAD is still one of those commits, or the numbers skip or repeat."""
+    numbers: list[int] = []
+    for subject in subjects:
+        match = BATCH_SUBJECT.search(subject or "")
+        if match:
+            numbers.append(int(match.group(1)))
+    if not numbers:
+        return None
+    latest_is_batch = bool(subjects) and bool(BATCH_SUBJECT.search(subjects[0] or ""))
+    present = set(numbers)
+    unique = sorted(present)
+    repeated = sorted(number for number in unique if numbers.count(number) > 1)
+    missing = [number for number in range(unique[0], unique[-1] + 1) if number not in present]
+    if not latest_is_batch and not repeated and not missing:
+        return None
+    reasons = ["HEAD is still an Add original source batch commit"]
+    if repeated:
+        reasons.append("batch numbers repeat")
+    if missing:
+        reasons.append("batch numbers skip")
+    reason = "; ".join(reasons)
+    return {
+        "status": "partial",
+        "reason": reason,
+        "batch_numbers": unique,
+        "repeated_batches": repeated,
+        "missing_batches": missing,
+        "latest_batch": max(numbers) if latest_is_batch else unique[-1],
+    }
 
 
 def is_grok_fingerprint(path: str) -> bool:
@@ -2657,6 +2722,41 @@ def append_confirmed_attribution(
     mixed = sorted(name for name in names if mixed_slug(name))
     heading_text = (heading or "").lstrip("#").strip()
     heading_differs = bool(heading_text) and heading_text != slug
+    if slug == expected:
+        resolved = (
+            f"GitHub name {ident.get('full_name')} matches {expected}. "
+            "The slug convention mismatch is resolved."
+        )
+        if mixed:
+            resolved += " Previous alias " + ", ".join(mixed) + " still redirects and does not match that pattern."
+        if heading_differs:
+            resolved += f" README heading remains {heading}."
+        events.append(
+            identity_event(
+                timestamp=detected_at,
+                event_id=f"evt-label-resolved-{repo_id}-{source.model}",
+                event_type="LABEL_MISMATCH_RESOLVED",
+                severity="notice",
+                outcome="resolved",
+                model=source.model,
+                repo=ident.get("full_name"),
+                repo_url=ident.get("html_url"),
+                commit=manifest["commit"]["sha"],
+                snapshot_id=manifest["snapshot_id"],
+                message=resolved,
+                detail={
+                    "resolves": "LABEL_MISMATCH",
+                    "repo_id": repo_id,
+                    "node_id": source.node_id,
+                    "current_full_name": ident.get("full_name"),
+                    "expected_pattern": expected,
+                    "mixed_aliases": mixed,
+                    "readme_heading": heading,
+                    "heading_still_differs": heading_differs,
+                    "source_renamed_by_tracker": False,
+                },
+            )
+        )
     if not mixed and slug == expected and not heading_differs:
         return
     parts = []
@@ -3049,9 +3149,11 @@ def apply_identity_audit(
         ]
         try:
             remote_commits = commits_of(full_name) or []
+            remote_authors = sorted({row["author"] for row in remote_commits if row.get("author")})
         except Exception as exc:
             print(f"commit list skipped for {full_name}: {exc}", file=sys.stderr)
             remote_commits = []
+            remote_authors = list(previous.get("remote_commit_authors") or [])
         if old_name:
             retitles = [row["subject"] for row in commit_rows if (row.get("subject") or "").lower().startswith("rename project")]
             message = (
@@ -3178,6 +3280,12 @@ def apply_identity_audit(
                 f"README heading is {heading or 'absent'}."
             )
             attribution_value = "confirmed"
+        elif source.attribution == "assigned":
+            note = (
+                f"Repo id {repo_id} is the {source.model} slot and is a different id from the other sealed models. "
+                f"GitHub full_name is {full_name}. README heading is {heading or 'absent'}."
+            )
+            attribution_value = "assigned"
         else:
             note = (
                 f"Assigned label {source.model} left unchanged. GitHub full_name is {full_name}. "
@@ -3189,7 +3297,7 @@ def apply_identity_audit(
             "repo_id": repo_id,
             "node_id": source.node_id,
             "model_label": source.model,
-            "model_slot": "tracked" if confirmed else previous.get("model_slot"),
+            "model_slot": "tracked" if source.attribution in ("confirmed", "assigned") else previous.get("model_slot"),
             "counts_as_model": True,
             "names": sorted(names),
             "current_full_name": full_name,
@@ -3207,7 +3315,7 @@ def apply_identity_audit(
             "commits": True,
             "renames": renames,
             "note": note,
-            "remote_commit_authors": sorted({row["author"] for row in remote_commits if row.get("author")}),
+            "remote_commit_authors": remote_authors,
             "cross_captured_at": dict(previous.get("cross_captured_at") or {}),
         }
         content_rows.append(
@@ -3232,6 +3340,75 @@ def apply_identity_audit(
         names.add(row["full_name"])
         pending = row.get("attribution") == "pending"
         renames = list(previous.get("renames") or [])
+        events.append(
+            identity_event(
+                timestamp=captured_at,
+                event_id=f"evt-discovered-{repo_id}",
+                event_type="REPO_DISCOVERED",
+                severity="notice",
+                outcome="success",
+                model=row["model"],
+                repo=row["full_name"],
+                repo_url=row.get("html_url"),
+                commit=None,
+                snapshot_id=None,
+                message=(
+                    f"Discovered repo_id {repo_id} ({row.get('node_id') or 'node id unknown'}) "
+                    f"as {row['full_name']} for the {row['model']} slot. It advertises no commits, so it was not sealed."
+                ),
+                detail={
+                    "repo_id": repo_id,
+                    "node_id": row.get("node_id"),
+                    "full_name": row["full_name"],
+                    "created_at": row.get("created_at"),
+                    "updated_at": row.get("updated_at"),
+                    "pushed_at": row.get("pushed_at"),
+                    "commits": False,
+                    "aliases": aliases.get(repo_id, []),
+                },
+            )
+        )
+        expected = f"lmos_public_{row['model']}"
+        bad_aliases = sorted(
+            name for name in aliases.get(repo_id, []) if name.split("/", 1)[-1] != expected and name != row["full_name"]
+        )
+        if bad_aliases:
+            current_slug = row["full_name"].split("/", 1)[-1]
+            events.append(
+                identity_event(
+                    timestamp=row.get("updated_at") or captured_at,
+                    event_id=f"evt-label-typo-{repo_id}-{short_hash(bad_aliases)}",
+                    event_type="LABEL_MISMATCH",
+                    severity="warning",
+                    outcome="flagged",
+                    model=row["model"],
+                    repo=row["full_name"],
+                    repo_url=row.get("html_url"),
+                    commit=None,
+                    snapshot_id=None,
+                    message=(
+                        "Created name "
+                        + ", ".join(bad_aliases)
+                        + f" does not match {expected}. "
+                        + (
+                            f"The live name {row['full_name']} matches {expected}. "
+                            if current_slug == expected
+                            else f"The live name {row['full_name']} does not match {expected}. "
+                        )
+                        + "Flag for Josh. The tracker did not rename the source."
+                    ),
+                    detail={
+                        "repo_id": repo_id,
+                        "node_id": row.get("node_id"),
+                        "expected_pattern": expected,
+                        "bad_aliases": bad_aliases,
+                        "current_full_name": row["full_name"],
+                        "current_matches_pattern": current_slug == expected,
+                        "flag_for": "Josh",
+                        "source_renamed_by_tracker": False,
+                    },
+                )
+            )
         apply_alias_hops(
             events,
             renames,
@@ -3385,10 +3562,10 @@ def apply_identity_audit(
             changed = True
         wrote_cross = True
 
-    if any(source.attribution == "confirmed" for source in keepers):
+    if any(source.attribution in ("confirmed", "assigned") for source in keepers):
         slots: dict[str, dict] = {}
         for source in keepers:
-            if source.attribution != "confirmed":
+            if source.attribution not in ("confirmed", "assigned"):
                 continue
             ident = identities.get(source.target)
             if not ident or (source.repo_id and source.repo_id != str(ident["id"])):
@@ -3542,6 +3719,19 @@ def capture(root: Path, sources_path: Path, enable: list[str]) -> int:
         if latest_complete(root, source.model) and load_manifest(latest_complete(root, source.model))["commit"]["sha"] == tree.commit:
             print(f"unchanged {source.model} {tree.commit[:12]}")
             continue
+        if is_github_target(source.target):
+            try:
+                remote_commits = github_recent_commits(source.target, limit=100)
+            except Exception as exc:
+                print(f"batch list skipped for {source.target}: {exc}", file=sys.stderr)
+                remote_commits = []
+            subjects = [row["subject"] for row in remote_commits if row.get("subject")]
+            if tree.subject and (not subjects or subjects[0] != tree.subject):
+                subjects.insert(0, tree.subject)
+            info = partial_upload(subjects)
+            if info:
+                tree.completeness = "partial"
+                tree.partial_detail = info
         result = capture_model(root, tree, captured_at, known)
         if not result.get("skipped"):
             new_seal = True

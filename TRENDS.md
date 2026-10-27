@@ -18,8 +18,13 @@ One row per sealed snapshot. This file is rebuilt from manifests. It is a projec
 | 2026-10-27T01:57:57.542Z | grok | 19 | 1623 | 3 | 548 | 0 | 40.5 | 0.1739 | 82.6 | 3 | claude |
 | 2026-10-27T01:59:16.646Z | grok | 24 | 2625 | 5 | 1002 | 0 | 38.0 | 0.1957 | 80.4 | 3 | claude |
 | 2026-10-27T02:00:18.087Z | grok | 26 | 3247 | 2 | 622 | 0 | 37.0 | 0.2174 | 78.3 | 3 | claude |
+| 2026-10-27T02:19:02.998Z | grok | 67 | 11031 | 41 | 7784 | 0 | 18.7 | 0.8478 | 15.2 | 4 | claude |
+| 2026-10-27T02:19:36.777Z | grok | 72 | 11739 | 5 | 708 | 0 | 16.1 | 0.8478 | 15.2 | 4 | claude |
 
-Sealed models: claude, grok. Mean pairwise divergence 37.0. grok is a byte-identical subset of claude: 26 shared paths match and 74 paths exist only in claude. The score is missing files, not conflicting edits.
+`grok` `e5f7e8d1b232` is PARTIAL. HEAD is still an Add original source batch commit. Batches seen: 0–17. repeated batches [8].
+`grok` `2787eed5fe99` is PARTIAL. HEAD is still an Add original source batch commit. Batches seen: 0–18. repeated batches [8].
+
+Sealed models: claude, grok. Mean pairwise divergence 16.1. PARTIAL: grok is still receiving batch commits.
 
 ## Identity
 
@@ -28,20 +33,20 @@ Repository id is the GitHub id and does not change when the slug changes. Captur
 | repo_id | node_id | label | current name | commits | attribution | counts | names |
 | --- | --- | --- | --- | --- | --- | --- | --- |
 | 1435079605 | R_kgDOVYmTtQ | claude | gosupark27/lmos_public_claude | yes | confirmed | yes | gosupark27/lmos-public-claude, gosupark27/lmos-public-grok, gosupark27/lmos-public_claude, gosupark27/lmos_public_claude |
-| 1435127338 | R_kgDOVYpOKg | grok | gosupark27/lmos_public_grok | yes | pending | no | gosupark27/lmos_public_grok |
+| 1435127338 | R_kgDOVYpOKg | grok | gosupark27/lmos_public_grok | yes | assigned | yes | gosupark27/lmos_public_grok |
 | 1435128289 | R_kgDOVYpR4Q | chatgpt | gosupark27/lmos_public_chatgpt | no | pending | no | gosupark27/lmos_public_chatgpt, gosupark27/lms_public_chatgpt |
 
 ## Model slots
 
-A slot counts a repository when `attribution=confirmed` on that repo id. A pending slot stays empty until a different repo id is confirmed.
+A slot counts a repository when its source line says `attribution=confirmed` or `attribution=assigned` on that repo id. A pending slot stays empty.
 
 | model | state | repos | repo_id |
 | --- | --- | --- | --- |
 | claude | tracked | 1 | 1435079605 |
-| grok | pending | 0 | — |
+| grok | tracked | 1 | 1435127338 |
 | chatgpt | pending | 0 | — |
 
-Claude: 1 repo tracked; Grok: none; ChatGPT: none.
+Claude: 1 repo tracked; Grok: 1 repo tracked; ChatGPT: none.
 
 ## Rename timeline
 
@@ -53,10 +58,8 @@ One repo id keeps one model. These rows are slug changes, including names that o
 - `2026-10-27T02:00:18.087Z`: `gosupark27/lmos-public-claude` → `gosupark27/lmos_public_claude` (repo 1435079605)
 - `2026-10-27T02:08:59Z`: `gosupark27/lms_public_chatgpt` → `gosupark27/lmos_public_chatgpt` (repo 1435128289)
 
-Seals labeled grok are history for repo 1435127338 (gosupark27/lmos_public_grok). The grok slot is pending and counts zero repositories.
-
 - `1435079605`: Josh confirmed repo_id 1435079605 is the claude build. GitHub full_name is gosupark27/lmos_public_claude. node_id is R_kgDOVYmTtQ. README heading is # lmos-public-claude.
-- `1435127338`: Slot grok is pending. repo_id 1435127338 (gosupark27/lmos_public_grok) has commits and was not sealed on this run. It counts as that model only after Josh confirms this distinct repo id.
+- `1435127338`: Repo id 1435127338 is the grok slot and is a different id from the other sealed models. GitHub full_name is gosupark27/lmos_public_grok. README heading is # lmos-public-claude.
 - `1435128289`: Slot chatgpt is pending. gosupark27/lmos_public_chatgpt (repo_id 1435128289) advertises no commits and was not scored.
 
 CSV: `trends/snapshots.csv`.

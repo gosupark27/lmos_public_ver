@@ -540,6 +540,24 @@ def test_confirmed_attribution_does_not_reopen_uncertainty() -> None:
         print("confirmed attribution ok")
 
 
+def test_partial_batch_sequence() -> None:
+    info = cap.partial_upload(
+        [
+            "Add original source (batch-14.json)",
+            "Add original source (batch-08.json)",
+            "Add original source (batch-08.json)",
+            "Initial commit",
+        ]
+    )
+    if not info or info["status"] != "partial" or info["repeated_batches"] != [8]:
+        fail(f"open batch sequence was not partial: {info}")
+    if 9 not in info["missing_batches"] or info["latest_batch"] != 14:
+        fail(f"batch span wrong: {info}")
+    if cap.partial_upload(["Implement the game", "Add original source (batch-01.json)"]):
+        fail("a non-batch HEAD with a contiguous history should not be partial")
+    print("partial ok")
+
+
 if __name__ == "__main__":
     test_roundtrip_and_idempotency()
     test_enable_refuses_missing_and_accepts_local()
@@ -547,4 +565,5 @@ if __name__ == "__main__":
     test_identity_rename_does_not_relabel()
     test_source_fields_and_alias_lines()
     test_confirmed_attribution_does_not_reopen_uncertainty()
+    test_partial_batch_sequence()
     print("all capture tests passed")

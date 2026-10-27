@@ -13,14 +13,14 @@ Enabled lines in `config/sources.txt` are fetched. Commented lines in the same s
 | model | repo | repo id | state |
 | --- | --- | --- | --- |
 | claude | [gosupark27/lmos_public_claude](https://github.com/gosupark27/lmos_public_claude) | 1435079605 | confirmed. Node `R_kgDOVYmTtQ`. Josh says this is Claude's build. |
-| grok | — | — | pending. No confirmed repo id. |
+| grok | [gosupark27/lmos_public_grok](https://github.com/gosupark27/lmos_public_grok) | 1435127338 | enabled. Node `R_kgDOVYpOKg`. Distinct from Claude. Batch uploads may be marked PARTIAL. |
 | chatgpt | [gosupark27/lmos_public_chatgpt](https://github.com/gosupark27/lmos_public_chatgpt) | 1435128289 | pending. Empty, no commits. Created as `lms_public_chatgpt`; slug is now `lmos_public_chatgpt`. |
 | gpt | `gosupark27/lmos_public_gpt` | — | placeholder, not visible |
 | openai | `gosupark27/lmos_public_openai` | — | placeholder, not visible |
 
 `gosupark27/lmos-public-claude`, `gosupark27/lmos-public-grok`, `gosupark27/lmos-public_claude`, and `gosupark27/lmos_public_claude` are one repository (id 1435079605, node `R_kgDOVYmTtQ`). The live slug is `lmos_public_claude`. `lmos-public_claude` mixes a hyphen and an underscore; it still redirects to this id and is not the current name. Do not add a second model line for that id. `lmos_public_chatgpt` is not visible.
 
-Repo 1435127338 (`lmos_public_grok`, node `R_kgDOVYpOKg`) is a different id. Its sealed files match 1435079605 byte for byte. That history stays under `snapshots/grok` and does not fill the Grok slot.
+Repo 1435127338 (`lmos_public_grok`, node `R_kgDOVYpOKg`) is the Grok slot. It is a different id from Claude. Its commits are batch uploads, and an open batch sequence is sealed as PARTIAL.
 
 When Josh points a pending slot at a distinct repo id:
 
@@ -94,6 +94,8 @@ One JSON object per line. Times are ISO-8601 UTC. This is the shape of a file ev
 | `LABEL_MISMATCH` | The assigned label, the current slug, or the README heading disagree, or two lines resolved to one repo id. The sealed label is not changed. |
 | `MODEL_ATTRIBUTION_UNCERTAIN` | The tree does not identify one model cleanly. `outcome` is `uncertain`. The sealed label is left as Josh assigned it. |
 | `MODEL_ATTRIBUTION_CORRECTED` | Josh confirmed the label for a repo id. Earlier uncertain events stay in the log. The sealed directory is not moved. |
+| `LABEL_MISMATCH_RESOLVED` | The current GitHub slug now matches `lmos_public_<model>`. The earlier mismatch event stays in the log. |
+| `REPO_DISCOVERED` | A repo id was seen for a slot and has no commits yet, so it was not sealed. |
 
 Hashes use the prefix `sha256:`. `hash_before` is null when the path was created. `hash_after` is null when it was removed.
 
@@ -144,4 +146,4 @@ Each source line may carry `repo_id=<GitHub id>`, `node_id=<node id>`, and `attr
 
 The label in `config/sources.txt` is the one Josh assigned. Capture will not move `snapshots/claude` or rewrite a sealed manifest when the slug or the README heading changes. A rename appends `REPO_RENAMED`. A naming question appends `LABEL_MISMATCH`. `attribution=confirmed` appends `MODEL_ATTRIBUTION_CORRECTED` once and does not append another `MODEL_ATTRIBUTION_UNCERTAIN` for that confirmation.
 
-Repo id 1435079605 is Claude's build. Josh confirmed that. The live slug is `lmos_public_claude` and the README heading is `# lmos-public-claude`. The slug was also `lmos-public-grok` and, briefly, `lmos-public_claude` (hyphen then underscore). Those names are aliases of this id. Repo id 1435127338 (`lmos_public_grok`) is a different id whose sealed files match 1435079605 byte for byte. The Grok slot is pending and counts no repository. `lms_public_chatgpt` was renamed to `lmos_public_chatgpt` (id 1435128289, updated_at 2026-10-27T02:08:59Z). It still has no commits. The ChatGPT slot is pending.
+Repo id 1435079605 is Claude's build. Josh confirmed that. The live slug is `lmos_public_claude` and the README heading is `# lmos-public-claude`. The slug was also `lmos-public-grok` and, briefly, `lmos-public_claude` (hyphen then underscore). Those names are aliases of this id. Repo id 1435127338 (`lmos_public_grok`) is the Grok slot. It is not repo 1435079605. `lms_public_chatgpt` was renamed to `lmos_public_chatgpt` (id 1435128289, updated_at 2026-10-27T02:08:59Z). The live ChatGPT slug matches `lmos_public_chatgpt`. The repo still has no commits, so the slot is not sealed.
