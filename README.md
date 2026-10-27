@@ -12,13 +12,13 @@ Enabled lines in `config/sources.txt` are fetched. Commented lines in the same s
 
 | model | repo | repo id | state |
 | --- | --- | --- | --- |
-| claude | [gosupark27/lmos-public-grok](https://github.com/gosupark27/lmos-public-grok) | 1435079605 | enabled. Label stays `claude` until Josh confirms a relabel. |
+| claude | [gosupark27/lmos_public_claude](https://github.com/gosupark27/lmos_public_claude) | 1435079605 | enabled. Same id was also `lmos-public-claude` and `lmos-public-grok`. Label stays `claude`. |
 | grok | [gosupark27/lmos_public_grok](https://github.com/gosupark27/lmos_public_grok) | 1435127338 | enabled. Partial copy of repo 1435079605, still arriving as `batch-NN` commits. Shared paths match byte for byte. Label stays `grok`. |
 | chatgpt | [gosupark27/lms_public_chatgpt](https://github.com/gosupark27/lms_public_chatgpt) | 1435128289 | placeholder. Empty, no commits. The spelling is `lms`, not `lmos`. |
 | gpt | `gosupark27/lmos_public_gpt` | — | placeholder, not visible |
 | openai | `gosupark27/lmos_public_openai` | — | placeholder, not visible |
 
-`gosupark27/lmos-public-claude` and `gosupark27/lmos-public-grok` are the same repository (id 1435079605). The underscore names `lmos_public_claude` and `lmos_public_chatgpt` are not visible. Do not add a second model line for id 1435079605.
+`gosupark27/lmos-public-claude`, `gosupark27/lmos-public-grok`, and `gosupark27/lmos_public_claude` are the same repository (id 1435079605). The current slug is `lmos_public_claude`. Do not add a second model line for that id. `lmos_public_chatgpt` is not visible.
 
 When a placeholder repo exists:
 
@@ -141,4 +141,4 @@ Each source line may end with `repo_id=<GitHub id>`. The id is the key. The slug
 
 The label in `config/sources.txt` is the one Josh assigned. Capture will not move `snapshots/claude` or rewrite a sealed manifest when the slug or the README heading changes. It appends `REPO_RENAMED`, `LABEL_MISMATCH`, or `MODEL_ATTRIBUTION_UNCERTAIN` and waits for Josh to confirm a relabel.
 
-Repo id 1435079605 is the only full tree. Its slug is `lmos-public-grok` and its README heading is `# lmos-public-claude`. Repo id 1435127338 (`lmos_public_grok`) is a second GitHub id receiving that same tree in `batch-NN` commits. Every file present there matches 1435079605 byte for byte, so the divergence score is missing files, not a second interpretation of the spec. `lms_public_chatgpt` (id 1435128289) has no commits. `lmos_public_claude` and `lmos_public_chatgpt` are not visible.
+Repo id 1435079605 is the only full tree. Its current slug is `lmos_public_claude` and its README heading is `# lmos-public-claude`. Between those, the slug was `lmos-public-grok` with no extra commit. Repo id 1435127338 (`lmos_public_grok`) is a second GitHub id receiving that same tree in `batch-NN` commits. Every file present there matches 1435079605 byte for byte, so the divergence score is missing files, not a second interpretation of the spec. `lms_public_chatgpt` (id 1435128289) has no commits. `lmos_public_chatgpt` is not visible.

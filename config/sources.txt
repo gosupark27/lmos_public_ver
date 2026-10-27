@@ -4,8 +4,9 @@
 # A rename updates the owner/repo text and appends REPO_RENAMED. It does not change the label.
 #
 # Repo 1435079605 was created as gosupark27/lmos-public-claude (2026-10-27T00:38:41Z).
-# GitHub now serves that same id as gosupark27/lmos-public-grok. The sealed label stays claude
-# until Josh confirms a relabel. Do not point another model line at repo_id 1435079605.
+# The slug was then gosupark27/lmos-public-grok. It is now gosupark27/lmos_public_claude.
+# No commit moved the slug. The sealed label stays claude. Do not point another model
+# line at repo_id 1435079605.
 
 claude gosupark27/lmos_public_claude repo_id=1435079605
 
