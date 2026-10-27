@@ -1,0 +1,12 @@
+# One source per line: <model_id> <github-owner>/<repo>
+# A commented line in that shape is a placeholder. It is not fetched.
+# Enable one by deleting the leading hash, or run:
+#   python3 scripts/capture.py --enable <model_id>
+# A local git checkout may be used in place of owner/repo (absolute path).
+
+claude gosupark27/lmos-public-claude
+
+# grok gosupark27/lmos-public-grok
+# chatgpt gosupark27/lmos-public-chatgpt
+# gpt gosupark27/lmos-public-gpt
+# openai gosupark27/lmos-public-openai

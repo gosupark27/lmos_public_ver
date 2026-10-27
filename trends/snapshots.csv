@@ -1,0 +1,2 @@
+captured_at,model,commit,snapshot_id,file_count,total_lines,total_bytes,files_changed_since_last,lines_added,lines_removed,cross_model_divergence,spec_coverage,spec_gap_score,extra_surface_count,peer_models
+2026-10-27T01:39:49.543Z,claude,defee4d64a2191d6bbb3ddb2224616df67d4fca1,2026-10-27T01-39-49.543Z__defee4d64a2191d6bbb3ddb2224616df67d4fca1,100,14208,499716,100,14208,0,,0.8478,15.2,5,

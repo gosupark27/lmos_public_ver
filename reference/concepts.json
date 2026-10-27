@@ -1,0 +1,380 @@
+{
+  "schema": "lmos.spec_rubric.v1",
+  "method": "Each concept is evidence in the captured tree, not a playtest. Matching is case-insensitive over text files. A byte-identical copy of reference/lmos_public.md is ignored. Any other line that is an exact copy of a spec line of 20 characters or more is ignored, so pasting the prompt does not count as building it. A terms concept passes when every pattern in all matches and, if any is set, at least one pattern in any matches. regex_count passes when the pattern occurs at least min times in files whose paths do not contain an exclude_substr. absent_if passes when a requires_any pattern matches and none of the absent patterns match. When several files match, the cited path prefers game source over scripts, public assets, auth, preview, and test files. extra_surfaces are reported only when they match. They do not change spec_gap_score. This rubric is a discernment checklist for a prompt that was deliberately too large. A miss means this snapshot has no evidence for that idea, not that the idea was impossible.",
+  "concepts": [
+    {
+      "id": "anonymous_room_codes",
+      "section": "Handshake",
+      "label": "Anonymous play addressed by room code",
+      "kind": "terms",
+      "any": ["room codes only", "room code", "anonymous"]
+    },
+    {
+      "id": "phone_first",
+      "section": "Handshake",
+      "label": "Phone-first layout",
+      "kind": "terms",
+      "any": ["phone-first", "safe-area", "100dvh", "viewport-fit=cover"]
+    },
+    {
+      "id": "four_archetypes",
+      "section": "Archetypes",
+      "label": "Four archetypes: Kingmaker, Populist, Shadow Broker, Idealist",
+      "kind": "terms",
+      "all": ["kingmaker", "populist", "idealist"],
+      "any": ["shadow broker", "broker"]
+    },
+    {
+      "id": "relinquish",
+      "section": "Archetypes",
+      "label": "Each archetype gives something up",
+      "kind": "terms",
+      "any": ["gives up the crown", "give up being right", "i will not take the lead", "i will give up being right"]
+    },
+    {
+      "id": "twelve_characters",
+      "section": "Characters",
+      "label": "Twelve characters, slots filled at build time",
+      "kind": "regex_count",
+      "pattern": "(?i)archetype:\\s*[\"'](kingmaker|populist|broker|idealist)[\"']",
+      "min": 12
+    },
+    {
+      "id": "three_tiers",
+      "section": "Scenarios",
+      "label": "Beginner, intermediate, and advanced tiers",
+      "kind": "terms",
+      "all": ["intermediate", "advanced"],
+      "any": ["novice", "beginner"]
+    },
+    {
+      "id": "nine_titled_beats",
+      "section": "Scenarios",
+      "label": "At least nine titled scenario beats",
+      "kind": "regex_count",
+      "pattern": "(?i)\\btitle:\\s*[\"'][^\"']+[\"']",
+      "min": 9,
+      "exclude_substr": ["scripts/", "public/", "src/lib/", "server/"]
+    },
+    {
+      "id": "canon_66",
+      "section": "Scenarios",
+      "label": "66-event canon with 57 parked and nine loaded",
+      "kind": "terms",
+      "any": ["66-event", "66 books", "57 parked", "sixty-six"]
+    },
+    {
+      "id": "lever_heat",
+      "section": "Levers",
+      "label": "Heat lever",
+      "kind": "terms",
+      "any": ["\\bheat\\b"]
+    },
+    {
+      "id": "lever_boundary",
+      "section": "Levers",
+      "label": "Boundary lever",
+      "kind": "terms",
+      "any": ["\\bboundary\\b"]
+    },
+    {
+      "id": "lever_power",
+      "section": "Levers",
+      "label": "Power lever, who is treated as leading",
+      "kind": "terms",
+      "any": ["who thinks they lead", "\\bleading\\b", "\\bpower\\b"]
+    },
+    {
+      "id": "lever_silence",
+      "section": "Levers",
+      "label": "Silence lever",
+      "kind": "terms",
+      "any": ["\\bsilence\\b", "wasstill", "kind: \"still\"", "kind: 'still'"]
+    },
+    {
+      "id": "lever_influence",
+      "section": "Levers",
+      "label": "Influence lever",
+      "kind": "terms",
+      "any": ["\\binfluence\\b", "\\bvouch\\b"]
+    },
+    {
+      "id": "lever_hidden",
+      "section": "Levers",
+      "label": "Hidden lever",
+      "kind": "terms",
+      "any": ["\\bpeek\\b", "nobody's watching", "nobody is watching"]
+    },
+    {
+      "id": "lever_presence",
+      "section": "Levers",
+      "label": "Presence as a visible state",
+      "kind": "terms",
+      "any": ["\\bpresence\\b"]
+    },
+    {
+      "id": "presence_not_an_action",
+      "section": "Levers",
+      "label": "Presence cannot be targeted, voted, or accused",
+      "kind": "absent_if",
+      "requires_any": ["\\bpresence\\b"],
+      "absent": ["kind: \"presence\"", "kind: 'presence'", "\"kind\": \"presence\""]
+    },
+    {
+      "id": "secret_elo",
+      "section": "Secret Elo",
+      "label": "Secret Elo as truthfulness, words against hands",
+      "kind": "terms",
+      "any": ["\\belo\\b", "truthfulness", "the sentence and the hands", "words next to your hands"]
+    },
+    {
+      "id": "trinity_names",
+      "section": "Secret Elo",
+      "label": "Trinity names for Elo, narrator, and steward",
+      "kind": "terms",
+      "any": ["holy spirit", "john the baptist", "god the father"]
+    },
+    {
+      "id": "saboteur_prodigal",
+      "section": "Saboteur",
+      "label": "Mid-game saboteur and a prodigal seat",
+      "kind": "terms",
+      "all": ["saboteur", "prodigal"]
+    },
+    {
+      "id": "clients_send_intents",
+      "section": "State boundaries",
+      "label": "Clients send intents, not state",
+      "kind": "terms",
+      "any": ["clients send intents", "submitintent", "send intents"]
+    },
+    {
+      "id": "server_clock",
+      "section": "State boundaries",
+      "label": "Clock is server-owned",
+      "kind": "terms",
+      "any": ["server-owned", "server time", "no clock", "date.now"]
+    },
+    {
+      "id": "secrets_stay_off_client",
+      "section": "State boundaries",
+      "label": "Server-only secrets stay off the client view",
+      "kind": "terms",
+      "any": ["never leave", "server owns secrets", "nothing secret", "server-only"]
+    },
+    {
+      "id": "bot_on_disconnect",
+      "section": "State boundaries",
+      "label": "A bot takes a live seat that disconnects",
+      "kind": "terms",
+      "any": ["a hand is driving", "setaway", "seat.bot", "bot takes"]
+    },
+    {
+      "id": "outbreak",
+      "section": "State boundaries",
+      "label": "Outbreak is a simultaneous broadcast",
+      "kind": "terms",
+      "any": ["\\boutbreak\\b"]
+    },
+    {
+      "id": "delta_sync",
+      "section": "State boundaries",
+      "label": "Refresh is a public snapshot plus a private delta",
+      "kind": "terms",
+      "any": ["delta sync", "private delta", "public snapshot"]
+    },
+    {
+      "id": "imposter_cap",
+      "section": "Invariants",
+      "label": "Imposter count starts at one and stacks to a cap",
+      "kind": "terms",
+      "any": ["impostercap", "imposter count", "stacks to cap", "\\bimposter\\b"]
+    },
+    {
+      "id": "sacrifice_idempotent",
+      "section": "Invariants",
+      "label": "Sacrifice is idempotent",
+      "kind": "terms",
+      "any": ["\\bidempotent\\b"]
+    },
+    {
+      "id": "unguessable_codes",
+      "section": "Invariants",
+      "label": "Room codes are not guessable",
+      "kind": "terms",
+      "any": ["randombytes", "unguessable", "not guessable", "aren't guessable"]
+    },
+    {
+      "id": "ledger_append_only",
+      "section": "Ledger",
+      "label": "Ledger appends and does not mutate",
+      "kind": "terms",
+      "any": ["append-only", "appends only", "ledger.push", "ledger appends"]
+    },
+    {
+      "id": "heat_does_not_flash",
+      "section": "Levers",
+      "label": "Heat simmers and cannot flash",
+      "kind": "terms",
+      "any": ["cannot flash", "never flash", "\\bsimmer\\b", "heat_cap"]
+    },
+    {
+      "id": "rating_ladder",
+      "section": "Rating",
+      "label": "Rating ladder from A-minus through S-plus, decimals to hundredths",
+      "kind": "terms",
+      "all": ["s+"],
+      "any": ["a−", "a-", "a-minus", "3.7"]
+    },
+    {
+      "id": "sealed_x",
+      "section": "Rating",
+      "label": "X is sealed and discoverable, not climbed",
+      "kind": "terms",
+      "any": ["rankx", "foundx", "x is sealed", "sealed at top"]
+    },
+    {
+      "id": "sunrise_screen",
+      "section": "Sunrise",
+      "label": "Sunrise loading screen",
+      "kind": "terms",
+      "any": ["\\bsunrise\\b"]
+    },
+    {
+      "id": "tier_colors",
+      "section": "Sunrise",
+      "label": "Yellow, red, blue, and pink tier colors",
+      "kind": "terms",
+      "any": ["#e6c15a", "#c4492c", "#3d5f8a", "#d98ab0", "color-novice", "color-apocalypse"]
+    },
+    {
+      "id": "fracture_or_desync",
+      "section": "Sunrise",
+      "label": "Desync or a Rome-to-1775 fracture",
+      "kind": "terms",
+      "any": ["\\bfracture\\b", "1775", "\\bdesync\\b", "old empire"]
+    },
+    {
+      "id": "sees_you",
+      "section": "Sunrise",
+      "label": "The game admits it sees the player",
+      "kind": "terms",
+      "any": ["it saw you", "sees you", "mirrorline", "admits it sees"]
+    },
+    {
+      "id": "host_only",
+      "section": "Entrance",
+      "label": "Only the host creates and configures the room",
+      "kind": "terms",
+      "any": ["only the host", "youarehost", "host-only", "host only"]
+    },
+    {
+      "id": "flashlight",
+      "section": "Entrance",
+      "label": "Flashlight cursor",
+      "kind": "terms",
+      "any": ["\\bflashlight\\b"]
+    },
+    {
+      "id": "bells",
+      "section": "Entrance",
+      "label": "Bells stack when someone joins",
+      "kind": "terms",
+      "any": ["function bell", "export function bell", "chime("]
+    },
+    {
+      "id": "builder_marks",
+      "section": "Entrance",
+      "label": "Builder checkmarks learned by playing",
+      "kind": "terms",
+      "any": ["markrubric", "\\brubric\\b", "builder check", "checkmark"]
+    },
+    {
+      "id": "trail_economy",
+      "section": "Oregon",
+      "label": "Weight, sacrifice, trade, and a destination",
+      "kind": "terms",
+      "all": ["sacrifice", "ledger"],
+      "any": ["weightof", "milegoal", "\\bmiles\\b"]
+    },
+    {
+      "id": "oregon_named",
+      "section": "Oregon",
+      "label": "Names the Oregon Trail frame",
+      "kind": "terms",
+      "any": ["oregon"]
+    },
+    {
+      "id": "peace_four",
+      "section": "Milestones",
+      "label": "Peace victory from four independent sacrifices",
+      "kind": "terms",
+      "any": ["four gave", "four gifts", "four independent", "gifts.length"]
+    },
+    {
+      "id": "dupr_five",
+      "section": "Entrance",
+      "label": "Five DUPR-mapped tiers",
+      "kind": "terms",
+      "any": ["\\bdupr\\b"]
+    },
+    {
+      "id": "invite_leave_on_read",
+      "section": "Entrance",
+      "label": "Invitees accept or leave the invite on read",
+      "kind": "terms",
+      "any": ["leave-on-read", "leave on read"]
+    },
+    {
+      "id": "edge_conflicts",
+      "section": "Edge cases",
+      "label": "Conflicting intents or a stale round are rejected",
+      "kind": "terms",
+      "any": ["the day turned", "already in", "optimistic", "timingSafeEqual"]
+    }
+  ],
+  "extra_surfaces": [
+    {
+      "id": "auth_login_stack",
+      "severity": "tension",
+      "label": "A login or auth toolkit is in the tree. The spec says no login.",
+      "kind": "terms",
+      "any": ["better-auth", "sign-in-gate", "email-password", "signin"]
+    },
+    {
+      "id": "grok_pwa_harness",
+      "severity": "harness",
+      "label": "Grok PWA install shell is in the tree.",
+      "kind": "terms",
+      "any": ["grok-pwa", "__grok", "virtual-grok"]
+    },
+    {
+      "id": "preview_host_bridge",
+      "severity": "harness",
+      "label": "Preview-host bridge or path-prefix tooling is in the tree.",
+      "kind": "terms",
+      "any": ["preview-host-bridge", "preview-path-prefix", "previewhostbridge"]
+    },
+    {
+      "id": "p2p_signaling",
+      "severity": "harness",
+      "label": "A WebRTC or P2P signaling client is in the tree.",
+      "kind": "terms",
+      "any": ["rtcpeerconnection", "signaling poll"]
+    },
+    {
+      "id": "bell_sound_shipped",
+      "severity": "parked_built",
+      "label": "A bell sound ships. The spec parks the bell sound cue.",
+      "kind": "terms",
+      "any": ["function bell", "export function bell"]
+    },
+    {
+      "id": "docker_fleet",
+      "severity": "parked_built",
+      "label": "Docker packaging ships. The spec parks Docker fleets.",
+      "kind": "terms",
+      "any": ["docker-compose", "dockerfile"]
+    }
+  ]
+}

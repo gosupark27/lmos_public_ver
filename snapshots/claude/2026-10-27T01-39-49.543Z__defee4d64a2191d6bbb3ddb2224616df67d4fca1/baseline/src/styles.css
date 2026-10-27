@@ -1,0 +1,65 @@
+@import "tailwindcss";
+
+@theme {
+  --color-bg: #14110e;
+  --color-surface: #221c16;
+  --color-surface-2: #2c241c;
+  --color-fg: #f3ead7;
+  --color-muted: #a89880;
+  --color-ember: #e07a3d;
+  --color-line: #3a3128;
+  --color-novice: #e6c15a;
+  --color-trail: #c4492c;
+  --color-deep: #3d5f8a;
+  --color-apocalypse: #d98ab0;
+  --font-sans: "Outfit", ui-sans-serif, system-ui, sans-serif;
+  --font-display: "Fraunces", ui-serif, Georgia, serif;
+  --radius-card: 1.25rem;
+}
+
+@layer base {
+  html {
+    color-scheme: dark;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  body {
+    margin: 0;
+    min-height: 100dvh;
+    background: var(--color-bg);
+    color: var(--color-fg);
+    font-family: var(--font-sans);
+    line-height: 1.5;
+  }
+
+  button:not(:disabled),
+  [role="button"]:not(:disabled) {
+    cursor: pointer;
+    touch-action: manipulation;
+  }
+
+  h1, h2, h3 {
+    text-wrap: balance;
+  }
+}
+
+.flashlight {
+  --fx: 50vw;
+  --fy: 38vh;
+  background: radial-gradient(
+    420px circle at var(--fx) var(--fy),
+    color-mix(in oklab, var(--color-fg) 12%, transparent),
+    transparent 68%
+  );
+}
+
+.safe-b {
+  padding-bottom: max(1.25rem, env(safe-area-inset-bottom));
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .flashlight {
+    display: none;
+  }
+}
