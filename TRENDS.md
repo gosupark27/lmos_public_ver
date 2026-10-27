@@ -25,12 +25,14 @@ One row per sealed snapshot. This file is rebuilt from manifests. It is a projec
 | 2026-10-27T02:30:20.240Z | grok | 72 | 11775 | 3 | 222 | 109 | 98.8 | 0.8478 | 15.2 | 4 | claude |
 | 2026-10-27T02:36:21.013Z | claude | 54 | 8270 | 54 | 8270 | 0 | 98.8 | 0.8913 | 10.9 | 0 | grok |
 | 2026-10-27T02:36:29.084Z | grok | 86 | 13342 | 20 | 1720 | 153 | 98.9 | 0.8478 | 15.2 | 5 | claude |
+| 2026-10-27T03:05:49.198Z | grok | 100 | 14216 | 15 | 877 | 3 | 99.0 | 0.8478 | 15.2 | 5 | claude |
 
 `grok` `e5f7e8d1b232` is PARTIAL. HEAD is still an Add original source batch commit. Batches seen: 0–17. repeated batches [8].
 `grok` `2787eed5fe99` is PARTIAL. HEAD is still an Add original source batch commit. Batches seen: 0–18. repeated batches [8].
 `grok` `bc6aef95e1df` is PARTIAL. HEAD `Restore original migrations/0002_rooms.sql` is not a batch commit. Batches seen: 0–18. repeated batches [0, 1, 2, 8].
 `grok` `a5bf80de5c7a` is PARTIAL. HEAD `Restore original migrations/auth/0001_auth.sql` is not a batch commit. Batches seen: 0–18. repeated batches [0, 1, 2, 8].
 `grok` `842c2a1cb56a` is PARTIAL. HEAD `Restore original src/lib/multiplayer/p2p.ts` is not a batch commit. Batches seen: 0–18. repeated batches [0, 1, 2, 8].
+`grok` `c6c1df60e2d7` is PARTIAL. HEAD `Restore original vite.config.ts` is not a batch commit. Batches seen: 0–18. repeated batches [0, 1, 2, 8].
 
 ## Genuine baseline
 
@@ -44,7 +46,7 @@ Snapshots of this repo through `46018f12b4d2` are the content that commit remove
 
 Build 1.0.0 reports spec hash `1e2c01b465b9b3e62fa898e75d6b829291e5f24a0f0bf8ae89db1a336ee10b88` (PV-0.9.0-full). Flagged contradictions: F1, F2, F3, F4, F5, F6, F7, F8. Decision labels in the ledger: DECIDED, INFERRED, FLAGGED. Tests claimed passing: 27. The tracker did not run them. Stack recorded from the ledger and package.json: Cloudflare Worker, one Durable Object per room, WebSockets, vanilla JS client, no package dependencies.
 
-Sealed models: claude, grok. Mean pairwise divergence 98.9. PARTIAL: grok batch history still repeats or skips. claude 3a3cd7e97db2 is the first genuine build baseline. A claude-versus-peer score that uses a snapshot through 46018f12b4d2 is invalid.
+Sealed models: claude, grok. Mean pairwise divergence 99.0. PARTIAL: grok batch history still repeats or skips. claude 3a3cd7e97db2 is the first genuine build baseline. A claude-versus-peer score that uses a snapshot through 46018f12b4d2 is invalid.
 
 ## Identity
 

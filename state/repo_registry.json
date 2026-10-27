@@ -112,7 +112,7 @@
       "current_full_name": "gosupark27/lmos_public_grok",
       "description": "",
       "detected_at": "2026-10-27T01:57:04.540Z",
-      "head": "842c2a1cb56abc9f72841e05b987991473cb0510",
+      "head": "c6c1df60e2d75eb2619543fd1f7227c1c14ec254",
       "html_url": "https://github.com/gosupark27/lmos_public_grok",
       "model_label": "grok",
       "model_slot": "tracked",
@@ -121,7 +121,7 @@
       ],
       "node_id": "R_kgDOVYpOKg",
       "note": "Repo id 1435127338 is the grok slot and is a different id from the other sealed models. GitHub full_name is gosupark27/lmos_public_grok. README heading is # lmos_public_grok.",
-      "pushed_at": "2026-10-27T02:36:14Z",
+      "pushed_at": "2026-10-27T02:40:38Z",
       "readme_heading": "# lmos_public_grok",
       "remote_commit_authors": [
         "JJ Park"
@@ -129,8 +129,8 @@
       "renames": [],
       "repo_id": "1435127338",
       "sealed_repo_name": "gosupark27/lmos_public_grok",
-      "snapshot_id": "2026-10-27T02-36-29.084Z__842c2a1cb56abc9f72841e05b987991473cb0510",
-      "updated_at": "2026-10-27T02:36:18Z"
+      "snapshot_id": "2026-10-27T03-05-49.198Z__c6c1df60e2d75eb2619543fd1f7227c1c14ec254",
+      "updated_at": "2026-10-27T02:40:41Z"
     },
     "1435128289": {
       "attribution": "pending",
