@@ -1,0 +1,4 @@
+# Copy to .dev.vars for `wrangler dev`. In production use: npx wrangler secret put PASSPORT_SECRET
+PASSPORT_SECRET=change-me-to-a-long-random-string
+# Enables the 3-second "blitz" pace for testing. Leave unset in production.
+HANDSHAKE_DEV=1

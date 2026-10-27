@@ -1,0 +1,703 @@
+--- a/docs/lmos_public.md
++++ b/docs/lmos_public.md
+@@ -1,155 +1,56 @@
+-# **Living Mirror OS — Sync File**
++# lmos_public — 외부 공개용 원본 및 비공개 유지 규칙
+ 
+-# **Generated 2026-10-26. Read by any of the four models cold.**
++이 문서는 외부에 밀려도 되는 공개용 원본이다. 이 저장소에는 설명만 두고, 비밀과 위험 요소는 넣지 않는다. 위험 요소는 이 파일 밖에 두지 않는다.
+ 
+-## **THESIS**
++---
+ 
+-Prompt is the single source of truth. Harness, temperature, model choice, and output flow from it. Discernment — knowing what to include and exclude — rooted in self-knowledge and godly wisdom. AI agents do 80% of work; user owns final 20%. Anything requiring validation can never be superseded. One-shot accuracy is the ultimate success metric. User’s raw verbal ideation is the raw material that feeds prompt design.
++## 1. 이 저장소에 들어가는 것
+ 
+-## **THE GAME: Handshake**
++공개 저장소 `lmos_public`에는 아래만 들어간다.
+ 
+-Anonymous multiplayer social deduction. No login, no install, no IGN, no faces. Room codes only. Phone-first, responsive desktop for host config.
++- 소스 코드. 비밀, 토큰, 주소, 계정, 키가 들어 있지 않은 것.
++- 이 설명서.
++- 설치와 실행에 필요한 공개 설정 파일.
++- 테스트 중 비밀이 없는 것.
++- 비밀이 없는 예시 화면.
+ 
+-## **FOUR ARCHETYPES**
++위 목록에 없는 파일은 이 저장소에 들지 않는다.
+ 
+-* Kingmaker: gives up the crown
++## 2. 이 저장소에 들어가지 않는 것
+ 
+-* Populist: gives up the crowd
++아래는 공개 저장소에 넣지 않는다. 값만 비워도 넣지 않는다. 이름만 적어도 넣지 않는다. 예시로도 넣지 않는다. 주석으로도 넣지 않는다.
+ 
+-* Shadow Broker: gives up the leverage
++- API 키, 접근 토큰, 세션 토큰, 비밀번호, 비밀 키.
++- 비밀을 풀 수 있는 암호화 키. 개발용이라도 마찬가지다.
++- `.env`, `.env.local`, `.env.production`, `.env.development` 과 그 밖에 실제 값이 들어 있는 환경 파일.
++- 비밀 파일의 복사본. 이름을 `*.sample` 로 바꾸었다는 이유로 예외가 되지 않는다. 복사본에 값이 남아 있으면 그 파일도 비밀이다.
++- 사용자 계정, 이메일 주소, 전화번호, 결제 정보, 주소.
++- 비밀이 들어 있는 설정 파일과 백업 파일.
++- 운영 노트, 장애 기록, 보안 점검 기록, 고객 문의.
++- 이 저장소를 돌려도 비밀이 다시 생기지 않는 설명 문서. 그 설명은 여기 두지 않는다.
+ 
+-* Idealist: gives up being right
++예외는 없다. "한번만", "테스트용", "잠시", "나중에 지우기"는 예외가 아니다.
+ 
+-## **TWELVE CHARACTERS**
++## 3. 예시와 주석도 같다
+ 
+-Three subtypes each. Slots left blank for build-time invention.
++비밀을 예시 값으로 올리지 않는다. 예시는 나중에 진짜 값으로 바뀌기 쉽다. 예시를 보고 사람이 그 값을 따라 쓰기도 쉽다.
+ 
+-## **NINE SCENARIOS (TRIADS)**
++주석에 비밀을 적지 않는다. 주석은 검색된다. 주석은 복사된다. 주석은 삭제해도 기록에 남는다.
+ 
+-Beginner / intermediate / advanced. 66-event canon exists (66 books of the Bible); nine load per room. 57 parked.
++코드 안에 비밀을 글자열로 쓰지 않는다. 비밀은 설정 파일에도 쓰지 않는다. 비밀은 화면 안내문에도 쓰지 않는다. 비밀은 이 설명에도 쓰지 않는다.
+ 
+-## **SEVEN LEVERS (CAPYBARAS)**
++비밀의 일부만 가려도 비밀이다. 앞 4글자, 뒤 4글자, 가운데 글자를 별로 바꾼 형태도 비밀이다.
+ 
+-1. Heat — pressure before something boils over. Start low, simmer, never flash-fire.
++## 4. 이 문서가 해야 하는 일과 하지 않는 일
+ 
+-2. Boundary — who counts as inside.
++이 문서는 위의 금지 목록을 설명한다. 이 문서는 그 목록 안의 것을 이 저장소 안에 다시 쓰지 않는다.
+ 
+-3. Power — who thinks they lead.
++이 문서를 읽어도 비밀을 알아낼 수 없어야 한다. 이 문서를 복사해도 비밀이 따라와서는 안 된다. 이 문서는 공개 저장소와 같이 밖으로 나가도 되는 파일이다.
+ 
+-4. Silence — the one who waits. Costs Secret Elo to break.
++위험 요소를 이 파일에 적으면 이 파일 자체가 비공개 유지 대상이 된다. 그래서 적지 않는다.
+ 
+-5. Influence — soft moves that shift everything.
++## 5. 확인
+ 
+-6. Hidden — the thing nobody’s watching.
++공개 전에 저장소 전체를 검색한다. 위 2절의 항목이 파일 이름, 파일 내용, 주석, 설정 예시, 문서 예시 어디에도 없어야 한다. 하나라도 있으면 그 파일은 공개 저장소에 들지 않는다.
+ 
+-7. Presence — the big one, doing nothing, shifting the water level. CANNOT be targeted. No vote, no accusation, no lever points at it. Everything else is an action; presence is a state. Can shrink if the player starts performing again — desync made visible.
+-
+-## **SECRET ELO**
+-
+-Not skill. Truthfulness. Public words vs. surface actions. The machine/narrative engine knows the truth and keeps a scorecard per player. Spectrum: honest to dishonest. Tied to archetypes — a Shadow Broker’s truthfulness means something different than an Idealist’s. Trinity mapping: Secret Elo \= Holy Spirit. Narrator/secret server \= God the Father. Players in good standing \= Jesus followers. John the Baptist role \= the steward who points at truth without building the kingdom.
+-
+-## **SABOTEUR (HYBRID PATH — LOCKED)**
+-
+-Everyone starts clean. Event path can promote a clean player to saboteur mid-game when pressure peaks. Silent assignment. Server-only secret. Ledger does NOT record it. Caught by majority vote → prodigal seat opens: confess out loud or stay silent. Room doesn’t exile. It stops pretending. Redemption arc, not ban. Inspired by prodigal son structure and Esther.
+-
+-## **STATE BOUNDARIES (POKER ANALOGY — LOCKED)**
+-
+-* Refresh mid-round: delta sync only.
+-
+-* Outbreak: simultaneous broadcast, not staggered.
+-
+-* Disconnect during live action: bot takes over, scaled by room temperature and ELO.
+-
+-* Peace victory with lagging phone: frozen table, bell chime as cue. Consequence as mechanic.
+-
+-* Clients send intents, never state.
+-
+-* Poll payload splits: public snapshot \+ private delta per player.
+-
+-* Server-only secrets: saboteur truth, outbreak state, sacrifice window validity.
+-
+-* Nothing secret ships to the phone.
+-
+-## **INVARIANTS (LOCKED)**
+-
+-1. Imposter count starts at one, stacks to cap.
+-
+-2. Sacrifice is idempotent.
+-
+-3. Clock is server-owned.
+-
+-4. Room codes aren’t guessable.
+-
+-5. Ledger appends, doesn’t mutate.
+-
+-6. Clients never receive secret truth.
+-
+-7. Slow is fast.
+-
+-## **LEDGER**
+-
+-Append-only event log. Unified with prompt versioning. Diffs between prompt versions \= agents’ curriculum. Gaps flagged, not skipped.
+-
+-## **RATING LADDER (LOCKED)**
+-
+-X sealed at top, Easter-egg discoverable. S-plus through A-minus. Start at A. Soft floor A-minus. True bottom: sarcastic Master. Decimals to hundredths. Color and plus/minus distinguish levels. Builder mark: public rubric with half the items learned by playing.
+-
+-## **SUNRISE LOADING SCREEN**
+-
+-Desert gradient from I-10. Yellow novice, red intermediate, blue advanced, pink apocalypse. Default synced. Desync \= performance. Fracture: Rome to 1775 by collective truthfulness. Matrix beat: game admits it sees you.
+-
+-## **SOFT ENTRANCE (UX)**
+-
+-Host-only creation. Invitees accept or leave-on-read. Music before glow. Bells stack on join. Flashlight cursor. Five DUPR-mapped tiers. Easter eggs via room search. Builder checkmarks for demonstrated purpose.
+-
+-## **OREGON TRAIL FIVE ASSETS**
+-
+-1. The crossing — obstacle that defines the era.
+-
+-2. The roster — twelve characters in period clothes.
+-
+-3. The ledger — diary literal. Land too big to trust memory.
+-
+-4. The weather — heat lever in natural form.
+-
+-5. The destination — sea to shining sea.
+-
+-Resources \= weight. Freely given \= sacrifice. Traded \= ledger entry. Hoarded \= presence going quiet.
+-
+-## **MILESTONES**
+-
+-1. Room exists. (DONE)
+-
+-2. Host-invite flow, rating ladder, flashlight config. (DONE)
+-
+-3. Room goes live. Sunrise. Silence. Founding act. (DONE)
+-
+-4. First actions: trade, accusation, failed sacrifice. Rome/1775 branches. (DONE)
+-
+-5. Caught saboteur → prodigal seat. (DONE)
+-
+-6. Seven levers rewrite legal moves. Heat as simmer. (DONE)
+-
+-7. Resource economy. Oregon Trail skin. Five assets. (DONE)
+-
+-8. Peace victory. Four independent sacrifices. (DONE)
+-
+-## **OPEN SLOTS**
+-
+-Scenario contents. Time-bound number. Tech stack. Resources detail.
+-
+-## **PARKED**
+-
+-Docker fleets. ML tour. Cover image. Submission copy. Bell sound cue.
+-
+-## **NEXT MOVES**
+-
+-Paste one-shot. Read aloud first. Red-team cluster. Real container session. 66-day hike parallel.
+-
+-## **EDGE CASE CLUSTER**
+-
+-Timestamp trust, vote integrity, conflicting intents. 80% of bugs live here.
+-
+-## **SUCCESS METRIC**
+-
+-5 \- 10 real games fully played 
+\ No newline at end of file
++검색은 사람이 한다. 검색 도구가 대신해 주지 않는다. 검색 결과는 이 파일에 적지 않는다.
+--- a/eslint.config.mjs
++++ b/eslint.config.mjs
+@@ -1,47 +1,42 @@
+-import js from "@eslint/js";
+-import prettier from "eslint-config-prettier";
+-import reactHooks from "eslint-plugin-react-hooks";
+-import reactRefresh from "eslint-plugin-react-refresh";
+-import globals from "globals";
+-import tseslint from "typescript-eslint";
++import js from '@eslint/js'
++import tseslint from 'typescript-eslint'
++import reactHooks from 'eslint-plugin-react-hooks'
++import reactRefresh from 'eslint-plugin-react-refresh'
++import { globalIgnores } from 'eslint/config'
+ 
+-/** Flat ESLint config for the TanStack Start app-builder template. */
+ export default tseslint.config(
+-  {
+-    ignores: [
+-      "dist/**",
+-      ".output/**",
+-      ".vercel/**",
+-      ".nitro/**",
+-      "node_modules/**",
+-      "src/routeTree.gen.ts",
+-    ],
+-  },
++  globalIgnores(['dist', 'src/routeTree.gen.ts']),
+   js.configs.recommended,
+   ...tseslint.configs.recommended,
+   {
+-    files: ["**/*.{ts,tsx,js,jsx,mjs,cjs}"],
++    files: ['src/**/*.{ts,tsx}'],
+     languageOptions: {
+-      ecmaVersion: 2022,
+-      globals: { ...globals.browser, ...globals.node },
++      parserOptions: {
++        tsconfigRootDir: import.meta.dirname,
++      },
+     },
+     plugins: {
+-      "react-hooks": reactHooks,
+-      "react-refresh": reactRefresh,
++      'react-hooks': reactHooks,
++      'react-refresh': reactRefresh,
+     },
+     rules: {
+       ...reactHooks.configs.recommended.rules,
+-      "react-refresh/only-export-components": [
+-        "warn",
++      'react-refresh/only-export-components': [
++        'warn',
+         { allowConstantExport: true },
+       ],
+-      "@typescript-eslint/no-unused-vars": [
+-        "warn",
+-        { argsIgnorePattern: "^_", varsIgnorePattern: "^_" },
++      '@typescript-eslint/no-unused-vars': [
++        'error',
++        {
++          argsIgnorePattern: '^_',
++          varsIgnorePattern: '^_',
++          caughtErrorsIgnorePattern: '^_',
++        },
++      ],
++      '@typescript-eslint/consistent-type-imports': [
++        'error',
++        { prefer: 'type-imports', fixStyle: 'inline-type-imports' },
+       ],
+-      "@typescript-eslint/no-explicit-any": "off",
+     },
+   },
+-  // Disable rules that conflict with Prettier formatting.
+-  prettier,
+-);
++)
+--- a/migrations/auth/0001_auth.sql
++++ b/migrations/auth/0001_auth.sql
+@@ -1,67 +1,58 @@
+--- Better Auth schema (identity + sessions for "Sign in with Grok").
+---
+--- Generated by the Better Auth CLI for its Postgres adapter — DO NOT EDIT by
+--- hand. `@/lib/auth/server` runs Better Auth against these tables when
+--- DATABASE_URL is set. The columns are camelCase and MUST stay double-quoted so
+--- Postgres preserves the case Better Auth queries by.
+---
+--- Migrations in this folder are the single source of truth for your schema. They
+--- apply to Neon during the Vercel build (`npm run build`) and to the local
+--- PGLite fallback automatically on startup, so dev matches production. Applied
+--- files are recorded by name in `_migrations` and NEVER run again.
+---
+--- Put YOUR app's schema in NEW ordered files (0002_*.sql, 0003_*.sql, …), never
+--- in this one. For app tables, prefer snake_case and give per-user tables a
+--- `user_id TEXT NOT NULL` column (TEXT, not UUID — the preview dev user id is
+--- the string 'dev-user'), then scope every query to the authenticated user
+--- server-side (see the `neon` + `auth` skills and src/lib/auth/verify.server.ts).
++CREATE TABLE IF NOT EXISTS auth_user (
++  id TEXT PRIMARY KEY,
++  name TEXT,
++  email TEXT UNIQUE,
++  email_verified INTEGER NOT NULL DEFAULT 0,
++  image TEXT,
++  created_at INTEGER NOT NULL,
++  updated_at INTEGER NOT NULL
++);
+ 
+-create table if not exists "user" (
+-  "id" text not null primary key,
+-  "name" text not null,
+-  "email" text not null unique,
+-  "emailVerified" boolean not null,
+-  "image" text,
+-  "createdAt" timestamptz default CURRENT_TIMESTAMP not null,
+-  "updatedAt" timestamptz default CURRENT_TIMESTAMP not null
++CREATE TABLE IF NOT EXISTS auth_session (
++  id TEXT PRIMARY KEY,
++  user_id TEXT NOT NULL REFERENCES auth_user (id) ON DELETE CASCADE,
++  token TEXT NOT NULL UNIQUE,
++  expires_at INTEGER NOT NULL,
++  ip_address TEXT,
++  user_agent TEXT,
++  created_at INTEGER NOT NULL,
++  updated_at INTEGER NOT NULL
+ );
+ 
+-create table if not exists "session" (
+-  "id" text not null primary key,
+-  "expiresAt" timestamptz not null,
+-  "token" text not null unique,
+-  "createdAt" timestamptz default CURRENT_TIMESTAMP not null,
+-  "updatedAt" timestamptz not null,
+-  "ipAddress" text,
+-  "userAgent" text,
+-  "userId" text not null references "user" ("id") on delete cascade
++CREATE TABLE IF NOT EXISTS auth_account (
++  id TEXT PRIMARY KEY,
++  user_id TEXT NOT NULL REFERENCES auth_user (id) ON DELETE CASCADE,
++  account_id TEXT NOT NULL,
++  provider_id TEXT NOT NULL,
++  access_token TEXT,
++  refresh_token TEXT,
++  access_token_expires_at INTEGER,
++  refresh_token_expires_at INTEGER,
++  scope TEXT,
++  id_token TEXT,
++  password TEXT,
++  created_at INTEGER NOT NULL,
++  updated_at INTEGER NOT NULL
+ );
+ 
+-create table if not exists "account" (
+-  "id" text not null primary key,
+-  "accountId" text not null,
+-  "providerId" text not null,
+-  "userId" text not null references "user" ("id") on delete cascade,
+-  "accessToken" text,
+-  "refreshToken" text,
+-  "idToken" text,
+-  "accessTokenExpiresAt" timestamptz,
+-  "refreshTokenExpiresAt" timestamptz,
+-  "scope" text,
+-  "password" text,
+-  "createdAt" timestamptz default CURRENT_TIMESTAMP not null,
+-  "updatedAt" timestamptz not null
++CREATE TABLE IF NOT EXISTS auth_verification (
++  id TEXT PRIMARY KEY,
++  identifier TEXT NOT NULL,
++  value TEXT NOT NULL,
++  expires_at INTEGER NOT NULL,
++  created_at INTEGER NOT NULL,
++  updated_at INTEGER NOT NULL
+ );
+ 
+-create table if not exists "verification" (
+-  "id" text not null primary key,
+-  "identifier" text not null,
+-  "value" text not null,
+-  "expiresAt" timestamptz not null,
+-  "createdAt" timestamptz default CURRENT_TIMESTAMP not null,
+-  "updatedAt" timestamptz default CURRENT_TIMESTAMP not null
++CREATE TABLE IF NOT EXISTS auth_jwks (
++  id TEXT PRIMARY KEY,
++  public_key TEXT NOT NULL,
++  private_key TEXT NOT NULL,
++  created_at INTEGER NOT NULL,
++  expires_at INTEGER
+ );
+ 
+-create index if not exists "session_userId_idx" on "session" ("userId");
+-create index if not exists "account_userId_idx" on "account" ("userId");
+-create index if not exists "verification_identifier_idx" on "verification" ("identifier");
++CREATE INDEX IF NOT EXISTS idx_auth_session_user ON auth_session (user_id);
++CREATE INDEX IF NOT EXISTS idx_auth_account_user ON auth_account (user_id);
++CREATE UNIQUE INDEX IF NOT EXISTS idx_auth_account_provider
++  ON auth_account (provider_id, account_id);
+--- a/package.json
++++ b/package.json
+@@ -1,97 +1,48 @@
+ {
+-  "name": "app-builder-workspace",
++  "name": "handshake",
+   "private": true,
+-  "sideEffects": false,
++  "version": "0.0.0",
+   "type": "module",
+-  "overrides": {
+-    "nf3": "0.3.17"
+-  },
+   "scripts": {
+-    "dev": "node scripts/with-app-env.mjs vite dev --host 0.0.0.0 --port 8080",
+-    "build": "node scripts/with-app-env.mjs vite build && npm run db:migrate",
+-    "db:migrate": "node scripts/migrate.mjs",
+-    "build:dev": "node scripts/with-app-env.mjs vite build --mode development",
+-    "preview": "node scripts/with-app-env.mjs vite preview",
+-    "preview:restart": "node scripts/preview.mjs restart",
+-    "preview:stop": "node scripts/preview.mjs stop",
+-    "typecheck": "tsc --noEmit",
+-    "check:auth": "node scripts/check-auth-invariant.mjs",
+-    "test": "node --test 'scripts/**/*.test.mjs' && node --experimental-strip-types --test src/lib/app-data/app-data.test.ts src/lib/app-data/readiness-schedule.test.ts src/lib/auth/gate-identity.test.ts src/lib/auth/sign-in-gate.test.ts src/lib/preview-path-prefix.test.ts",
++    "dev": "node scripts/ensure-auth-env.mjs && vite dev",
++    "build": "node scripts/ensure-auth-env.mjs && vite build && node scripts/fix-vercel-sfc-bundles.mjs",
++    "preview": "vite preview",
++    "test": "vitest run",
+     "lint": "eslint .",
+-    "format": "prettier --write ."
++    "format": "prettier --write .",
++    "db:migrate": "node scripts/migrate.mjs",
++    "db:migrate:auth": "node scripts/migrate-auth.mjs"
+   },
+   "dependencies": {
+-    "@electric-sql/pglite": "^0.5.4",
+-    "@hookform/resolvers": "^5.7.0",
+-    "@radix-ui/react-accordion": "^1.2.12",
+-    "@radix-ui/react-alert-dialog": "^1.1.15",
+-    "@radix-ui/react-avatar": "^1.1.11",
+-    "@radix-ui/react-checkbox": "^1.3.3",
+-    "@radix-ui/react-collapsible": "^1.1.12",
+-    "@radix-ui/react-dialog": "^1.1.15",
+-    "@radix-ui/react-dropdown-menu": "^2.1.16",
+-    "@radix-ui/react-label": "^2.1.8",
+-    "@radix-ui/react-popover": "^1.1.15",
+-    "@radix-ui/react-progress": "^1.1.8",
+-    "@radix-ui/react-radio-group": "^1.3.8",
+-    "@radix-ui/react-scroll-area": "^1.2.10",
+-    "@radix-ui/react-select": "^2.2.6",
+-    "@radix-ui/react-separator": "^1.1.8",
+-    "@radix-ui/react-slider": "^1.3.6",
+-    "@radix-ui/react-slot": "^1.2.4",
+-    "@radix-ui/react-switch": "^1.2.6",
+-    "@radix-ui/react-tabs": "^1.1.13",
+-    "@radix-ui/react-toggle": "^1.1.10",
+-    "@radix-ui/react-toggle-group": "^1.1.11",
+-    "@radix-ui/react-tooltip": "^1.2.8",
+-    "@tailwindcss/vite": "^4.3.0",
+-    "@tanstack/react-query": "^5.101.0",
+-    "@tanstack/react-router": "^1.170.0",
+-    "@tanstack/react-start": "^1.168.60",
+-    "@tanstack/react-table": "^8.21.0",
+-    "@tanstack/router-plugin": "^1.168.0",
+-    "@vitejs/plugin-react": "^5.2.0",
+-    "better-auth": "~1.6.30",
+-    "class-variance-authority": "^0.7.1",
+-    "clsx": "^2.1.1",
+-    "cmdk": "^1.1.1",
+-    "date-fns": "^4.0.0",
+-    "jose": "6.2.9",
+-    "kysely": "^0.28.5",
+-    "lightningcss": "^1.28.0",
+-    "lucide-react": "^0.510.0",
+-    "nitro": "3.0.260610-beta",
+-    "pg": "^8.16.3",
+-    "react": "^19.2.0",
+-    "react-day-picker": "^9.14.0",
+-    "react-dom": "^19.2.0",
+-    "react-hook-form": "^7.54.0",
+-    "react-resizable-panels": "^4.6.5",
+-    "recharts": "^2.13.0",
+-    "sonner": "^2.0.7",
+-    "tailwind-merge": "^3.5.0",
+-    "tailwindcss": "^4.3.0",
+-    "tw-animate-css": "^1.3.4",
+-    "typescript": "^5.7.0",
+-    "vaul": "^1.1.2",
+-    "vite": "^8.2.0",
+-    "zod": "^4.4.0",
+-    "zustand": "^5.0.0"
++    "@tanstack/react-router": "^1.120.3",
++    "@tanstack/react-start": "^1.120.3",
++    "@vercel/functions": "^3.7.4",
++    "better-auth": "^1.6.11",
++    "better-sqlite3": "^12.10.0",
++    "react": "^19.1.0",
++    "react-dom": "^19.1.0",
++    "zod": "^4.4.3"
+   },
+   "devDependencies": {
+-    "@eslint/js": "^9.20.0",
+-    "@types/node": "^22.16.5",
+-    "@types/pg": "^8.11.10",
+-    "@types/react": "^19.2.0",
+-    "@types/react-dom": "^19.2.0",
+-    "eslint": "^9.20.0",
+-    "eslint-config-prettier": "^10.1.1",
+-    "eslint-plugin-prettier": "^5.2.6",
++    "@eslint/js": "^9.24.0",
++    "@types/better-sqlite3": "^7.6.13",
++    "@types/node": "^22.15.3",
++    "@types/react": "^19.1.2",
++    "@types/react-dom": "^19.1.2",
++    "@vitejs/plugin-react": "^4.4.1",
++    "eslint": "^9.24.0",
+     "eslint-plugin-react-hooks": "^5.2.0",
+-    "eslint-plugin-react-refresh": "^0.4.20",
+-    "globals": "^15.15.0",
+-    "playwright": "^1.62.0",
+-    "prettier": "^3.4.0",
+-    "typescript-eslint": "^8.56.1"
++    "eslint-plugin-react-refresh": "^0.4.19",
++    "globals": "^16.0.0",
++    "jsdom": "^29.1.1",
++    "nitro": "npm:nitro-nightly@latest",
++    "prettier": "^3.5.3",
++    "typescript": "~5.8.3",
++    "typescript-eslint": "^8.30.1",
++    "vite": "^7.0.2",
++    "vitest": "^3.1.1"
++  },
++  "overrides": {
++    "vite": "^7.0.2"
+   }
+ }
+--- a/public/__grok/install/assets/homescreen/glass-puzzle.svg
++++ b/public/__grok/install/assets/homescreen/glass-puzzle.svg
+@@ -1,13 +1,36 @@
+-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 30 30" fill="none">
++<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 184 184">
++  <g filter="url(#glass-puzzle-blur)" opacity="0.4" style="mix-blend-mode:hard-light">
++    <path fill="#000" d="M32.25 32.25h119.5v119.5H32.25z" />
++    <path stroke="#fff" stroke-width="0.5" d="M32.5 32.5h119v119h-119z" />
++  </g>
++  <foreignObject width="136" height="136" x="24" y="24">
++    <div xmlns="http://www.w3.org/1999/xhtml" style="backdrop-filter:blur(4px);clip-path:url(#glass-puzzle-bg);height:100%;width:100%"></div>
++  </foreignObject>
++  <g data-figma-bg-blur-radius="8">
++    <rect width="120" height="120" x="32" y="32" fill="#fff" fill-opacity="0.01" rx="26" />
++    <rect width="119.5" height="119.5" x="32.25" y="32.25" stroke="#fff" stroke-opacity="0.1" stroke-width="0.5" rx="25.75" />
++  </g>
++  <g filter="url(#glass-puzzle-shadow)">
++    <path fill="#fff" d="M78.03 58.63c0-6.5 5.17-11.66 10.84-11.66 5.66 0 10.96 5.16 10.96 11.66s-4.8 10.71-10.46 10.71-3.05.24-3.17 2.26c-.12 2.02 1.43 2.26 3.17 2.26 6.4 0 11.58-5.28 11.58-11.79 0-6.5-5.18-11.78-11.58-11.78s-11.58 5.28-11.58 11.78c0 1.56 1.24 2.38 2.5 2.38s2.13-.82 2.13-2.5zM99.24 79.47c-6.4 0-11.58 5.28-11.58 11.78s5.18 11.78 11.58 11.78 11.58-5.28 11.58-11.78-5.3-11.66-11.1-11.66q-1.02 0-1.6.36c-1.7.95-1.58 2.98.24 2.98 5.66 0 9.23-4.64 9.23-9.64 0-5-3.57-8.7-8.23-8.7-4.65 0-9.23 4.3-9.23 9.3 0 5 4.58 8.58 9.23 8.58 1.34 0 2.26-.83 2.26-2.15 0-1.55-.8-2.02-2.38-2.02-6.4 0-11.58 5.28-11.58 11.79s5.18 11.78 11.58 11.78c6.4 0 11.58-5.28 11.58-11.78s-5.18-11.79-11.58-11.79z" />
++  </g>
+   <defs>
+-    <linearGradient id="lg" x1="15" y1="0" x2="15" y2="30" gradientUnits="userSpaceOnUse">
+-      <stop stop-color="#5F5F5F" stop-opacity="0.12"/>
+-      <stop offset="1" stop-color="#FFFFFF" stop-opacity="0.12"/>
+-    </linearGradient>
++    <filter id="glass-puzzle-blur" width="136" height="136" x="24" y="24" color-interpolation-filters="sRGB" filterUnits="userSpaceOnUse">
++      <feFlood flood-opacity="0" result="BackgroundImageFix" />
++      <feBlend in="SourceGraphic" in2="BackgroundImageFix" result="shape" />
++      <feGaussianBlur result="effect1_foregroundBlur" stdDeviation="4" />
++    </filter>
++    <filter id="glass-puzzle-shadow" width="58.34" height="59.16" x="63.26" y="45.97" color-interpolation-filters="sRGB" filterUnits="userSpaceOnUse">
++      <feFlood flood-opacity="0" result="BackgroundImageFix" />
++      <feColorMatrix in="SourceAlpha" result="hardAlpha" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0" />
++      <feOffset dy="1" />
++      <feGaussianBlur stdDeviation="1.5" />
++      <feComposite in2="hardAlpha" operator="out" />
++      <feColorMatrix values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.1 0" />
++      <feBlend in2="BackgroundImageFix" result="shadow" />
++      <feBlend in="SourceGraphic" in2="shadow" result="shape" />
++    </filter>
++    <clipPath id="glass-puzzle-bg" transform="translate(-24 -24)">
++      <rect width="120" height="120" x="32" y="32" rx="26" />
++    </clipPath>
+   </defs>
+-  <rect width="30" height="30" rx="15" fill="url(#lg)"/>
+-  <g transform="translate(8.23 6.62) scale(1.2724)">
+-    <path fill="#fff" d="M0.541681 13.172H7.10209C7.3955 13.172 7.64377 12.9237 7.64377 12.6303C7.64377 12.3369 7.3955 12.0886 7.10209 12.0886H0.541681C0.248268 12.0886 0 12.3369 0 12.6303C0 12.9237 0.248268 13.172 0.541681 13.172ZM0.541681 10.1551H10.1114C10.4049 10.1551 10.6531 9.90681 10.6531 9.6134C10.6531 9.31998 10.4049 9.07171 10.1114 9.07171H0.541681C0.248268 9.07171 0 9.31998 0 9.6134C0 9.90681 0.248268 10.1551 0.541681 10.1551Z"/>
+-    <path fill="#fff" fill-opacity="0.5" d="M1.2188 0C0.406276 0 0 0.428833 0 1.24136V2.85136C0 3.11468 0.210657 3.28771 0.451406 3.28771C0.594361 3.28771 0.7373 3.22753 0.857667 3.10716C1.02319 2.94164 1.24889 2.70842 1.71533 2.70842C2.29464 2.70842 2.7611 3.17487 2.7611 3.76169C2.7611 4.34852 2.29464 4.81496 1.71533 4.81496C1.24889 4.81496 1.02319 4.58927 0.857667 4.41622C0.7373 4.29585 0.594361 4.24319 0.451406 4.24319C0.210657 4.24319 0 4.4087 0 4.67202V6.29708C0 7.11712 0.406276 7.53092 1.2188 7.53092H5.91339C6.73345 7.53092 7.14723 7.12466 7.14723 6.3046V4.70212C7.14723 4.62688 7.20741 4.59679 7.27513 4.65697C7.48579 4.81496 7.74158 4.92029 8.02747 4.92029C8.66696 4.92029 9.18607 4.4087 9.18607 3.76169C9.18607 3.11468 8.66696 2.60309 8.02747 2.60309C7.74158 2.60309 7.48579 2.71594 7.27513 2.87393C7.20741 2.9266 7.14723 2.90403 7.14723 2.82879V1.2263C7.14723 0.421299 6.73345 0 5.91339 0H1.2188Z"/>
+-  </g>
+ </svg>
+--- a/public/__grok/install/assets/homescreen/glass-share.svg
++++ b/public/__grok/install/assets/homescreen/glass-share.svg
+@@ -1,10 +1,37 @@
+-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 30 30" fill="none">
++<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 184 184">
++  <g filter="url(#glass-share-blur)" opacity="0.4" style="mix-blend-mode:hard-light">
++    <path fill="#000" d="M32.25 32.25h119.5v119.5H32.25z" />
++    <path stroke="#fff" stroke-width="0.5" d="M32.5 32.5h119v119h-119z" />
++  </g>
++  <foreignObject width="136" height="136" x="24" y="24">
++    <div xmlns="http://www.w3.org/1999/xhtml" style="backdrop-filter:blur(4px);clip-path:url(#glass-share-bg);height:100%;width:100%"></div>
++  </foreignObject>
++  <g data-figma-bg-blur-radius="8">
++    <rect width="120" height="120" x="32" y="32" fill="#fff" fill-opacity="0.01" rx="26" />
++    <rect width="119.5" height="119.5" x="32.25" y="32.25" stroke="#fff" stroke-opacity="0.1" stroke-width="0.5" rx="25.75" />
++  </g>
++  <g filter="url(#glass-share-shadow)">
++    <path fill="#fff" fill-rule="evenodd" d="M91.5 52c-6.35 0-11.5 5.15-11.5 11.5S85.15 75 91.5 75 103 69.85 103 63.5 97.85 52 91.5 52m0 4c-4.14 0-7.5 3.36-7.5 7.5s3.36 7.5 7.5 7.5 7.5-3.36 7.5-7.5-3.36-7.5-7.5-7.5M60 96.5c0-6.35 5.15-11.5 11.5-11.5S83 90.15 83 96.5 77.85 108 71.5 108 60 102.85 60 96.5m11.5-7.5c-4.14 0-7.5 3.36-7.5 7.5s3.36 7.5 7.5 7.5 7.5-3.36 7.5-7.5-3.36-7.5-7.5-7.5m20 31c0-6.35 5.15-11.5 11.5-11.5s11.5 5.15 11.5 11.5-5.15 11.5-11.5 11.5-11.5-5.15-11.5-11.5m11.5-7.5c-4.14 0-7.5 3.36-7.5 7.5s3.36 7.5 7.5 7.5 7.5-3.36 7.5-7.5-3.36-7.5-7.5-7.5" clip-rule="evenodd" />
++    <path fill="#fff" d="m84.22 69.47-8.94 14.06 3.44 2.19 8.94-14.07zM99.22 116.53l-8.94-14.06-3.44 2.19 8.94 14.07z" />
++  </g>
+   <defs>
+-    <linearGradient id="lg" x1="15" y1="0" x2="15" y2="30" gradientUnits="userSpaceOnUse">
+-      <stop stop-color="#5F5F5F" stop-opacity="0.12"/>
+-      <stop offset="1" stop-color="#FFFFFF" stop-opacity="0.12"/>
+-    </linearGradient>
++    <filter id="glass-share-blur" width="136" height="136" x="24" y="24" color-interpolation-filters="sRGB" filterUnits="userSpaceOnUse">
++      <feFlood flood-opacity="0" result="BackgroundImageFix" />
++      <feBlend in="SourceGraphic" in2="BackgroundImageFix" result="shape" />
++      <feGaussianBlur result="effect1_foregroundBlur" stdDeviation="4" />
++    </filter>
++    <filter id="glass-share-shadow" width="58" height="82" x="63" y="49" color-interpolation-filters="sRGB" filterUnits="userSpaceOnUse">
++      <feFlood flood-opacity="0" result="BackgroundImageFix" />
++      <feColorMatrix in="SourceAlpha" result="hardAlpha" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0" />
++      <feOffset dy="1" />
++      <feGaussianBlur stdDeviation="1.5" />
++      <feComposite in2="hardAlpha" operator="out" />
++      <feColorMatrix values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.1 0" />
++      <feBlend in2="BackgroundImageFix" result="shadow" />
++      <feBlend in="SourceGraphic" in2="shadow" result="shape" />
++    </filter>
++    <clipPath id="glass-share-bg" transform="translate(-24 -24)">
++      <rect width="120" height="120" x="32" y="32" rx="26" />
++    </clipPath>
+   </defs>
+-  <rect width="30" height="30" rx="15" fill="url(#lg)"/>
+-  <path fill="#fff" d="M12.4805 9.24805C12.3145 9.24805 12.1729 9.19434 12.0557 9.08691C11.9385 8.97461 11.8799 8.83301 11.8799 8.66211C11.8799 8.50098 11.9458 8.35693 12.0776 8.22998L14.48 5.9082C14.5728 5.82031 14.6606 5.76172 14.7437 5.73242C14.8267 5.69824 14.9121 5.68115 15 5.68115C15.0879 5.68115 15.1733 5.69824 15.2563 5.73242C15.3394 5.76172 15.4248 5.82031 15.5127 5.9082L17.9224 8.22998C18.0493 8.35693 18.1128 8.50098 18.1128 8.66211C18.1128 8.83301 18.0518 8.97461 17.9297 9.08691C17.8125 9.19434 17.6709 9.24805 17.5049 9.24805C17.3242 9.24805 17.1729 9.18213 17.0508 9.05029L16.0107 7.92969L15 6.71387L13.9893 7.92969L12.9419 9.05029C12.8247 9.18213 12.6709 9.24805 12.4805 9.24805ZM15 16.5356C14.8145 16.5356 14.6533 16.4722 14.5166 16.3452C14.3848 16.2134 14.3188 16.0571 14.3188 15.8765V8.55957L14.4434 6.4502C14.4531 6.29883 14.5093 6.16943 14.6118 6.06201C14.7192 5.94971 14.8486 5.89355 15 5.89355C15.1514 5.89355 15.2783 5.94971 15.3809 6.06201C15.4883 6.16943 15.5469 6.29883 15.5566 6.4502L15.6812 8.55957V15.8765C15.6812 16.0571 15.6128 16.2134 15.4761 16.3452C15.3442 16.4722 15.1855 16.5356 15 16.5356ZM11.521 22.439C10.5151 22.439 9.73877 22.1655 9.19189 21.6187C8.6499 21.0767 8.37891 20.3027 8.37891 19.2969V13.6499C8.37891 12.644 8.6499 11.8701 9.19189 11.3281C9.73877 10.7812 10.5151 10.5078 11.521 10.5078H12.9346V11.9507H11.5576C11.001 11.9507 10.5713 12.1021 10.2686 12.4048C9.9707 12.7075 9.82178 13.1372 9.82178 13.6938V19.2603C9.82178 19.8169 9.9707 20.2441 10.2686 20.542C10.5713 20.8447 11.001 20.9961 11.5576 20.9961H18.4351C18.9966 20.9961 19.4263 20.8447 19.7241 20.542C20.0269 20.2441 20.1782 19.8169 20.1782 19.2603V13.6938C20.1782 13.1372 20.0269 12.7075 19.7241 12.4048C19.4263 12.1021 18.9966 11.9507 18.4351 11.9507H17.0581V10.5078H18.4717C19.4824 10.5078 20.2588 10.7812 20.8008 11.3281C21.3477 11.8701 21.6211 12.644 21.6211 13.6499V19.2969C21.6211 20.3027 21.3477 21.0767 20.8008 21.6187C20.2588 22.1655 19.4824 22.439 18.4717 22.439H11.521Z"/>
+ </svg>
+--- a/public/__grok/install/assets/homescreen/logo-grok.svg
++++ b/public/__grok/install/assets/homescreen/logo-grok.svg
+@@ -1,6 +1,3 @@
+-<svg preserveAspectRatio="xMidYMid meet" width="12" height="12" viewBox="0 0 12 11.5714" fill="none" xmlns="http://www.w3.org/2000/svg">
+-<g id="vector">
+-<path d="M4.63453 7.42767L8.62395 4.46607C8.81953 4.32088 9.09907 4.37752 9.19225 4.60303C9.68274 5.79241 9.46361 7.22172 8.48776 8.20308C7.5119 9.18444 6.15411 9.39966 4.91305 8.9095L3.5573 9.54074C5.50184 10.8774 7.86313 10.5468 9.33868 9.0619C10.5091 7.88488 10.8716 6.28051 10.5326 4.8337L10.5357 4.83679C10.0442 2.71136 10.6565 1.86181 11.9109 0.124601C11.9406 0.0834107 11.9703 0.0422202 12 0L10.3493 1.65998V1.65483L4.6335 7.4287" fill="white" fill-opacity="0.6"/>
+-<path d="M3.81125 8.14747C2.41556 6.80672 2.6562 4.73175 3.84709 3.53517C4.72771 2.64958 6.17049 2.28813 7.42999 2.81949L8.78266 2.19133C8.53895 2.01421 8.22664 1.82371 7.86825 1.68984C6.24832 1.01946 4.3089 1.35311 2.99206 2.67635C1.7254 3.95016 1.32708 5.90877 2.01109 7.58007C2.52206 8.82917 1.68444 9.71271 0.840686 10.6045C0.541684 10.9206 0.241659 11.2368 0 11.5714L3.81022 8.1485" fill="white" fill-opacity="0.6"/>
+-</g>
++<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 113 113">
++  <path fill="#fff" d="M78.7 55.5c-8.4-4.2-19.1-1.1-23.3 7.3-2.1 4.2-2.5 8.8-1.5 13.2 1.6 6.8 6.6 12.1 13.2 14.1 6.7 2 13.8.4 19.1-4.3 4.4-3.9 6.9-9.5 6.9-15.5V28.2l-14.4 27.3zm-22.4-22.1 7.2 13.7c-7.2 1.1-13.7 5.5-17.4 12.1-5.5 9.8-4.4 21.8 2.5 30.4-8.4 2.3-17.8 1.1-25.2-4.3C14.2 78.9 9.7 67.2 12.1 55.5c2.5-12.3 13.1-21.1 25.4-21.1 6.3 0 12.4 2.2 17.3 6.3l1.5-7.3z" />
+ </svg>
+--- a/public/__grok/install/assets/homescreen/plus.svg
++++ b/public/__grok/install/assets/homescreen/plus.svg
+@@ -1,6 +1,36 @@
+-<svg preserveAspectRatio="xMidYMid meet" width="16" height="16" viewBox="0 0 12.6667 12.6667" fill="none" xmlns="http://www.w3.org/2000/svg">
+-<g id="vector">
+-<path d="M7 5.66667H9V7H7V9H5.66667V7H3.66667V5.66667H5.66667V3.66667H7V5.66667Z" fill="white"/>
+-<path fill-rule="evenodd" clip-rule="evenodd" d="M7.73307 6.7338e-07C8.46879 6.7338e-07 9.06095 -0.000648836 9.53906 0.0384121C10.0249 0.0781037 10.4516 0.162178 10.8464 0.363282C11.4736 0.682859 11.9838 1.19311 12.3034 1.82031C12.5045 2.21511 12.5886 2.6418 12.6283 3.1276C12.6673 3.60572 12.6667 4.19788 12.6667 4.93359V7.73307C12.6667 8.46879 12.6673 9.06095 12.6283 9.53906C12.5886 10.0249 12.5045 10.4516 12.3034 10.8464C11.9838 11.4736 11.4736 11.9838 10.8464 12.3034C10.4516 12.5045 10.0249 12.5886 9.53906 12.6283C9.06095 12.6673 8.46879 12.6667 7.73307 12.6667H4.93359C4.19788 12.6667 3.60572 12.6673 3.1276 12.6283C2.6418 12.5886 2.21511 12.5045 1.82031 12.3034C1.19311 11.9838 0.682859 11.4736 0.363282 10.8464C0.162178 10.4516 0.0781037 10.0249 0.0384121 9.53906C-0.000648844 9.06095 6.73357e-07 8.46879 6.73357e-07 7.73307V4.93359C6.72234e-07 4.19788 -0.000648973 3.60572 0.0384121 3.1276C0.0781039 2.6418 0.162177 2.21511 0.363282 1.82031C0.68286 1.19311 1.19311 0.68286 1.82031 0.363282C2.21511 0.162177 2.6418 0.0781039 3.1276 0.0384121C3.60572 -0.00064898 4.19788 6.72257e-07 4.93359 6.7338e-07H7.73307ZM4.93359 1.33333C4.17597 1.33333 3.64753 1.3336 3.23633 1.36719C2.83288 1.40015 2.6007 1.46198 2.42513 1.55143C2.04898 1.74315 1.74315 2.04898 1.55143 2.42513C1.46198 2.6007 1.40015 2.83289 1.36719 3.23633C1.3336 3.64753 1.33333 4.17597 1.33333 4.93359V7.73307C1.33333 8.49069 1.3336 9.01914 1.36719 9.43034C1.40015 9.83378 1.46198 10.066 1.55143 10.2415C1.74315 10.6177 2.04898 10.9235 2.42513 11.1152C2.6007 11.2047 2.83289 11.2665 3.23633 11.2995C3.64753 11.3331 4.17597 11.3333 4.93359 11.3333H7.73307C8.49069 11.3333 9.01914 11.3331 9.43034 11.2995C9.83378 11.2665 10.066 11.2047 10.2415 11.1152C10.6177 10.9235 10.9235 10.6177 11.1152 10.2415C11.2047 10.066 11.2665 9.83378 11.2995 9.43034C11.3331 9.01914 11.3333 8.49069 11.3333 7.73307V4.93359C11.3333 4.17597 11.3331 3.64753 11.2995 3.23633C11.2665 2.83289 11.2047 2.6007 11.1152 2.42513C10.9235 2.04898 10.6177 1.74315 10.2415 1.55143C10.066 1.46198 9.83378 1.40015 9.43034 1.36719C9.01914 1.3336 8.49069 1.33333 7.73307 1.33333H4.93359Z" fill="white"/>
+-</g>
++<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 184 184">
++  <g filter="url(#plus-blur)" opacity="0.4" style="mix-blend-mode:hard-light">
++    <path fill="#000" d="M32.25 32.25h119.5v119.5H32.25z" />
++    <path stroke="#fff" stroke-width="0.5" d="M32.5 32.5h119v119h-119z" />
++  </g>
++  <foreignObject width="136" height="136" x="24" y="24">
++    <div xmlns="http://www.w3.org/1999/xhtml" style="backdrop-filter:blur(4px);clip-path:url(#plus-bg);height:100%;width:100%"></div>
++  </foreignObject>
++  <g data-figma-bg-blur-radius="8">
++    <rect width="120" height="120" x="32" y="32" fill="#fff" fill-opacity="0.01" rx="26" />
++    <rect width="119.5" height="119.5" x="32.25" y="32.25" stroke="#fff" stroke-opacity="0.1" stroke-width="0.5" rx="25.75" />
++  </g>
++  <g filter="url(#plus-shadow)">
++    <path fill="#fff" d="M92 64h-8v-8a4 4 0 0 0-8 0v8h-8a4 4 0 0 0 0 8h8v8a4 4 0 0 0 8 0v-8h8a4 4 0 0 0 0-8" />
++  </g>
++  <defs>
++    <filter id="plus-blur" width="136" height="136" x="24" y="24" color-interpolation-filters="sRGB" filterUnits="userSpaceOnUse">
++      <feFlood flood-opacity="0" result="BackgroundImageFix" />
++      <feBlend in="SourceGraphic" in2="BackgroundImageFix" result="shape" />
++      <feGaussianBlur result="effect1_foregroundBlur" stdDeviation="4" />
++    </filter>
++    <filter id="plus-shadow" width="46" height="46" x="69" y="51" color-interpolation-filters="sRGB" filterUnits="userSpaceOnUse">
++      <feFlood flood-opacity="0" result="BackgroundImageFix" />
++      <feColorMatrix in="SourceAlpha" result="hardAlpha" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0" />
++      <feOffset dy="1" />
++      <feGaussianBlur stdDeviation="1.5" />
++      <feComposite in2="hardAlpha" operator="out" />
++      <feColorMatrix values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.1 0" />
++      <feBlend in2="BackgroundImageFix" result="shadow" />
++      <feBlend in="SourceGraphic" in2="shadow" result="shape" />
++    </filter>
++    <clipPath id="plus-bg" transform="translate(-24 -24)">
++      <rect width="120" height="120" x="32" y="32" rx="26" />
++    </clipPath>
++  </defs>
+ </svg>
+--- a/README.md
++++ b/README.md
+@@ -1,12 +1,20 @@
+-# lmos-public-claude
++# Handshake
+ 
+-Handshake — anonymous multiplayer trail game from Living Mirror OS.
++게임 대기실. 음성 톡으로 스택을 정하고 같은 수를 내면 승리한다.
+ 
+-Public source snapshot. Room codes only. Server owns secrets; clients send intents.
++잠시 비공개. 로컬에서만 돌린다.
+ 
+-See `docs/lmos_public.md` for the sync file.
++## 로컬
+ 
+-```
++```bash
+ npm install
+ npm run dev
+ ```
++
++브라우저에서 http://localhost:3000 을 연다.
++
++## 설명
++
++방 코드 6자리. 상대가 같은 코드를 넣으면 접속된다. 인원은 두 명이고, 스택은 1부터 100까지다. 승부는 맞춘 쪽이 가지고 진 쪽의 스택이 이동한다. 세 판정은 동점에 돌아간다.
++
++로비에서 방 코드를 복사해 친구에게 보낸다.

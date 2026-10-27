@@ -1,0 +1,95 @@
+{
+  "captured_at": "2026-10-27T01:56:07.023Z",
+  "content_repos": [
+    {
+      "attribution": "confirmed",
+      "created_at": "2026-10-27T00:38:41Z",
+      "full_name": "gosupark27/lmos_public_claude",
+      "head": "46018f12b4d208c79da82c0888b51541f6c85fba",
+      "html_url": "https://github.com/gosupark27/lmos_public_claude",
+      "label": "claude",
+      "pushed_at": "2026-10-27T01:47:05Z",
+      "repo_id": "1435079605",
+      "snapshot_id": "2026-10-27T01-56-07.023Z__46018f12b4d208c79da82c0888b51541f6c85fba"
+    }
+  ],
+  "distinct_content_repos": 1,
+  "divergence_method": "not_computed. Two names of one GitHub repo id are not a pair.",
+  "empty_repositories": [
+    {
+      "attribution": "pending",
+      "created_at": "2026-10-27T01:49:20Z",
+      "full_name": "gosupark27/lmos_public_chatgpt",
+      "html_url": "https://github.com/gosupark27/lmos_public_chatgpt",
+      "model": "chatgpt",
+      "node_id": "R_kgDOVYpR4Q",
+      "pushed_at": "2026-10-27T01:49:21Z",
+      "repo_id": "1435128289",
+      "target": "gosupark27/lmos_public_chatgpt",
+      "updated_at": "2026-10-27T02:08:59Z"
+    }
+  ],
+  "mode": "single_repository",
+  "names": [
+    "gosupark27/lmos-public-claude",
+    "gosupark27/lmos-public-grok",
+    "gosupark27/lmos-public_claude",
+    "gosupark27/lmos_public_claude"
+  ],
+  "not_found": [
+    {
+      "model": null,
+      "target": "gosupark27/lmos-public-chatgpt"
+    },
+    {
+      "model": null,
+      "target": "gosupark27/lmos-public-gpt"
+    },
+    {
+      "model": null,
+      "target": "gosupark27/lmos-public-openai"
+    },
+    {
+      "model": "gpt",
+      "target": "gosupark27/lmos_public_gpt"
+    },
+    {
+      "model": "openai",
+      "target": "gosupark27/lmos_public_openai"
+    },
+    {
+      "model": null,
+      "target": "gosupark27/lms_public_claude"
+    },
+    {
+      "model": null,
+      "target": "gosupark27/lms_public_grok"
+    }
+  ],
+  "over_time": {
+    "commit": "46018f12b4d208c79da82c0888b51541f6c85fba",
+    "model": "claude",
+    "parent_commit": "defee4d64a2191d6bbb3ddb2224616df67d4fca1",
+    "paths": [
+      "README.md"
+    ],
+    "snapshot_id": "2026-10-27T01-56-07.023Z__46018f12b4d208c79da82c0888b51541f6c85fba"
+  },
+  "pairs": [],
+  "pairwise": "not_computed",
+  "schema": "lmos.cross_model.v1",
+  "snapshot_ids": [
+    "2026-10-27T01-56-07.023Z__46018f12b4d208c79da82c0888b51541f6c85fba",
+    "2026-10-27T02-00-18.087Z__ece2c05acc8eb099b7ff9449b9a7eaf50f71ac51"
+  ],
+  "summary": "One distinct repository has a tree: GitHub id 1435079605 (gosupark27/lmos_public_claude), sealed under the label claude. HEAD 46018f12b4d208c79da82c0888b51541f6c85fba is that seal. Other names of this id are aliases. Pairwise divergence was not computed. Empty repositories were listed and not scored: gosupark27/lmos_public_chatgpt. Josh confirmed this id is the claude build.",
+  "unsealed_with_commits": [
+    {
+      "full_name": "gosupark27/lmos_public_grok",
+      "head": "1696102474bada161bef42ed2b5227e002077902",
+      "model": "grok",
+      "repo_id": "1435127338",
+      "target": "gosupark27/lmos_public_grok"
+    }
+  ]
+}

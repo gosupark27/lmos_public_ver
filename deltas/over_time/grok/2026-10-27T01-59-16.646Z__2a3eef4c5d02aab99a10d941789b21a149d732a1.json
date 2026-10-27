@@ -1,0 +1,74 @@
+{
+  "baseline": false,
+  "binary": [],
+  "captured_at": "2026-10-27T01:59:16.646Z",
+  "commit": "2a3eef4c5d02aab99a10d941789b21a149d732a1",
+  "directories": [],
+  "files": [
+    {
+      "added": 416,
+      "binary": false,
+      "hash_after": "sha256:48b3924b41d606f94a9b8faae47ff350b84978fdd5ab3f6ca01640ed4c7087d7",
+      "hash_before": null,
+      "lines": 416,
+      "op": "add",
+      "path": "scripts/browser-smoke-verdict.test.mjs",
+      "removed": 0,
+      "sha256": "sha256:48b3924b41d606f94a9b8faae47ff350b84978fdd5ab3f6ca01640ed4c7087d7"
+    },
+    {
+      "added": 177,
+      "binary": false,
+      "hash_after": "sha256:2e1cc3136f33bd74b73b4b3dba812e74ac299c24893b9a7c406e9bbeaf46571f",
+      "hash_before": null,
+      "lines": 177,
+      "op": "add",
+      "path": "scripts/browser-smoke.mjs",
+      "removed": 0,
+      "sha256": "sha256:2e1cc3136f33bd74b73b4b3dba812e74ac299c24893b9a7c406e9bbeaf46571f"
+    },
+    {
+      "added": 109,
+      "binary": false,
+      "hash_after": "sha256:d712203c4bc92c197c342e5c91660fc5a141a31171f22f35c505a0bff45f98ee",
+      "hash_before": null,
+      "lines": 109,
+      "op": "add",
+      "path": "scripts/check-auth-invariant.mjs",
+      "removed": 0,
+      "sha256": "sha256:d712203c4bc92c197c342e5c91660fc5a141a31171f22f35c505a0bff45f98ee"
+    },
+    {
+      "added": 110,
+      "binary": false,
+      "hash_after": "sha256:75a58f44dffb2fc77eb47473638646f607dba26a68a6900156031c7b6227cf3c",
+      "hash_before": null,
+      "lines": 110,
+      "op": "add",
+      "path": "scripts/check-auth-invariant.test.mjs",
+      "removed": 0,
+      "sha256": "sha256:75a58f44dffb2fc77eb47473638646f607dba26a68a6900156031c7b6227cf3c"
+    },
+    {
+      "added": 190,
+      "binary": false,
+      "hash_after": "sha256:36331d0bc0664debb5068bd6869d3089dc41555b7770c9ccb577d8845958835c",
+      "hash_before": null,
+      "lines": 190,
+      "op": "add",
+      "path": "scripts/grok-pwa-plugin.mjs",
+      "removed": 0,
+      "sha256": "sha256:36331d0bc0664debb5068bd6869d3089dc41555b7770c9ccb577d8845958835c"
+    }
+  ],
+  "files_added": 5,
+  "files_modified": 0,
+  "files_removed": 0,
+  "lines_added": 1002,
+  "lines_removed": 0,
+  "model": "grok",
+  "parent_snapshot_id": "2026-10-27T01-57-57.542Z__262aaa175740b02aa0d0d6ff258630a06e1acb8f",
+  "patch": "deltas/over_time/grok/2026-10-27T01-59-16.646Z__2a3eef4c5d02aab99a10d941789b21a149d732a1.patch",
+  "schema": "lmos.over_time.v1",
+  "snapshot_id": "2026-10-27T01-59-16.646Z__2a3eef4c5d02aab99a10d941789b21a149d732a1"
+}

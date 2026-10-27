@@ -1,0 +1,118 @@
+{
+  "baseline": false,
+  "binary": [],
+  "captured_at": "2026-10-27T02:28:10.359Z",
+  "commit": "bc6aef95e1df86dca13335a944e903ba9ef09708",
+  "directories": [],
+  "files": [
+    {
+      "added": 13,
+      "binary": false,
+      "hash_after": "sha256:623698ce70f8852647e32a85d82447736de3d86441414ef9ee3a82eba9ad47e5",
+      "hash_before": "sha256:8361daa2a7a21e4d4d3295fd4272a79d4307e4af17bcbe9c873188d6bd305a33",
+      "lines": 20,
+      "op": "modify",
+      "path": "README.md",
+      "removed": 5,
+      "sha256": "sha256:623698ce70f8852647e32a85d82447736de3d86441414ef9ee3a82eba9ad47e5"
+    },
+    {
+      "added": 34,
+      "binary": false,
+      "hash_after": "sha256:fca568239b2b16363ae2f46067d38ebe14ebf2f749707a8cb640b60ecebe9f3b",
+      "hash_before": "sha256:1e2c01b465b9b3e62fa898e75d6b829291e5f24a0f0bf8ae89db1a336ee10b88",
+      "lines": 56,
+      "op": "modify",
+      "path": "docs/lmos_public.md",
+      "removed": 133,
+      "sha256": "sha256:fca568239b2b16363ae2f46067d38ebe14ebf2f749707a8cb640b60ecebe9f3b"
+    },
+    {
+      "added": 26,
+      "binary": false,
+      "hash_after": "sha256:dfb1751c44916115bf7e35b6e50665754a0c806b2c52672f5ca4da78a9f9d6b6",
+      "hash_before": "sha256:9c79df07c33ff6aa13876bdd1e7e6652aa1ecb377c7b7f029f7915d215ee4488",
+      "lines": 42,
+      "op": "modify",
+      "path": "eslint.config.mjs",
+      "removed": 31,
+      "sha256": "sha256:dfb1751c44916115bf7e35b6e50665754a0c806b2c52672f5ca4da78a9f9d6b6"
+    },
+    {
+      "added": 49,
+      "binary": false,
+      "hash_after": "sha256:418b88f27c1862bbe1b7cfc5d473a466c5ae6fba00ffe7c81486a113e0c16e1b",
+      "hash_before": "sha256:f953cacc448c0c81ae4fe63e66b0e59569e840782ad279fdee201dff529363e9",
+      "lines": 58,
+      "op": "modify",
+      "path": "migrations/auth/0001_auth.sql",
+      "removed": 58,
+      "sha256": "sha256:418b88f27c1862bbe1b7cfc5d473a466c5ae6fba00ffe7c81486a113e0c16e1b"
+    },
+    {
+      "added": 36,
+      "binary": false,
+      "hash_after": "sha256:e2d873f3a9f3a4bdcdccf152216705b0f68f5c17128e6022c5b71ce5848701fb",
+      "hash_before": "sha256:c138a44993e23d255bdc0d2054f692f0ef61df5718deb44701d756fa3b99cb50",
+      "lines": 48,
+      "op": "modify",
+      "path": "package.json",
+      "removed": 85,
+      "sha256": "sha256:e2d873f3a9f3a4bdcdccf152216705b0f68f5c17128e6022c5b71ce5848701fb"
+    },
+    {
+      "added": 33,
+      "binary": false,
+      "hash_after": "sha256:1d1fb0fc84000209604591061bfe12f69d0c35a5808768f337d5cc73624ed1f5",
+      "hash_before": "sha256:a677c9356c23d1e699559ddbffac97cd135c2782cd893fb34f3738f6d11bee17",
+      "lines": 36,
+      "op": "modify",
+      "path": "public/__grok/install/assets/homescreen/glass-puzzle.svg",
+      "removed": 10,
+      "sha256": "sha256:1d1fb0fc84000209604591061bfe12f69d0c35a5808768f337d5cc73624ed1f5"
+    },
+    {
+      "added": 34,
+      "binary": false,
+      "hash_after": "sha256:d6559692d878bbcc78ead972863011e72d963c8ecc5e3f00bebad04d3e9019d3",
+      "hash_before": "sha256:efad1b4b507a68c1f1af4aad2c93e8c24076224aa593da86677697f543d026d6",
+      "lines": 37,
+      "op": "modify",
+      "path": "public/__grok/install/assets/homescreen/glass-share.svg",
+      "removed": 7,
+      "sha256": "sha256:d6559692d878bbcc78ead972863011e72d963c8ecc5e3f00bebad04d3e9019d3"
+    },
+    {
+      "added": 2,
+      "binary": false,
+      "hash_after": "sha256:37bb6c47bea962cf14e2cbb36b1087d8f990fee33ecab1657068b923808c3960",
+      "hash_before": "sha256:0654e3e59cce69856f38525cbfe4ab3a9ef52d4b64c8532dd0bc1a3f34fcb5b1",
+      "lines": 3,
+      "op": "modify",
+      "path": "public/__grok/install/assets/homescreen/logo-grok.svg",
+      "removed": 5,
+      "sha256": "sha256:37bb6c47bea962cf14e2cbb36b1087d8f990fee33ecab1657068b923808c3960"
+    },
+    {
+      "added": 35,
+      "binary": false,
+      "hash_after": "sha256:e1f71da6f8d57e4ae1258ce327df820a332e73edfd08349eac7872188b17fc85",
+      "hash_before": "sha256:c2c94be46aa2c3c2fda95d7c6f2fc6d0b656d1f5847828d5d95b5a81a6f4f20d",
+      "lines": 36,
+      "op": "modify",
+      "path": "public/__grok/install/assets/homescreen/plus.svg",
+      "removed": 5,
+      "sha256": "sha256:e1f71da6f8d57e4ae1258ce327df820a332e73edfd08349eac7872188b17fc85"
+    }
+  ],
+  "files_added": 0,
+  "files_modified": 9,
+  "files_removed": 0,
+  "lines_added": 262,
+  "lines_removed": 339,
+  "model": "grok",
+  "parent_snapshot_id": "2026-10-27T02-19-36.777Z__2787eed5fe99ff44a1b459c7aea9b0f9af524637",
+  "patch": "deltas/over_time/grok/2026-10-27T02-28-10.359Z__bc6aef95e1df86dca13335a944e903ba9ef09708.patch",
+  "schema": "lmos.over_time.v1",
+  "snapshot_id": "2026-10-27T02-28-10.359Z__bc6aef95e1df86dca13335a944e903ba9ef09708"
+}

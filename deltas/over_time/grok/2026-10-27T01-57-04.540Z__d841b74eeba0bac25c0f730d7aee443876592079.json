@@ -1,0 +1,250 @@
+{
+  "baseline": true,
+  "binary": [],
+  "captured_at": "2026-10-27T01:57:04.540Z",
+  "commit": "d841b74eeba0bac25c0f730d7aee443876592079",
+  "directories": [
+    {
+      "bytes": 62,
+      "directory": ".gitignore",
+      "files": 1,
+      "lines": 8
+    },
+    {
+      "bytes": 90,
+      "directory": ".prettierrc",
+      "files": 1,
+      "lines": 6
+    },
+    {
+      "bytes": 256,
+      "directory": "README.md",
+      "files": 1,
+      "lines": 12
+    },
+    {
+      "bytes": 5739,
+      "directory": "docs",
+      "files": 1,
+      "lines": 155
+    },
+    {
+      "bytes": 1277,
+      "directory": "eslint.config.mjs",
+      "files": 1,
+      "lines": 47
+    },
+    {
+      "bytes": 2911,
+      "directory": "migrations",
+      "files": 2,
+      "lines": 73
+    },
+    {
+      "bytes": 3542,
+      "directory": "package.json",
+      "files": 1,
+      "lines": 97
+    },
+    {
+      "bytes": 14737,
+      "directory": "public",
+      "files": 6,
+      "lines": 416
+    },
+    {
+      "bytes": 10887,
+      "directory": "scripts",
+      "files": 2,
+      "lines": 261
+    }
+  ],
+  "files": [
+    {
+      "added": 8,
+      "binary": false,
+      "hash_after": "sha256:687bc2e1dcb6c2e34a8606d1c4a29f3ca8931eb4a46eccd7f8d614594bd02f43",
+      "hash_before": null,
+      "lines": 8,
+      "op": "add",
+      "path": ".gitignore",
+      "removed": 0,
+      "sha256": "sha256:687bc2e1dcb6c2e34a8606d1c4a29f3ca8931eb4a46eccd7f8d614594bd02f43"
+    },
+    {
+      "added": 6,
+      "binary": false,
+      "hash_after": "sha256:d5f90f76c5b68ce7be5ba077813f97e1983511b8c314764537345a538c1261f4",
+      "hash_before": null,
+      "lines": 6,
+      "op": "add",
+      "path": ".prettierrc",
+      "removed": 0,
+      "sha256": "sha256:d5f90f76c5b68ce7be5ba077813f97e1983511b8c314764537345a538c1261f4"
+    },
+    {
+      "added": 12,
+      "binary": false,
+      "hash_after": "sha256:8361daa2a7a21e4d4d3295fd4272a79d4307e4af17bcbe9c873188d6bd305a33",
+      "hash_before": null,
+      "lines": 12,
+      "op": "add",
+      "path": "README.md",
+      "removed": 0,
+      "sha256": "sha256:8361daa2a7a21e4d4d3295fd4272a79d4307e4af17bcbe9c873188d6bd305a33"
+    },
+    {
+      "added": 155,
+      "binary": false,
+      "hash_after": "sha256:1e2c01b465b9b3e62fa898e75d6b829291e5f24a0f0bf8ae89db1a336ee10b88",
+      "hash_before": null,
+      "lines": 155,
+      "op": "add",
+      "path": "docs/lmos_public.md",
+      "removed": 0,
+      "sha256": "sha256:1e2c01b465b9b3e62fa898e75d6b829291e5f24a0f0bf8ae89db1a336ee10b88"
+    },
+    {
+      "added": 47,
+      "binary": false,
+      "hash_after": "sha256:9c79df07c33ff6aa13876bdd1e7e6652aa1ecb377c7b7f029f7915d215ee4488",
+      "hash_before": null,
+      "lines": 47,
+      "op": "add",
+      "path": "eslint.config.mjs",
+      "removed": 0,
+      "sha256": "sha256:9c79df07c33ff6aa13876bdd1e7e6652aa1ecb377c7b7f029f7915d215ee4488"
+    },
+    {
+      "added": 6,
+      "binary": false,
+      "hash_after": "sha256:62003a919fae3cda6dfafef7b1d2bf8f12036a7c34f43075c5a9e2a6b7bac515",
+      "hash_before": null,
+      "lines": 6,
+      "op": "add",
+      "path": "migrations/0002_rooms.sql",
+      "removed": 0,
+      "sha256": "sha256:62003a919fae3cda6dfafef7b1d2bf8f12036a7c34f43075c5a9e2a6b7bac515"
+    },
+    {
+      "added": 67,
+      "binary": false,
+      "hash_after": "sha256:f953cacc448c0c81ae4fe63e66b0e59569e840782ad279fdee201dff529363e9",
+      "hash_before": null,
+      "lines": 67,
+      "op": "add",
+      "path": "migrations/auth/0001_auth.sql",
+      "removed": 0,
+      "sha256": "sha256:f953cacc448c0c81ae4fe63e66b0e59569e840782ad279fdee201dff529363e9"
+    },
+    {
+      "added": 97,
+      "binary": false,
+      "hash_after": "sha256:c138a44993e23d255bdc0d2054f692f0ef61df5718deb44701d756fa3b99cb50",
+      "hash_before": null,
+      "lines": 97,
+      "op": "add",
+      "path": "package.json",
+      "removed": 0,
+      "sha256": "sha256:c138a44993e23d255bdc0d2054f692f0ef61df5718deb44701d756fa3b99cb50"
+    },
+    {
+      "added": 13,
+      "binary": false,
+      "hash_after": "sha256:a677c9356c23d1e699559ddbffac97cd135c2782cd893fb34f3738f6d11bee17",
+      "hash_before": null,
+      "lines": 13,
+      "op": "add",
+      "path": "public/__grok/install/assets/homescreen/glass-puzzle.svg",
+      "removed": 0,
+      "sha256": "sha256:a677c9356c23d1e699559ddbffac97cd135c2782cd893fb34f3738f6d11bee17"
+    },
+    {
+      "added": 10,
+      "binary": false,
+      "hash_after": "sha256:efad1b4b507a68c1f1af4aad2c93e8c24076224aa593da86677697f543d026d6",
+      "hash_before": null,
+      "lines": 10,
+      "op": "add",
+      "path": "public/__grok/install/assets/homescreen/glass-share.svg",
+      "removed": 0,
+      "sha256": "sha256:efad1b4b507a68c1f1af4aad2c93e8c24076224aa593da86677697f543d026d6"
+    },
+    {
+      "added": 6,
+      "binary": false,
+      "hash_after": "sha256:0654e3e59cce69856f38525cbfe4ab3a9ef52d4b64c8532dd0bc1a3f34fcb5b1",
+      "hash_before": null,
+      "lines": 6,
+      "op": "add",
+      "path": "public/__grok/install/assets/homescreen/logo-grok.svg",
+      "removed": 0,
+      "sha256": "sha256:0654e3e59cce69856f38525cbfe4ab3a9ef52d4b64c8532dd0bc1a3f34fcb5b1"
+    },
+    {
+      "added": 6,
+      "binary": false,
+      "hash_after": "sha256:c2c94be46aa2c3c2fda95d7c6f2fc6d0b656d1f5847828d5d95b5a81a6f4f20d",
+      "hash_before": null,
+      "lines": 6,
+      "op": "add",
+      "path": "public/__grok/install/assets/homescreen/plus.svg",
+      "removed": 0,
+      "sha256": "sha256:c2c94be46aa2c3c2fda95d7c6f2fc6d0b656d1f5847828d5d95b5a81a6f4f20d"
+    },
+    {
+      "added": 375,
+      "binary": false,
+      "hash_after": "sha256:7e8e881302f58e54a9c07e7be395692d3de20fdaa27ce358531cc8dcca472cb6",
+      "hash_before": null,
+      "lines": 375,
+      "op": "add",
+      "path": "public/__grok/install/styles.css",
+      "removed": 0,
+      "sha256": "sha256:7e8e881302f58e54a9c07e7be395692d3de20fdaa27ce358531cc8dcca472cb6"
+    },
+    {
+      "added": 6,
+      "binary": false,
+      "hash_after": "sha256:44f09753c1535943fab35571b3299259a9621c6566d23709c359e85248d75c89",
+      "hash_before": null,
+      "lines": 6,
+      "op": "add",
+      "path": "public/favicon.svg",
+      "removed": 0,
+      "sha256": "sha256:44f09753c1535943fab35571b3299259a9621c6566d23709c359e85248d75c89"
+    },
+    {
+      "added": 34,
+      "binary": false,
+      "hash_after": "sha256:92962d2361a98413c0cef80b31266d49b063cf4ecf6421bb99f57f6eef4ed7b6",
+      "hash_before": null,
+      "lines": 34,
+      "op": "add",
+      "path": "scripts/app-env-plugin.mjs",
+      "removed": 0,
+      "sha256": "sha256:92962d2361a98413c0cef80b31266d49b063cf4ecf6421bb99f57f6eef4ed7b6"
+    },
+    {
+      "added": 227,
+      "binary": false,
+      "hash_after": "sha256:318f33ce7b29b55c386cc8847084068777880f795a5082043229bb06686be035",
+      "hash_before": null,
+      "lines": 227,
+      "op": "add",
+      "path": "scripts/brand-check.mjs",
+      "removed": 0,
+      "sha256": "sha256:318f33ce7b29b55c386cc8847084068777880f795a5082043229bb06686be035"
+    }
+  ],
+  "files_added": 16,
+  "files_modified": 0,
+  "files_removed": 0,
+  "lines_added": 1075,
+  "lines_removed": 0,
+  "model": "grok",
+  "parent_snapshot_id": null,
+  "patch": null,
+  "schema": "lmos.over_time.v1",
+  "snapshot_id": "2026-10-27T01-57-04.540Z__d841b74eeba0bac25c0f730d7aee443876592079"
+}

@@ -1,0 +1,30 @@
+{
+  "baseline": false,
+  "binary": [],
+  "captured_at": "2026-10-27T01:56:07.023Z",
+  "commit": "46018f12b4d208c79da82c0888b51541f6c85fba",
+  "directories": [],
+  "files": [
+    {
+      "added": 1,
+      "binary": false,
+      "hash_after": "sha256:8361daa2a7a21e4d4d3295fd4272a79d4307e4af17bcbe9c873188d6bd305a33",
+      "hash_before": "sha256:e74e20a982414b70a8592b5e1ee2d695d9ee7476f437a661ced45b2f1c74b39e",
+      "lines": 12,
+      "op": "modify",
+      "path": "README.md",
+      "removed": 1,
+      "sha256": "sha256:8361daa2a7a21e4d4d3295fd4272a79d4307e4af17bcbe9c873188d6bd305a33"
+    }
+  ],
+  "files_added": 0,
+  "files_modified": 1,
+  "files_removed": 0,
+  "lines_added": 1,
+  "lines_removed": 1,
+  "model": "claude",
+  "parent_snapshot_id": "2026-10-27T01-39-49.543Z__defee4d64a2191d6bbb3ddb2224616df67d4fca1",
+  "patch": "deltas/over_time/claude/2026-10-27T01-56-07.023Z__46018f12b4d208c79da82c0888b51541f6c85fba.patch",
+  "schema": "lmos.over_time.v1",
+  "snapshot_id": "2026-10-27T01-56-07.023Z__46018f12b4d208c79da82c0888b51541f6c85fba"
+}

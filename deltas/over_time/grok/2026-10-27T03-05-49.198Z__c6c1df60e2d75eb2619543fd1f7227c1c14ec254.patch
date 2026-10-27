@@ -1,0 +1,945 @@
+--- a/src/lib/multiplayer/p2p.ts
++++ b/src/lib/multiplayer/p2p.ts
+@@ -167,7 +167,7 @@
+     return [...this.peers.values()].map((s) => ({ ...s.info }));
+   }
+ 
+-  // ── signaling loop ───────────────────────────────────────────────────────
++  // ── signaling loop ─────────────────────────────────────────────────────────────
+ 
+   private schedulePoll(delay: number): void {
+     if (this.closed) return;
+@@ -241,7 +241,7 @@
+     this.emitPeers();
+   }
+ 
+-  // ── per-pair connection ────────────────────────────────────────────────────
++  // ── per-pair connection ───────────────────────────────────────────────────────────
+ 
+   private connectTo(peerId: string, name: string, initiator: boolean): PeerSlot | null {
+     if (this.closed) return null;
+@@ -474,7 +474,7 @@
+     }
+   }
+ 
+-  // ── diagnostics + recovery ────────────────────────────────────────────────────
++  // ── diagnostics + recovery ───────────────────────────────────────────────────────────
+ 
+   private pingAll(): void {
+     const wire = JSON.stringify({ t: "ping" });
+--- /dev/null
++++ b/src/lib/og/site.json
+@@ -0,0 +1,5 @@
++{
++  "title": "Handshake",
++  "type": "x:game",
++  "card": "custom"
++}
+--- /dev/null
++++ b/src/lib/preview-embedder-origin.ts
+@@ -0,0 +1,56 @@
++export function isGrokEmbedderOrigin(origin: string): boolean {
++  try {
++    const url = new URL(origin);
++    if (url.protocol !== "https:" && url.protocol !== "http:") return false;
++    const host = url.hostname.toLowerCase();
++    if (host === "grok.com" || host.endsWith(".grok.com")) return true;
++    if (host === "localhost" || host === "127.0.0.1" || host === "[::1]") return true;
++    return false;
++  } catch {
++    return false;
++  }
++}
++
++export function isSandboxPreviewGuestHost(hostname: string): boolean {
++  const host = hostname.toLowerCase();
++  return host === "grok-sandbox.com" || host.endsWith(".grok-sandbox.com");
++}
++
++function isRemintPreviewPair(guestHost: string, parentHost: string): boolean {
++  const guest = guestHost.toLowerCase();
++  const parent = parentHost.toLowerCase();
++  const sep = ".preview.";
++  const i = guest.indexOf(sep);
++  if (i <= 0) return false;
++  const label = guest.slice(0, i);
++  const rest = guest.slice(i + sep.length);
++  if (label.includes(".") || !rest.includes(".")) return false;
++  return parent === rest || parent === `grok.${rest}`;
++}
++
++export function resolveParentEmbedderOrigin(
++  parentIsSelf: boolean,
++  referrer: string,
++  ancestorOrigin?: string | null,
++  guestHostname: string = "",
++): string | null {
++  if (parentIsSelf) return null;
++  for (const candidate of [referrer, ancestorOrigin ?? ""].filter(Boolean)) {
++    try {
++      const url = new URL(
++        candidate.includes("://") ? candidate : `https://${candidate}`,
++      );
++      if (url.protocol !== "https:" && url.protocol !== "http:") continue;
++      if (isGrokEmbedderOrigin(url.origin)) return url.origin;
++      if (
++        isSandboxPreviewGuestHost(guestHostname) ||
++        isRemintPreviewPair(guestHostname, url.hostname)
++      ) {
++        return url.origin;
++      }
++    } catch {
++      // try next candidate
++    }
++  }
++  return null;
++}
+--- /dev/null
++++ b/src/lib/preview-host-bridge.ts
+@@ -0,0 +1,307 @@
++/**
++ * Guest side of the grok-web ↔ sandbox preview postMessage bridge.
++ *
++ * Activates only when this page is framed by an allowlisted Grok embedder.
++ * Top-level runs (download/export, local `npm run dev`, deployed sites) noop.
++ */
++
++import { z } from "zod";
++import { CONNECTOR_TOKEN_READY_EVENT } from "./app-data/types";
++import { resolveParentEmbedderOrigin } from "./preview-embedder-origin";
++
++export {
++  isGrokEmbedderOrigin,
++  isSandboxPreviewGuestHost,
++  resolveParentEmbedderOrigin,
++} from "./preview-embedder-origin";
++
++export const PREVIEW_BRIDGE_CHANNEL = "grok-preview-bridge" as const;
++export const PREVIEW_BRIDGE_VERSION = 1 as const;
++
++const EnvelopeSchema = z.object({
++  channel: z.literal(PREVIEW_BRIDGE_CHANNEL),
++  version: z.number().int().positive(),
++  type: z.string().min(1),
++});
++
++const HelloSchema = EnvelopeSchema.extend({
++  type: z.literal("hello"),
++});
++
++const NavigateSchema = EnvelopeSchema.extend({
++  type: z.literal("navigate"),
++  path: z.string().min(1),
++});
++
++const HistorySchema = EnvelopeSchema.extend({
++  type: z.literal("history"),
++  delta: z.union([z.literal(-1), z.literal(1)]),
++});
++
++const ConnectorTokenReadySchema = EnvelopeSchema.extend({
++  type: z.literal("connector-token-ready"),
++});
++
++export type PreviewHostBridgeOptions = {
++  /** Prefer the app router when available; falls back to history.pushState. */
++  navigate?: (path: string) => void;
++  /** Best-effort registered paths for host autosuggest (may be empty). */
++  getRoutePaths?: () => string[];
++};
++
++export function isSafeBridgePath(path: string): boolean {
++  if (!path.startsWith("/") || path.startsWith("//") || path.includes("\\")) {
++    return false;
++  }
++  try {
++    const resolved = new URL(path, "https://preview.invalid");
++    return resolved.origin === "https://preview.invalid";
++  } catch {
++    return false;
++  }
++}
++
++/**
++ * Origin of the Grok embedder framing this page, or null when the page runs
++ * top-level (download/export, local `npm run dev`, deployed sites) or under a
++ * non-Grok parent. Client-only; null during SSR.
++ */
++export function resolveCurrentEmbedderOrigin(): string | null {
++  if (typeof window === "undefined") return null;
++  const ancestorOrigin =
++    typeof location.ancestorOrigins !== 'undefined' && location.ancestorOrigins.length > 0
++      ? location.ancestorOrigins[0]
++      : null;
++  return resolveParentEmbedderOrigin(
++    window.parent === window,
++    document.referrer,
++    ancestorOrigin,
++    window.location.hostname,
++  );
++}
++
++/**
++ * Install host↔guest messaging. Returns a dispose function.
++ * Noops (returns a no-op dispose) when not embedded under a Grok parent.
++ */
++export function installPreviewHostBridge(
++  options: PreviewHostBridgeOptions = {},
++): () => void {
++  const parentOrigin = resolveCurrentEmbedderOrigin();
++  if (parentOrigin === null) return () => {};
++
++  const ROOT_STATE_KEY = "__grokPreviewBridgeRoot";
++  const originalPushState = window.history.pushState.bind(window.history);
++  const originalReplaceState = window.history.replaceState.bind(window.history);
++
++  const isAtHistoryRoot = () => {
++    const state = window.history.state;
++    return Boolean(
++      state && typeof state === "object" && state[ROOT_STATE_KEY] === true,
++    );
++  };
++
++  // Floor for chrome Back: only the first install in a fresh history stack is
++  // root. Full document navigations reinstall this bridge on a deep URL; if we
++  // re-stamped that entry as root, Back would no-op while earlier in-preview
++  // history still exists. Preserve an existing tag (bfcache / SPA remount).
++  try {
++    const current = window.history.state;
++    const alreadyTagged =
++      current !== null &&
++      typeof current === "object" &&
++      Object.prototype.hasOwnProperty.call(current, ROOT_STATE_KEY);
++    if (!alreadyTagged) {
++      const isRoot = window.history.length <= 1;
++      const marked =
++        current && typeof current === "object"
++          ? { ...current, [ROOT_STATE_KEY]: isRoot }
++          : { [ROOT_STATE_KEY]: isRoot };
++      originalReplaceState(marked, "", window.location.href);
++    }
++  } catch {
++    // ignore if the document cannot be marked
++  }
++
++  const post = (message: object) => {
++    window.parent.postMessage(message, parentOrigin);
++  };
++
++  const reportLocation = () => {
++    post({
++      channel: PREVIEW_BRIDGE_CHANNEL,
++      version: PREVIEW_BRIDGE_VERSION,
++      type: "location",
++      path: window.location.pathname || "/",
++      search: window.location.search,
++      hash: window.location.hash,
++    });
++  };
++
++  const reportRoutes = () => {
++    const paths = options.getRoutePaths?.() ?? [];
++    post({
++      channel: PREVIEW_BRIDGE_CHANNEL,
++      version: PREVIEW_BRIDGE_VERSION,
++      type: "routes",
++      paths,
++    });
++  };
++
++  const defaultNavigate = (path: string) => {
++    if (!isSafeBridgePath(path)) return;
++    try {
++      const url = new URL(path, window.location.origin);
++      if (url.origin !== window.location.origin) return;
++      const next = `${url.pathname}${url.search}${url.hash}`;
++      window.history.pushState(window.history.state, "", next);
++      window.dispatchEvent(new PopStateEvent("popstate", { state: window.history.state }));
++    } catch {
++      // ignore malformed paths
++    }
++  };
++
++  const navigate = (path: string) => {
++    if (!isSafeBridgePath(path)) return;
++    if (options.navigate) {
++      options.navigate(path);
++      return;
++    }
++    defaultNavigate(path);
++  };
++
++  const announce = () => {
++    reportLocation();
++    reportRoutes();
++    post({
++      channel: PREVIEW_BRIDGE_CHANNEL,
++      version: PREVIEW_BRIDGE_VERSION,
++      type: "ready",
++    });
++  };
++
++  // Host re-handshake: it may have (re)mounted after our install-time
++  // announce, or asked before we hydrated. Announce again.
++  const onHello = (data: unknown) => {
++    if (!HelloSchema.safeParse(data).success) return;
++    announce();
++  };
++
++  const onNavigate = (data: unknown) => {
++    const parsed = NavigateSchema.safeParse(data);
++    if (!parsed.success) return;
++    navigate(parsed.data.path);
++    // Router navigations often update location asynchronously; report after a tick.
++    queueMicrotask(reportLocation);
++  };
++
++  const onHistory = (data: unknown) => {
++    const parsed = HistorySchema.safeParse(data);
++    if (!parsed.success) return;
++    // Do not history.go(-1) off the first entry — that leaves the preview.
++    if (parsed.data.delta === -1 && isAtHistoryRoot()) return;
++    // Location sync comes from the popstate listener once history settles.
++    window.history.go(parsed.data.delta);
++  };
++
++  const onConnectorTokenReady = (data: unknown) => {
++    if (!ConnectorTokenReadySchema.safeParse(data).success) return;
++    window.dispatchEvent(new Event(CONNECTOR_TOKEN_READY_EVENT));
++  };
++
++  const hostMessageHandlers = new Map<string, (data: unknown) => void>([
++    ["hello", onHello],
++    ["navigate", onNavigate],
++    ["history", onHistory],
++    ["connector-token-ready", onConnectorTokenReady],
++  ]);
++
++  const onMessage = (event: MessageEvent) => {
++    if (event.source !== window.parent) return;
++    if (event.origin !== parentOrigin) return;
++
++    const envelope = EnvelopeSchema.safeParse(event.data);
++    if (!envelope.success || envelope.data.version !== PREVIEW_BRIDGE_VERSION) return;
++    hostMessageHandlers.get(envelope.data.type)?.(event.data);
++  };
++
++  const onPopState = () => {
++    reportLocation();
++  };
++
++  // Same-document `#` navigations fire hashchange, not popstate / pushState.
++  const onHashChange = () => {
++    reportLocation();
++  };
++
++  // Patch history so in-app SPA navigations sync the host address bar.
++  window.history.pushState = (data, unused, url) => {
++    const next =
++      data && typeof data === "object"
++        ? { ...data, [ROOT_STATE_KEY]: false }
++        : data;
++    originalPushState(next, unused, url);
++    reportLocation();
++  };
++  window.history.replaceState = (data, unused, url) => {
++    const next =
++      isAtHistoryRoot()
++        ? {
++            ...(data && typeof data === "object" ? data : {}),
++            [ROOT_STATE_KEY]: true,
++          }
++        : data;
++    originalReplaceState(next, unused, url);
++    reportLocation();
++  };
++
++  window.addEventListener("message", onMessage);
++  window.addEventListener("popstate", onPopState);
++  window.addEventListener("hashchange", onHashChange);
++
++  announce();
++
++  return () => {
++    window.removeEventListener("message", onMessage);
++    window.removeEventListener("popstate", onPopState);
++    window.removeEventListener("hashchange", onHashChange);
++    window.history.pushState = originalPushState;
++    window.history.replaceState = originalReplaceState;
++  };
++}
++
++/** Collect static path patterns from a TanStack route tree (best-effort). */
++export function collectRoutePathsFromTree(routeTree: unknown): string[] {
++  const paths = new Set<string>();
++
++  const walk = (node: unknown) => {
++    if (!node || typeof node !== "object") return;
++    const record = node as {
++      fullPath?: unknown;
++      path?: unknown;
++      children?: unknown;
++    };
++    const full =
++      typeof record.fullPath === "string"
++        ? record.fullPath
++        : typeof record.path === "string"
++          ? record.path
++          : null;
++    if (full !== null && full !== "") {
++      paths.add(full.startsWith("/") ? full : `/${full}`);
++    } else if (full === "") {
++      paths.add("/");
++    }
++    const children = record.children;
++    if (Array.isArray(children)) {
++      for (const child of children) walk(child);
++    } else if (children && typeof children === "object") {
++      for (const child of Object.values(children as Record<string, unknown>)) {
++        walk(child);
++      }
++    }
++  };
++
++  walk(routeTree);
++  return [...paths];
++}
+--- /dev/null
++++ b/src/lib/preview-path-prefix.test.ts
+@@ -0,0 +1,38 @@
++import { describe, it } from "node:test";
++import assert from "node:assert/strict";
++import { prefixRewrite, previewPathPrefix } from "./preview-path-prefix.ts";
++
++const PORT = "/hds-up68yqz8egcm-6014-7b575";
++
++describe("previewPathPrefix", () => {
++  it("reads the port id segment on path-based preview hosts", () => {
++    assert.equal(previewPathPrefix("preview.grokgsac.com", `${PORT}/`), PORT);
++    assert.equal(previewPathPrefix("Preview.Grok.GenAI.mil", `${PORT}/about`), PORT);
++    assert.equal(previewPathPrefix("preview.grok.mil", PORT), PORT);
++  });
++
++  it("ignores other hosts and paths without a port id", () => {
++    assert.equal(previewPathPrefix("abc.grok-sandbox.com", `${PORT}/`), undefined);
++    assert.equal(previewPathPrefix("localhost", `${PORT}/`), undefined);
++    assert.equal(previewPathPrefix("preview.grokgsac.com", "/about"), undefined);
++    assert.equal(previewPathPrefix("preview.grokgsac.com", "/hds-abc-web-x1/"), undefined);
++    assert.equal(previewPathPrefix("preview.grokgsac.com", `${PORT}.js`), undefined);
++  });
++});
++
++describe("prefixRewrite", () => {
++  const rewrite = prefixRewrite(PORT);
++  const run = (fn: typeof rewrite.input, href: string) =>
++    String(fn?.({ url: new URL(href, "https://preview.grokgsac.com") }));
++
++  it("strips the prefix on input", () => {
++    assert.equal(run(rewrite.input, PORT), "https://preview.grokgsac.com/");
++    assert.equal(run(rewrite.input, `${PORT}/a?b=1#c`), "https://preview.grokgsac.com/a?b=1#c");
++    assert.equal(run(rewrite.input, "/other"), "https://preview.grokgsac.com/other");
++  });
++
++  it("adds the prefix on output", () => {
++    assert.equal(run(rewrite.output, "/a?b=1"), `https://preview.grokgsac.com${PORT}/a?b=1`);
++    assert.equal(run(rewrite.output, "/"), `https://preview.grokgsac.com${PORT}/`);
++  });
++});
+--- /dev/null
++++ b/src/lib/preview-path-prefix.ts
+@@ -0,0 +1,41 @@
++import type { LocationRewrite } from "@tanstack/react-router";
++
++/**
++ * Path-based preview hosts serve the dev server under `/{port_id}/` and strip
++ * that prefix before forwarding, so SSR sees `/` while the browser URL keeps the
++ * prefix. TanStack Start resets `basepath` on hydration, so a `rewrite` keeps
++ * client routing and generated links aligned with the public URL.
++ */
++const PATH_BASED_PREVIEW_HOSTS = new Set([
++  "preview.grok.genai.mil",
++  "preview.grok.mil",
++  "preview.grokgsac.com",
++]);
++
++const PORT_ID_PREFIX = /^\/hds-[a-z0-9]+-\d+-[a-z0-9]+(?=\/|$)/i;
++
++export function previewPathPrefix(hostname: string, pathname: string): string | undefined {
++  if (!PATH_BASED_PREVIEW_HOSTS.has(hostname.toLowerCase())) return undefined;
++  return PORT_ID_PREFIX.exec(pathname)?.[0];
++}
++
++export function prefixRewrite(prefix: string): LocationRewrite {
++  return {
++    input: ({ url }) => {
++      if (url.pathname === prefix) url.pathname = "/";
++      else if (url.pathname.startsWith(`${prefix}/`))
++        url.pathname = url.pathname.slice(prefix.length);
++      return url;
++    },
++    output: ({ url }) => {
++      url.pathname = `${prefix}${url.pathname}`;
++      return url;
++    },
++  };
++}
++
++export function previewPathRewrite(): LocationRewrite | undefined {
++  if (typeof window === "undefined") return undefined;
++  const prefix = previewPathPrefix(window.location.hostname, window.location.pathname);
++  return prefix ? prefixRewrite(prefix) : undefined;
++}
+--- /dev/null
++++ b/src/router.tsx
+@@ -0,0 +1,12 @@
++import { createRouter } from "@tanstack/react-router";
++import { AppErrorComponent } from "@/lib/error-component";
++import { previewPathRewrite } from "@/lib/preview-path-prefix";
++import { routeTree } from "./routeTree.gen";
++
++export function getRouter() {
++  return createRouter({
++    routeTree,
++    rewrite: previewPathRewrite(),
++    defaultErrorComponent: AppErrorComponent,
++  });
++}
+--- /dev/null
++++ b/src/routes/index.tsx
+@@ -0,0 +1,4 @@
++import { createFileRoute } from "@tanstack/react-router";
++import { HandshakeApp } from "@/components/handshake/play";
++
++export const Route = createFileRoute("/")({ component: HandshakeApp });
+--- /dev/null
++++ b/src/routes/__root.tsx
+@@ -0,0 +1,47 @@
++import { createRootRoute, HeadContent, Outlet, Scripts } from "@tanstack/react-router";
++import { AuthProvider } from "@/lib/auth/provider";
++import { PreviewHostBridge } from "@/components/preview-host-bridge";
++import appCss from "../styles.css?url";
++
++const APP_NAME = "Handshake";
++
++export const Route = createRootRoute({
++  head: () => ({
++    meta: [
++      { charSet: "utf-8" },
++      { name: "viewport", content: "width=device-width, initial-scale=1, viewport-fit=cover" },
++      { title: APP_NAME },
++      { name: "theme-color", content: "#14110e" },
++      {
++        name: "description",
++        content: "Anonymous trail. Room codes only. No names, no faces.",
++      },
++    ],
++    links: [
++      { rel: "icon", type: "image/svg+xml", href: "/favicon.svg" },
++      { rel: "preconnect", href: "https://fonts.googleapis.com" },
++      { rel: "preconnect", href: "https://fonts.gstatic.com", crossOrigin: "anonymous" },
++      {
++        rel: "stylesheet",
++        href: "https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,560;9..144,640&family=Outfit:wght@400;500;600&display=swap",
++      },
++      { rel: "stylesheet", href: appCss },
++      { rel: "manifest", href: "/__grok/manifest.webmanifest" },
++      { rel: "apple-touch-icon", href: "/__grok/icon-180.png" },
++    ],
++  }),
++  component: () => (
++    <html lang="en" className="antialiased" suppressHydrationWarning>
++      <head>
++        <HeadContent />
++      </head>
++      <body>
++        <PreviewHostBridge />
++        <AuthProvider>
++          <Outlet />
++        </AuthProvider>
++        <Scripts />
++      </body>
++    </html>
++  ),
++});
+--- /dev/null
++++ b/src/routeTree.gen.ts
+@@ -0,0 +1,68 @@
++/* eslint-disable */
++
++// @ts-nocheck
++
++// noinspection JSUnusedGlobalSymbols
++
++// This file was automatically generated by TanStack Router.
++// You should NOT make any changes in this file as it will be overwritten.
++// Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
++
++import { Route as rootRouteImport } from './routes/__root'
++import { Route as IndexRouteImport } from './routes/index'
++
++const IndexRoute = IndexRouteImport.update({
++  id: '/',
++  path: '/',
++  getParentRoute: () => rootRouteImport,
++} as any)
++
++export interface FileRoutesByFullPath {
++  '/': typeof IndexRoute
++}
++export interface FileRoutesByTo {
++  '/': typeof IndexRoute
++}
++export interface FileRoutesById {
++  __root__: typeof rootRouteImport
++  '/': typeof IndexRoute
++}
++export interface FileRouteTypes {
++  fileRoutesByFullPath: FileRoutesByFullPath
++  fullPaths: '/'
++  fileRoutesByTo: FileRoutesByTo
++  to: '/'
++  id: '__root__' | '/'
++  fileRoutesById: FileRoutesById
++}
++export interface RootRouteChildren {
++  IndexRoute: typeof IndexRoute
++}
++
++declare module '@tanstack/react-router' {
++  interface FileRoutesByPath {
++    '/': {
++      id: '/'
++      path: '/'
++      fullPath: '/'
++      preLoaderRoute: typeof IndexRouteImport
++      parentRoute: typeof rootRouteImport
++    }
++  }
++}
++
++const rootRouteChildren: RootRouteChildren = {
++  IndexRoute: IndexRoute,
++}
++export const routeTree = rootRouteImport
++  ._addFileChildren(rootRouteChildren)
++  ._addFileTypes<FileRouteTypes>()
++
++import type { getRouter } from './router.tsx'
++import type { createStart } from '@tanstack/react-start'
++declare module '@tanstack/react-start' {
++  interface Register {
++    ssr: true
++    router: Awaited<ReturnType<typeof getRouter>>
++  }
++}
+--- /dev/null
++++ b/src/styles.css
+@@ -0,0 +1,65 @@
++@import "tailwindcss";
++
++@theme {
++  --color-bg: #14110e;
++  --color-surface: #221c16;
++  --color-surface-2: #2c241c;
++  --color-fg: #f3ead7;
++  --color-muted: #a89880;
++  --color-ember: #e07a3d;
++  --color-line: #3a3128;
++  --color-novice: #e6c15a;
++  --color-trail: #c4492c;
++  --color-deep: #3d5f8a;
++  --color-apocalypse: #d98ab0;
++  --font-sans: "Outfit", ui-sans-serif, system-ui, sans-serif;
++  --font-display: "Fraunces", ui-serif, Georgia, serif;
++  --radius-card: 1.25rem;
++}
++
++@layer base {
++  html {
++    color-scheme: dark;
++    -webkit-font-smoothing: antialiased;
++    -moz-osx-font-smoothing: grayscale;
++  }
++
++  body {
++    margin: 0;
++    min-height: 100dvh;
++    background: var(--color-bg);
++    color: var(--color-fg);
++    font-family: var(--font-sans);
++    line-height: 1.5;
++  }
++
++  button:not(:disabled),
++  [role="button"]:not(:disabled) {
++    cursor: pointer;
++    touch-action: manipulation;
++  }
++
++  h1, h2, h3 {
++    text-wrap: balance;
++  }
++}
++
++.flashlight {
++  --fx: 50vw;
++  --fy: 38vh;
++  background: radial-gradient(
++    420px circle at var(--fx) var(--fy),
++    color-mix(in oklab, var(--color-fg) 12%, transparent),
++    transparent 68%
++  );
++}
++
++.safe-b {
++  padding-bottom: max(1.25rem, env(safe-area-inset-bottom));
++}
++
++@media (prefers-reduced-motion: reduce) {
++  .flashlight {
++    display: none;
++  }
++}
+--- /dev/null
++++ b/startup.sh
+@@ -0,0 +1,9 @@
++#!/bin/sh
++set -eu
++cd /workspace
++# :8081 is QA-only — a revive must never inherit a stale built-output preview.
++node scripts/preview.mjs stop || true
++if curl -sf -o /dev/null --max-time 2 http://127.0.0.1:8080/; then
++  exit 0
++fi
++npm run dev >>/tmp/app-startup.log 2>&1 &
+--- /dev/null
++++ b/tsconfig.json
+@@ -0,0 +1,36 @@
++{
++  "compilerOptions": {
++    "target": "ES2022",
++    "lib": [
++      "ES2022",
++      "DOM",
++      "DOM.Iterable"
++    ],
++    "module": "ESNext",
++    "moduleResolution": "bundler",
++    "jsx": "react-jsx",
++    "strict": true,
++    "isolatedModules": true,
++    "skipLibCheck": true,
++    // `src/lib/db.ts` imports scripts/migration-plan.mjs; checkJs types the
++    // implementation itself instead of a hand-written declaration beside it.
++    "allowJs": true,
++    "checkJs": true,
++    "noEmit": true,
++    "types": [
++      "vite/client",
++      "node"
++    ],
++    "baseUrl": ".",
++    "paths": {
++      "@/*": [
++        "./src/*"
++      ]
++    },
++    "allowImportingTsExtensions": true
++  },
++  "include": [
++    "src",
++    "server"
++  ]
++}
+--- /dev/null
++++ b/vercel.json
+@@ -0,0 +1,3 @@
++{
++  "installCommand": "npm install --omit=dev --no-audit --no-fund"
++}
+--- /dev/null
++++ b/vite.config.ts
+@@ -0,0 +1,183 @@
++import { readdirSync } from "node:fs";
++import { join } from "node:path";
++import type { Plugin } from "vite";
++import { defineConfig } from "vite";
++import { tanstackStart } from "@tanstack/react-start/plugin/vite";
++import viteReact from "@vitejs/plugin-react";
++import tailwindcss from "@tailwindcss/vite";
++import { nitro } from "nitro/vite";
++// @ts-expect-error JS plugin alongside the TS vite config
++import { grokPwaPlugin } from "./scripts/grok-pwa-plugin.mjs";
++// @ts-expect-error JS plugin alongside the TS vite config
++import { appEnvPlugin } from "./scripts/app-env-plugin.mjs";
++import { isMigrationFile } from "./scripts/migration-plan.mjs";
++
++/** The files `src/lib/db.ts` globs — same directory, same non-recursive scope. */
++function hasGlobbedMigrations(root: string): boolean {
++  try {
++    return readdirSync(join(root, "migrations")).some(isMigrationFile);
++  } catch {
++    return false;
++  }
++}
++
++/**
++ * Finish PGLite bootstrap during dev-server setup (before traffic). Vite awaits
++ * async `configureServer` hooks. Production: `src/lib/db` kicks `ensureDbReady`
++ * on import.
++ *
++ * Vite awaiting the hook puts this on time-to-first-render, so an app with no
++ * migrations — no schema to apply — skips it entirely rather than paying for a
++ * PGLite instance it never queries.
++ */
++function pgliteBootstrapPlugin(): Plugin {
++  return {
++    name: "app-builder:pglite-bootstrap",
++    apply: "serve",
++    async configureServer(server) {
++      if (!hasGlobbedMigrations(server.config.root)) return;
++      try {
++        const mod = (await server.ssrLoadModule("/src/lib/db.ts")) as {
++          ensureDbReady?: () => Promise<void>;
++        };
++        if (typeof mod.ensureDbReady === "function") {
++          await mod.ensureDbReady();
++        }
++      } catch (err) {
++        console.error("[app-builder] DB bootstrap failed:", err);
++        throw err;
++      }
++    },
++  };
++}
++
++/**
++ * Live-preview OAuth popup — handled HERE so the agent never has to create a
++ * `/auth/popup` route (and cannot break it by scaffolding a React page that
++ * paints the full app shell in the popup).
++ *
++ * `signIn` (client.ts) opens `/auth/popup?providerId=…` in a top-level window.
++ * This middleware runs before TanStack Start, calls `handleAuthPopupRequest`,
++ * and returns the 302 / completion HTML. Deployed apps do not use the popup
++ * (full-page OAuth redirect), so `apply: "serve"` is enough.
++ */
++function authPopupPlugin(): Plugin {
++  return {
++    name: "app-builder:auth-popup",
++    apply: "serve",
++    configureServer(server) {
++      // Register immediately (not in a returned post-hook) so we run BEFORE
++      // TanStack Start / the SPA HTML fallback. A model-authored
++      // `src/routes/auth/popup.tsx` React page must never win this path.
++      server.middlewares.use(async (req, res, next) => {
++        try {
++          const rawUrl = req.url ?? "";
++          const pathOnly = rawUrl.split("?", 1)[0] ?? "";
++          if (pathOnly !== "/auth/popup") {
++            next();
++            return;
++          }
++          if ((req.method ?? "GET").toUpperCase() !== "GET") {
++            res.statusCode = 405;
++            res.setHeader("content-type", "text/plain; charset=utf-8");
++            res.end("Method Not Allowed");
++            return;
++          }
++
++          const host = String(
++            req.headers["x-forwarded-host"] ?? req.headers.host ?? "localhost:8080",
++          );
++          const proto = String(
++            req.headers["x-forwarded-proto"] ??
++              ((req.socket as { encrypted?: boolean } | undefined)?.encrypted ? "https" : "http"),
++          );
++          const requestHeaders = new Headers();
++          for (const [key, value] of Object.entries(req.headers)) {
++            if (value === undefined) continue;
++            if (Array.isArray(value)) {
++              for (const v of value) requestHeaders.append(key, v);
++            } else {
++              requestHeaders.set(key, value);
++            }
++          }
++          // Ensure Host is the public preview host so Better Auth's dynamic
++          // baseURL / redirect_uri match the popup origin.
++          if (!requestHeaders.has("host")) requestHeaders.set("host", host);
++
++          const request = new Request(`${proto}://${host}${rawUrl}`, {
++            method: "GET",
++            headers: requestHeaders,
++          });
++
++          const mod = (await server.ssrLoadModule("/src/lib/auth/popup.server.ts")) as {
++            handleAuthPopupRequest: (req: Request) => Promise<Response>;
++          };
++          const response = await mod.handleAuthPopupRequest(request);
++
++          res.statusCode = response.status;
++          // Preserve multiple Set-Cookie headers (OAuth state + session).
++          const setCookies =
++            typeof response.headers.getSetCookie === "function"
++              ? response.headers.getSetCookie()
++              : [];
++          response.headers.forEach((value, key) => {
++            if (key.toLowerCase() === "set-cookie") return;
++            res.setHeader(key, value);
++          });
++          for (const cookie of setCookies) {
++            res.appendHeader("set-cookie", cookie);
++          }
++          const body = Buffer.from(await response.arrayBuffer());
++          res.end(body);
++        } catch (err) {
++          console.error("[app-builder] /auth/popup handler failed:", err);
++          if (!res.headersSent) {
++            res.statusCode = 500;
++            res.setHeader("content-type", "text/plain; charset=utf-8");
++            res.end("auth popup failed");
++          }
++        }
++      });
++    },
++  };
++}
++
++// `0.0.0.0:8080` is the live-preview contract — don't change host/port.
++// The dev server starts once `src/router.tsx` and `src/routes/` exist — see
++// AGENTS.md § "First scaffold".
++export default defineConfig(({ command, isPreview }) => ({
++  server: {
++    host: "0.0.0.0",
++    port: 8080,
++    strictPort: true,
++  },
++  preview: {
++    host: "127.0.0.1",
++    port: 8081,
++    strictPort: true,
++  },
++  resolve: { tsconfigPaths: true },
++  plugins: [
++    pgliteBootstrapPlugin(),
++    // Before tanstackStart so /auth/popup never falls through to the SPA.
++    authPopupPlugin(),
++    // Dev-only /__app-env, read by scripts/check-auth-invariant.mjs.
++    appEnvPlugin(),
++    // PWA head + ?install=1 tutorial page; runs before Start/Nitro.
++    grokPwaPlugin(),
++    tailwindcss(),
++    tanstackStart(),
++    ...(command === "build" || isPreview
++      ? [
++          nitro({
++            preset: "vercel",
++            // Auto-registers server/middleware/* (the PWA install page +
++            // manifest + head-tag middleware). Nitro v3 defaults serverDir to
++            // false, so removing this silently unwires /?install=1 on deploys.
++            serverDir: "./server",
++          }),
++        ]
++      : []),
++    viteReact(),
++  ],
++}));

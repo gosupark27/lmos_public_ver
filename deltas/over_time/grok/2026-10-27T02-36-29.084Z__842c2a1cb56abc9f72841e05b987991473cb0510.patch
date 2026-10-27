@@ -1,0 +1,1960 @@
+--- a/package.json
++++ b/package.json
+@@ -1,48 +1,97 @@
+ {
+-  "name": "handshake",
++  "name": "app-builder-workspace",
+   "private": true,
+-  "version": "0.0.0",
++  "sideEffects": false,
+   "type": "module",
++  "overrides": {
++    "nf3": "0.3.17"
++  },
+   "scripts": {
+-    "dev": "node scripts/ensure-auth-env.mjs && vite dev",
+-    "build": "node scripts/ensure-auth-env.mjs && vite build && node scripts/fix-vercel-sfc-bundles.mjs",
+-    "preview": "vite preview",
+-    "test": "vitest run",
+-    "lint": "eslint .",
+-    "format": "prettier --write .",
++    "dev": "node scripts/with-app-env.mjs vite dev --host 0.0.0.0 --port 8080",
++    "build": "node scripts/with-app-env.mjs vite build && npm run db:migrate",
+     "db:migrate": "node scripts/migrate.mjs",
+-    "db:migrate:auth": "node scripts/migrate-auth.mjs"
++    "build:dev": "node scripts/with-app-env.mjs vite build --mode development",
++    "preview": "node scripts/with-app-env.mjs vite preview",
++    "preview:restart": "node scripts/preview.mjs restart",
++    "preview:stop": "node scripts/preview.mjs stop",
++    "typecheck": "tsc --noEmit",
++    "check:auth": "node scripts/check-auth-invariant.mjs",
++    "test": "node --test 'scripts/**/*.test.mjs' && node --experimental-strip-types --test src/lib/app-data/app-data.test.ts src/lib/app-data/readiness-schedule.test.ts src/lib/auth/gate-identity.test.ts src/lib/auth/sign-in-gate.test.ts src/lib/preview-path-prefix.test.ts",
++    "lint": "eslint .",
++    "format": "prettier --write ."
+   },
+   "dependencies": {
+-    "@tanstack/react-router": "^1.120.3",
+-    "@tanstack/react-start": "^1.120.3",
+-    "@vercel/functions": "^3.7.4",
+-    "better-auth": "^1.6.11",
+-    "better-sqlite3": "^12.10.0",
+-    "react": "^19.1.0",
+-    "react-dom": "^19.1.0",
+-    "zod": "^4.4.3"
++    "@electric-sql/pglite": "^0.5.4",
++    "@hookform/resolvers": "^5.7.0",
++    "@radix-ui/react-accordion": "^1.2.12",
++    "@radix-ui/react-alert-dialog": "^1.1.15",
++    "@radix-ui/react-avatar": "^1.1.11",
++    "@radix-ui/react-checkbox": "^1.3.3",
++    "@radix-ui/react-collapsible": "^1.1.12",
++    "@radix-ui/react-dialog": "^1.1.15",
++    "@radix-ui/react-dropdown-menu": "^2.1.16",
++    "@radix-ui/react-label": "^2.1.8",
++    "@radix-ui/react-popover": "^1.1.15",
++    "@radix-ui/react-progress": "^1.1.8",
++    "@radix-ui/react-radio-group": "^1.3.8",
++    "@radix-ui/react-scroll-area": "^1.2.10",
++    "@radix-ui/react-select": "^2.2.6",
++    "@radix-ui/react-separator": "^1.1.8",
++    "@radix-ui/react-slider": "^1.3.6",
++    "@radix-ui/react-slot": "^1.2.4",
++    "@radix-ui/react-switch": "^1.2.6",
++    "@radix-ui/react-tabs": "^1.1.13",
++    "@radix-ui/react-toggle": "^1.1.10",
++    "@radix-ui/react-toggle-group": "^1.1.11",
++    "@radix-ui/react-tooltip": "^1.2.8",
++    "@tailwindcss/vite": "^4.3.0",
++    "@tanstack/react-query": "^5.101.0",
++    "@tanstack/react-router": "^1.170.0",
++    "@tanstack/react-start": "^1.168.60",
++    "@tanstack/react-table": "^8.21.0",
++    "@tanstack/router-plugin": "^1.168.0",
++    "@vitejs/plugin-react": "^5.2.0",
++    "better-auth": "~1.6.30",
++    "class-variance-authority": "^0.7.1",
++    "clsx": "^2.1.1",
++    "cmdk": "^1.1.1",
++    "date-fns": "^4.0.0",
++    "jose": "6.2.9",
++    "kysely": "^0.28.5",
++    "lightningcss": "^1.28.0",
++    "lucide-react": "^0.510.0",
++    "nitro": "3.0.260610-beta",
++    "pg": "^8.16.3",
++    "react": "^19.2.0",
++    "react-day-picker": "^9.14.0",
++    "react-dom": "^19.2.0",
++    "react-hook-form": "^7.54.0",
++    "react-resizable-panels": "^4.6.5",
++    "recharts": "^2.13.0",
++    "sonner": "^2.0.7",
++    "tailwind-merge": "^3.5.0",
++    "tailwindcss": "^4.3.0",
++    "tw-animate-css": "^1.3.4",
++    "typescript": "^5.7.0",
++    "vaul": "^1.1.2",
++    "vite": "^8.2.0",
++    "zod": "^4.4.0",
++    "zustand": "^5.0.0"
+   },
+   "devDependencies": {
+-    "@eslint/js": "^9.24.0",
+-    "@types/better-sqlite3": "^7.6.13",
+-    "@types/node": "^22.15.3",
+-    "@types/react": "^19.1.2",
+-    "@types/react-dom": "^19.1.2",
+-    "@vitejs/plugin-react": "^4.4.1",
+-    "eslint": "^9.24.0",
++    "@eslint/js": "^9.20.0",
++    "@types/node": "^22.16.5",
++    "@types/pg": "^8.11.10",
++    "@types/react": "^19.2.0",
++    "@types/react-dom": "^19.2.0",
++    "eslint": "^9.20.0",
++    "eslint-config-prettier": "^10.1.1",
++    "eslint-plugin-prettier": "^5.2.6",
+     "eslint-plugin-react-hooks": "^5.2.0",
+-    "eslint-plugin-react-refresh": "^0.4.19",
+-    "globals": "^16.0.0",
+-    "jsdom": "^29.1.1",
+-    "nitro": "npm:nitro-nightly@latest",
+-    "prettier": "^3.5.3",
+-    "typescript": "~5.8.3",
+-    "typescript-eslint": "^8.30.1",
+-    "vite": "^7.0.2",
+-    "vitest": "^3.1.1"
+-  },
+-  "overrides": {
+-    "vite": "^7.0.2"
++    "eslint-plugin-react-refresh": "^0.4.20",
++    "globals": "^15.15.0",
++    "playwright": "^1.62.0",
++    "prettier": "^3.4.0",
++    "typescript-eslint": "^8.56.1"
+   }
+ }
+--- a/public/__grok/install/assets/homescreen/glass-puzzle.svg
++++ b/public/__grok/install/assets/homescreen/glass-puzzle.svg
+@@ -1,36 +1,13 @@
+-<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 184 184">
+-  <g filter="url(#glass-puzzle-blur)" opacity="0.4" style="mix-blend-mode:hard-light">
+-    <path fill="#000" d="M32.25 32.25h119.5v119.5H32.25z" />
+-    <path stroke="#fff" stroke-width="0.5" d="M32.5 32.5h119v119h-119z" />
+-  </g>
+-  <foreignObject width="136" height="136" x="24" y="24">
+-    <div xmlns="http://www.w3.org/1999/xhtml" style="backdrop-filter:blur(4px);clip-path:url(#glass-puzzle-bg);height:100%;width:100%"></div>
+-  </foreignObject>
+-  <g data-figma-bg-blur-radius="8">
+-    <rect width="120" height="120" x="32" y="32" fill="#fff" fill-opacity="0.01" rx="26" />
+-    <rect width="119.5" height="119.5" x="32.25" y="32.25" stroke="#fff" stroke-opacity="0.1" stroke-width="0.5" rx="25.75" />
+-  </g>
+-  <g filter="url(#glass-puzzle-shadow)">
+-    <path fill="#fff" d="M78.03 58.63c0-6.5 5.17-11.66 10.84-11.66 5.66 0 10.96 5.16 10.96 11.66s-4.8 10.71-10.46 10.71-3.05.24-3.17 2.26c-.12 2.02 1.43 2.26 3.17 2.26 6.4 0 11.58-5.28 11.58-11.79 0-6.5-5.18-11.78-11.58-11.78s-11.58 5.28-11.58 11.78c0 1.56 1.24 2.38 2.5 2.38s2.13-.82 2.13-2.5zM99.24 79.47c-6.4 0-11.58 5.28-11.58 11.78s5.18 11.78 11.58 11.78 11.58-5.28 11.58-11.78-5.3-11.66-11.1-11.66q-1.02 0-1.6.36c-1.7.95-1.58 2.98.24 2.98 5.66 0 9.23-4.64 9.23-9.64 0-5-3.57-8.7-8.23-8.7-4.65 0-9.23 4.3-9.23 9.3 0 5 4.58 8.58 9.23 8.58 1.34 0 2.26-.83 2.26-2.15 0-1.55-.8-2.02-2.38-2.02-6.4 0-11.58 5.28-11.58 11.79s5.18 11.78 11.58 11.78c6.4 0 11.58-5.28 11.58-11.78s-5.18-11.79-11.58-11.79z" />
+-  </g>
++<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 30 30" fill="none">
+   <defs>
+-    <filter id="glass-puzzle-blur" width="136" height="136" x="24" y="24" color-interpolation-filters="sRGB" filterUnits="userSpaceOnUse">
+-      <feFlood flood-opacity="0" result="BackgroundImageFix" />
+-      <feBlend in="SourceGraphic" in2="BackgroundImageFix" result="shape" />
+-      <feGaussianBlur result="effect1_foregroundBlur" stdDeviation="4" />
+-    </filter>
+-    <filter id="glass-puzzle-shadow" width="58.34" height="59.16" x="63.26" y="45.97" color-interpolation-filters="sRGB" filterUnits="userSpaceOnUse">
+-      <feFlood flood-opacity="0" result="BackgroundImageFix" />
+-      <feColorMatrix in="SourceAlpha" result="hardAlpha" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0" />
+-      <feOffset dy="1" />
+-      <feGaussianBlur stdDeviation="1.5" />
+-      <feComposite in2="hardAlpha" operator="out" />
+-      <feColorMatrix values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.1 0" />
+-      <feBlend in2="BackgroundImageFix" result="shadow" />
+-      <feBlend in="SourceGraphic" in2="shadow" result="shape" />
+-    </filter>
+-    <clipPath id="glass-puzzle-bg" transform="translate(-24 -24)">
+-      <rect width="120" height="120" x="32" y="32" rx="26" />
+-    </clipPath>
++    <linearGradient id="lg" x1="15" y1="0" x2="15" y2="30" gradientUnits="userSpaceOnUse">
++      <stop stop-color="#5F5F5F" stop-opacity="0.12"/>
++      <stop offset="1" stop-color="#FFFFFF" stop-opacity="0.12"/>
++    </linearGradient>
+   </defs>
++  <rect width="30" height="30" rx="15" fill="url(#lg)"/>
++  <g transform="translate(8.23 6.62) scale(1.2724)">
++    <path fill="#fff" d="M0.541681 13.172H7.10209C7.3955 13.172 7.64377 12.9237 7.64377 12.6303C7.64377 12.3369 7.3955 12.0886 7.10209 12.0886H0.541681C0.248268 12.0886 0 12.3369 0 12.6303C0 12.9237 0.248268 13.172 0.541681 13.172ZM0.541681 10.1551H10.1114C10.4049 10.1551 10.6531 9.90681 10.6531 9.6134C10.6531 9.31998 10.4049 9.07171 10.1114 9.07171H0.541681C0.248268 9.07171 0 9.31998 0 9.6134C0 9.90681 0.248268 10.1551 0.541681 10.1551Z"/>
++    <path fill="#fff" fill-opacity="0.5" d="M1.2188 0C0.406276 0 0 0.428833 0 1.24136V2.85136C0 3.11468 0.210657 3.28771 0.451406 3.28771C0.594361 3.28771 0.7373 3.22753 0.857667 3.10716C1.02319 2.94164 1.24889 2.70842 1.71533 2.70842C2.29464 2.70842 2.7611 3.17487 2.7611 3.76169C2.7611 4.34852 2.29464 4.81496 1.71533 4.81496C1.24889 4.81496 1.02319 4.58927 0.857667 4.41622C0.7373 4.29585 0.594361 4.24319 0.451406 4.24319C0.210657 4.24319 0 4.4087 0 4.67202V6.29708C0 7.11712 0.406276 7.53092 1.2188 7.53092H5.91339C6.73345 7.53092 7.14723 7.12466 7.14723 6.3046V4.70212C7.14723 4.62688 7.20741 4.59679 7.27513 4.65697C7.48579 4.81496 7.74158 4.92029 8.02747 4.92029C8.66696 4.92029 9.18607 4.4087 9.18607 3.76169C9.18607 3.11468 8.66696 2.60309 8.02747 2.60309C7.74158 2.60309 7.48579 2.71594 7.27513 2.87393C7.20741 2.9266 7.14723 2.90403 7.14723 2.82879V1.2263C7.14723 0.421299 6.73345 0 5.91339 0H1.2188Z"/>
++  </g>
+ </svg>
+--- a/public/__grok/install/assets/homescreen/glass-share.svg
++++ b/public/__grok/install/assets/homescreen/glass-share.svg
+@@ -1,37 +1,10 @@
+-<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 184 184">
+-  <g filter="url(#glass-share-blur)" opacity="0.4" style="mix-blend-mode:hard-light">
+-    <path fill="#000" d="M32.25 32.25h119.5v119.5H32.25z" />
+-    <path stroke="#fff" stroke-width="0.5" d="M32.5 32.5h119v119h-119z" />
+-  </g>
+-  <foreignObject width="136" height="136" x="24" y="24">
+-    <div xmlns="http://www.w3.org/1999/xhtml" style="backdrop-filter:blur(4px);clip-path:url(#glass-share-bg);height:100%;width:100%"></div>
+-  </foreignObject>
+-  <g data-figma-bg-blur-radius="8">
+-    <rect width="120" height="120" x="32" y="32" fill="#fff" fill-opacity="0.01" rx="26" />
+-    <rect width="119.5" height="119.5" x="32.25" y="32.25" stroke="#fff" stroke-opacity="0.1" stroke-width="0.5" rx="25.75" />
+-  </g>
+-  <g filter="url(#glass-share-shadow)">
+-    <path fill="#fff" fill-rule="evenodd" d="M91.5 52c-6.35 0-11.5 5.15-11.5 11.5S85.15 75 91.5 75 103 69.85 103 63.5 97.85 52 91.5 52m0 4c-4.14 0-7.5 3.36-7.5 7.5s3.36 7.5 7.5 7.5 7.5-3.36 7.5-7.5-3.36-7.5-7.5-7.5M60 96.5c0-6.35 5.15-11.5 11.5-11.5S83 90.15 83 96.5 77.85 108 71.5 108 60 102.85 60 96.5m11.5-7.5c-4.14 0-7.5 3.36-7.5 7.5s3.36 7.5 7.5 7.5 7.5-3.36 7.5-7.5-3.36-7.5-7.5-7.5m20 31c0-6.35 5.15-11.5 11.5-11.5s11.5 5.15 11.5 11.5-5.15 11.5-11.5 11.5-11.5-5.15-11.5-11.5m11.5-7.5c-4.14 0-7.5 3.36-7.5 7.5s3.36 7.5 7.5 7.5 7.5-3.36 7.5-7.5-3.36-7.5-7.5-7.5" clip-rule="evenodd" />
+-    <path fill="#fff" d="m84.22 69.47-8.94 14.06 3.44 2.19 8.94-14.07zM99.22 116.53l-8.94-14.06-3.44 2.19 8.94 14.07z" />
+-  </g>
++<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 30 30" fill="none">
+   <defs>
+-    <filter id="glass-share-blur" width="136" height="136" x="24" y="24" color-interpolation-filters="sRGB" filterUnits="userSpaceOnUse">
+-      <feFlood flood-opacity="0" result="BackgroundImageFix" />
+-      <feBlend in="SourceGraphic" in2="BackgroundImageFix" result="shape" />
+-      <feGaussianBlur result="effect1_foregroundBlur" stdDeviation="4" />
+-    </filter>
+-    <filter id="glass-share-shadow" width="58" height="82" x="63" y="49" color-interpolation-filters="sRGB" filterUnits="userSpaceOnUse">
+-      <feFlood flood-opacity="0" result="BackgroundImageFix" />
+-      <feColorMatrix in="SourceAlpha" result="hardAlpha" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0" />
+-      <feOffset dy="1" />
+-      <feGaussianBlur stdDeviation="1.5" />
+-      <feComposite in2="hardAlpha" operator="out" />
+-      <feColorMatrix values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.1 0" />
+-      <feBlend in2="BackgroundImageFix" result="shadow" />
+-      <feBlend in="SourceGraphic" in2="shadow" result="shape" />
+-    </filter>
+-    <clipPath id="glass-share-bg" transform="translate(-24 -24)">
+-      <rect width="120" height="120" x="32" y="32" rx="26" />
+-    </clipPath>
++    <linearGradient id="lg" x1="15" y1="0" x2="15" y2="30" gradientUnits="userSpaceOnUse">
++      <stop stop-color="#5F5F5F" stop-opacity="0.12"/>
++      <stop offset="1" stop-color="#FFFFFF" stop-opacity="0.12"/>
++    </linearGradient>
+   </defs>
++  <rect width="30" height="30" rx="15" fill="url(#lg)"/>
++  <path fill="#fff" d="M12.4805 9.24805C12.3145 9.24805 12.1729 9.19434 12.0557 9.08691C11.9385 8.97461 11.8799 8.83301 11.8799 8.66211C11.8799 8.50098 11.9458 8.35693 12.0776 8.22998L14.48 5.9082C14.5728 5.82031 14.6606 5.76172 14.7437 5.73242C14.8267 5.69824 14.9121 5.68115 15 5.68115C15.0879 5.68115 15.1733 5.69824 15.2563 5.73242C15.3394 5.76172 15.4248 5.82031 15.5127 5.9082L17.9224 8.22998C18.0493 8.35693 18.1128 8.50098 18.1128 8.66211C18.1128 8.83301 18.0518 8.97461 17.9297 9.08691C17.8125 9.19434 17.6709 9.24805 17.5049 9.24805C17.3242 9.24805 17.1729 9.18213 17.0508 9.05029L16.0107 7.92969L15 6.71387L13.9893 7.92969L12.9419 9.05029C12.8247 9.18213 12.6709 9.24805 12.4805 9.24805ZM15 16.5356C14.8145 16.5356 14.6533 16.4722 14.5166 16.3452C14.3848 16.2134 14.3188 16.0571 14.3188 15.8765V8.55957L14.4434 6.4502C14.4531 6.29883 14.5093 6.16943 14.6118 6.06201C14.7192 5.94971 14.8486 5.89355 15 5.89355C15.1514 5.89355 15.2783 5.94971 15.3809 6.06201C15.4883 6.16943 15.5469 6.29883 15.5566 6.4502L15.6812 8.55957V15.8765C15.6812 16.0571 15.6128 16.2134 15.4761 16.3452C15.3442 16.4722 15.1855 16.5356 15 16.5356ZM11.521 22.439C10.5151 22.439 9.73877 22.1655 9.19189 21.6187C8.6499 21.0767 8.37891 20.3027 8.37891 19.2969V13.6499C8.37891 12.644 8.6499 11.8701 9.19189 11.3281C9.73877 10.7812 10.5151 10.5078 11.521 10.5078H12.9346V11.9507H11.5576C11.001 11.9507 10.5713 12.1021 10.2686 12.4048C9.9707 12.7075 9.82178 13.1372 9.82178 13.6938V19.2603C9.82178 19.8169 9.9707 20.2441 10.2686 20.542C10.5713 20.8447 11.001 20.9961 11.5576 20.9961H18.4351C18.9966 20.9961 19.4263 20.8447 19.7241 20.542C20.0269 20.2441 20.1782 19.8169 20.1782 19.2603V13.6938C20.1782 13.1372 20.0269 12.7075 19.7241 12.4048C19.4263 12.1021 18.9966 11.9507 18.4351 11.9507H17.0581V10.5078H18.4717C19.4824 10.5078 20.2588 10.7812 20.8008 11.3281C21.3477 11.8701 21.6211 12.644 21.6211 13.6499V19.2969C21.6211 20.3027 21.3477 21.0767 20.8008 21.6187C20.2588 22.1655 19.4824 22.439 18.4717 22.439H11.521Z"/>
+ </svg>
+--- a/public/__grok/install/assets/homescreen/logo-grok.svg
++++ b/public/__grok/install/assets/homescreen/logo-grok.svg
+@@ -1,3 +1,6 @@
+-<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 113 113">
+-  <path fill="#fff" d="M78.7 55.5c-8.4-4.2-19.1-1.1-23.3 7.3-2.1 4.2-2.5 8.8-1.5 13.2 1.6 6.8 6.6 12.1 13.2 14.1 6.7 2 13.8.4 19.1-4.3 4.4-3.9 6.9-9.5 6.9-15.5V28.2l-14.4 27.3zm-22.4-22.1 7.2 13.7c-7.2 1.1-13.7 5.5-17.4 12.1-5.5 9.8-4.4 21.8 2.5 30.4-8.4 2.3-17.8 1.1-25.2-4.3C14.2 78.9 9.7 67.2 12.1 55.5c2.5-12.3 13.1-21.1 25.4-21.1 6.3 0 12.4 2.2 17.3 6.3l1.5-7.3z" />
++<svg preserveAspectRatio="xMidYMid meet" width="12" height="12" viewBox="0 0 12 11.5714" fill="none" xmlns="http://www.w3.org/2000/svg">
++<g id="vector">
++<path d="M4.63453 7.42767L8.62395 4.46607C8.81953 4.32088 9.09907 4.37752 9.19225 4.60303C9.68274 5.79241 9.46361 7.22172 8.48776 8.20308C7.5119 9.18444 6.15411 9.39966 4.91305 8.9095L3.5573 9.54074C5.50184 10.8774 7.86313 10.5468 9.33868 9.0619C10.5091 7.88488 10.8716 6.28051 10.5326 4.8337L10.5357 4.83679C10.0442 2.71136 10.6565 1.86181 11.9109 0.124601C11.9406 0.0834107 11.9703 0.0422202 12 0L10.3493 1.65998V1.65483L4.6335 7.4287" fill="white" fill-opacity="0.6"/>
++<path d="M3.81125 8.14747C2.41556 6.80672 2.6562 4.73175 3.84709 3.53517C4.72771 2.64958 6.17049 2.28813 7.42999 2.81949L8.78266 2.19133C8.53895 2.01421 8.22664 1.82371 7.86825 1.68984C6.24832 1.01946 4.3089 1.35311 2.99206 2.67635C1.7254 3.95016 1.32708 5.90877 2.01109 7.58007C2.52206 8.82917 1.68444 9.71271 0.840686 10.6045C0.541684 10.9206 0.241659 11.2368 0 11.5714L3.81022 8.1485" fill="white" fill-opacity="0.6"/>
++</g>
+ </svg>
+--- a/public/__grok/install/assets/homescreen/plus.svg
++++ b/public/__grok/install/assets/homescreen/plus.svg
+@@ -1,36 +1,6 @@
+-<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 184 184">
+-  <g filter="url(#plus-blur)" opacity="0.4" style="mix-blend-mode:hard-light">
+-    <path fill="#000" d="M32.25 32.25h119.5v119.5H32.25z" />
+-    <path stroke="#fff" stroke-width="0.5" d="M32.5 32.5h119v119h-119z" />
+-  </g>
+-  <foreignObject width="136" height="136" x="24" y="24">
+-    <div xmlns="http://www.w3.org/1999/xhtml" style="backdrop-filter:blur(4px);clip-path:url(#plus-bg);height:100%;width:100%"></div>
+-  </foreignObject>
+-  <g data-figma-bg-blur-radius="8">
+-    <rect width="120" height="120" x="32" y="32" fill="#fff" fill-opacity="0.01" rx="26" />
+-    <rect width="119.5" height="119.5" x="32.25" y="32.25" stroke="#fff" stroke-opacity="0.1" stroke-width="0.5" rx="25.75" />
+-  </g>
+-  <g filter="url(#plus-shadow)">
+-    <path fill="#fff" d="M92 64h-8v-8a4 4 0 0 0-8 0v8h-8a4 4 0 0 0 0 8h8v8a4 4 0 0 0 8 0v-8h8a4 4 0 0 0 0-8" />
+-  </g>
+-  <defs>
+-    <filter id="plus-blur" width="136" height="136" x="24" y="24" color-interpolation-filters="sRGB" filterUnits="userSpaceOnUse">
+-      <feFlood flood-opacity="0" result="BackgroundImageFix" />
+-      <feBlend in="SourceGraphic" in2="BackgroundImageFix" result="shape" />
+-      <feGaussianBlur result="effect1_foregroundBlur" stdDeviation="4" />
+-    </filter>
+-    <filter id="plus-shadow" width="46" height="46" x="69" y="51" color-interpolation-filters="sRGB" filterUnits="userSpaceOnUse">
+-      <feFlood flood-opacity="0" result="BackgroundImageFix" />
+-      <feColorMatrix in="SourceAlpha" result="hardAlpha" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0" />
+-      <feOffset dy="1" />
+-      <feGaussianBlur stdDeviation="1.5" />
+-      <feComposite in2="hardAlpha" operator="out" />
+-      <feColorMatrix values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.1 0" />
+-      <feBlend in2="BackgroundImageFix" result="shadow" />
+-      <feBlend in="SourceGraphic" in2="shadow" result="shape" />
+-    </filter>
+-    <clipPath id="plus-bg" transform="translate(-24 -24)">
+-      <rect width="120" height="120" x="32" y="32" rx="26" />
+-    </clipPath>
+-  </defs>
++<svg preserveAspectRatio="xMidYMid meet" width="16" height="16" viewBox="0 0 12.6667 12.6667" fill="none" xmlns="http://www.w3.org/2000/svg">
++<g id="vector">
++<path d="M7 5.66667H9V7H7V9H5.66667V7H3.66667V5.66667H5.66667V3.66667H7V5.66667Z" fill="white"/>
++<path fill-rule="evenodd" clip-rule="evenodd" d="M7.73307 6.7338e-07C8.46879 6.7338e-07 9.06095 -0.000648836 9.53906 0.0384121C10.0249 0.0781037 10.4516 0.162178 10.8464 0.363282C11.4736 0.682859 11.9838 1.19311 12.3034 1.82031C12.5045 2.21511 12.5886 2.6418 12.6283 3.1276C12.6673 3.60572 12.6667 4.19788 12.6667 4.93359V7.73307C12.6667 8.46879 12.6673 9.06095 12.6283 9.53906C12.5886 10.0249 12.5045 10.4516 12.3034 10.8464C11.9838 11.4736 11.4736 11.9838 10.8464 12.3034C10.4516 12.5045 10.0249 12.5886 9.53906 12.6283C9.06095 12.6673 8.46879 12.6667 7.73307 12.6667H4.93359C4.19788 12.6667 3.60572 12.6673 3.1276 12.6283C2.6418 12.5886 2.21511 12.5045 1.82031 12.3034C1.19311 11.9838 0.682859 11.4736 0.363282 10.8464C0.162178 10.4516 0.0781037 10.0249 0.0384121 9.53906C-0.000648844 9.06095 6.73357e-07 8.46879 6.73357e-07 7.73307V4.93359C6.72234e-07 4.19788 -0.000648973 3.60572 0.0384121 3.1276C0.0781039 2.6418 0.162177 2.21511 0.363282 1.82031C0.68286 1.19311 1.19311 0.68286 1.82031 0.363282C2.21511 0.162177 2.6418 0.0781039 3.1276 0.0384121C3.60572 -0.00064898 4.19788 6.72257e-07 4.93359 6.7338e-07H7.73307ZM4.93359 1.33333C4.17597 1.33333 3.64753 1.3336 3.23633 1.36719C2.83288 1.40015 2.6007 1.46198 2.42513 1.55143C2.04898 1.74315 1.74315 2.04898 1.55143 2.42513C1.46198 2.6007 1.40015 2.83289 1.36719 3.23633C1.3336 3.64753 1.33333 4.17597 1.33333 4.93359V7.73307C1.33333 8.49069 1.3336 9.01914 1.36719 9.43034C1.40015 9.83378 1.46198 10.066 1.55143 10.2415C1.74315 10.6177 2.04898 10.9235 2.42513 11.1152C2.6007 11.2047 2.83289 11.2665 3.23633 11.2995C3.64753 11.3331 4.17597 11.3333 4.93359 11.3333H7.73307C8.49069 11.3333 9.01914 11.3331 9.43034 11.2995C9.83378 11.2665 10.066 11.2047 10.2415 11.1152C10.6177 10.9235 10.9235 10.6177 11.1152 10.2415C11.2047 10.066 11.2665 9.83378 11.2995 9.43034C11.3331 9.01914 11.3333 8.49069 11.3333 7.73307V4.93359C11.3333 4.17597 11.3331 3.64753 11.2995 3.23633C11.2665 2.83289 11.2047 2.6007 11.1152 2.42513C10.9235 2.04898 10.6177 1.74315 10.2415 1.55143C10.066 1.46198 9.83378 1.40015 9.43034 1.36719C9.01914 1.3336 8.49069 1.33333 7.73307 1.33333H4.93359Z" fill="white"/>
++</g>
+ </svg>
+--- a/README.md
++++ b/README.md
+@@ -1,20 +1,12 @@
+-# Handshake
++# lmos_public_grok
+ 
+-게임 대기실. 음성 톡으로 스택을 정하고 같은 수를 내면 승리한다.
++Handshake — anonymous multiplayer trail game from Living Mirror OS.
+ 
+-잠시 비공개. 로컬에서만 돌린다.
++Public source snapshot. Room codes only. Server owns secrets; clients send intents.
+ 
+-## 로컬
++See `docs/lmos_public.md` for the sync file.
+ 
+-```bash
++```
+ npm install
+ npm run dev
+ ```
+-
+-브라우저에서 http://localhost:3000 을 연다.
+-
+-## 설명
+-
+-방 코드 6자리. 상대가 같은 코드를 넣으면 접속된다. 인원은 두 명이고, 스택은 1부터 100까지다. 승부는 맞춘 쪽이 가지고 진 쪽의 스택이 이동한다. 세 판정은 동점에 돌아간다.
+-
+-로비에서 방 코드를 복사해 친구에게 보낸다.
+--- /dev/null
++++ b/src/lib/auth/popup.server.ts
+@@ -0,0 +1,178 @@
++/**
++ * Live-preview sign-in popup — server-only (NEVER import from the client).
++ *
++ * The sandbox preview runs the app in a partitioned iframe, so OAuth must happen
++ * in a top-level popup (first-party cookies). This handler is the ENTIRE popup
++ * document — no React shell:
++ *
++ *   Phase 1 (`?providerId=…`): start OAuth server-side and 302 straight to the
++ *     broker / upstream login page. The popup never paints the app.
++ *   Phase 2 (`?done=1`): after the broker round-trip, emit a tiny HTML page that
++ *     posts the session token to the opener and closes. No SPA hydrate, no
++ *     server-fn round-trip.
++ *
++ * Wired automatically by the Vite `authPopupPlugin` in `vite.config.ts` during
++ * `npm run dev` (live preview). Do NOT create `src/routes/auth/popup.tsx` — a
++ * React route here paints the full app shell in the popup. The opener lives in
++ * `client.ts` (`signIn` → `openSignInPopup`).
++ */
++import { auth, SESSION_TOKEN_COOKIE } from "./server";
++
++/** Message shape the popup posts to the opener (must match `client.ts`). */
++type PopupMessage = {
++  source: "grok-auth-popup";
++  token: string | null;
++  error?: string;
++};
++
++/**
++ * Handle `GET /auth/popup`. Invoked by the Vite `authPopupPlugin` (dev / live
++ * preview). Do not re-export this from a React route file.
++ */
++export async function handleAuthPopupRequest(request: Request): Promise<Response> {
++  const url = new URL(request.url);
++  const done = url.searchParams.get("done") === "1";
++
++  if (done) {
++    const errored = url.searchParams.has("error");
++    const token = errored ? null : readCookie(request, SESSION_TOKEN_COOKIE);
++    const message: PopupMessage = {
++      source: "grok-auth-popup",
++      token,
++      ...(errored ? { error: url.searchParams.get("error") ?? "sign_in_failed" } : {}),
++    };
++    return new Response(completionHtml(message), {
++      status: 200,
++      headers: {
++        "content-type": "text/html; charset=utf-8",
++        // Never cache a page that embeds a session token.
++        "cache-control": "no-store",
++      },
++    });
++  }
++
++  const providerId = url.searchParams.get("providerId")?.trim();
++  if (!providerId) {
++    return new Response("Missing providerId", {
++      status: 400,
++      headers: { "content-type": "text/plain; charset=utf-8" },
++    });
++  }
++
++  // Stay first-party for the callback so the session cookie lands in THIS popup.
++  const back = `${url.origin}/auth/popup?done=1`;
++  try {
++    const apiRes = await auth.api.signInWithOAuth2({
++      body: {
++        providerId,
++        callbackURL: back,
++        errorCallbackURL: `${back}&error=1`,
++      },
++      // Forward the preview host so Better Auth derives the correct baseURL /
++      // redirect_uri for the dynamic `*.grok-sandbox.com` origin.
++      headers: request.headers,
++      asResponse: true,
++    });
++
++    if (!apiRes.ok) {
++      const detail = await apiRes.text().catch(() => "");
++      return completionResponse({
++        source: "grok-auth-popup",
++        token: null,
++        error: detail || `oauth_init_failed_${apiRes.status}`,
++      });
++    }
++
++    const body = (await apiRes.json().catch(() => null)) as {
++      url?: string;
++    } | null;
++    const location = body?.url;
++    if (!location) {
++      return completionResponse({
++        source: "grok-auth-popup",
++        token: null,
++        error: "oauth_init_missing_url",
++      });
++    }
++
++    // 302 to the broker (which headlessly forwards to Google/X). Forward any
++    // Set-Cookie (OAuth state / PKCE) so the callback can complete in this popup.
++    const headers = new Headers({ location, "cache-control": "no-store" });
++    for (const cookie of apiRes.headers.getSetCookie()) {
++      headers.append("set-cookie", cookie);
++    }
++    return new Response(null, { status: 302, headers });
++  } catch (err) {
++    const message = err instanceof Error ? err.message : "oauth_init_threw";
++    return completionResponse({
++      source: "grok-auth-popup",
++      token: null,
++      error: message,
++    });
++  }
++}
++
++function completionResponse(message: PopupMessage): Response {
++  return new Response(completionHtml(message), {
++    status: 200,
++    headers: {
++      "content-type": "text/html; charset=utf-8",
++      "cache-control": "no-store",
++    },
++  });
++}
++
++/** Minimal HTML: postMessage the token to the opener and close. No React. */
++function completionHtml(message: PopupMessage): string {
++  // JSON is safe inside a <script type="application/json"> block; the inline
++  // script only reads it. Avoids escaping pitfalls of embedding in JS source.
++  const payload = JSON.stringify(message).replace(/</g, "\\u003c");
++  return `<!doctype html>
++<html lang="en">
++<head>
++<meta charset="utf-8" />
++<meta name="viewport" content="width=device-width, initial-scale=1" />
++<title>Signing in…</title>
++<style>
++  html,body{margin:0;min-height:100%;background:#0b0b0c;color:#a1a1aa;
++    font:14px/1.5 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif}
++  main{min-height:100vh;display:grid;place-items:center;padding:1.5rem;text-align:center}
++</style>
++</head>
++<body>
++<main><p>Signing you in…</p></main>
++<script type="application/json" id="grok-auth-popup-msg">${payload}</script>
++<script>
++(function () {
++  var el = document.getElementById("grok-auth-popup-msg");
++  var msg = { source: "grok-auth-popup", token: null };
++  try { if (el && el.textContent) msg = JSON.parse(el.textContent); } catch (e) {}
++  try {
++    if (window.opener) window.opener.postMessage(msg, window.location.origin);
++  } catch (e) {}
++  try { window.close(); } catch (e) {}
++})();
++</script>
++</body>
++</html>`;
++}
++
++/** Read a single cookie value from the request (handles `=` inside values). */
++function readCookie(request: Request, name: string): string | null {
++  const header = request.headers.get("cookie");
++  if (!header) return null;
++  for (const part of header.split(";")) {
++    const trimmed = part.trim();
++    if (!trimmed) continue;
++    const eq = trimmed.indexOf("=");
++    if (eq <= 0) continue;
++    if (trimmed.slice(0, eq) !== name) continue;
++    const raw = trimmed.slice(eq + 1);
++    try {
++      return decodeURIComponent(raw);
++    } catch {
++      return raw;
++    }
++  }
++  return null;
++}
+--- /dev/null
++++ b/src/lib/auth/preview.ts
+@@ -0,0 +1,32 @@
++/**
++ * Shared LIVE-PREVIEW OAuth client (server-only — NEVER import from the client).
++ *
++ * The sandbox serves each live preview on a dynamic `https://*.grok-sandbox.com`
++ * URL, which can't be pre-registered per app. The broker instead exposes ONE
++ * shared "preview" client that accepts any
++ * `https://*.grok-sandbox.com/api/auth/oauth2/callback/*`
++ * (broker: `app-builder-deployer/auth/src/preview-oauth.ts`). Baking it here lets
++ * the live preview do REAL sign-in — no demo/mock users — with no platform
++ * injection. When deployed the deployer injects a per-app
++ * `GROK_AUTH_*` that overrides these (see `server.ts`).
++ *
++ * These MUST equal the broker's `GROK_PREVIEW_CLIENT_ID` /
++ * `GROK_PREVIEW_CLIENT_SECRET` (set in the broker's Vercel env; the broker stores
++ * only the secret's `base64url(SHA-256)` hash). This is a dedicated, low-privilege
++ * client (preview-only, `*.grok-sandbox.com`) — rotate it by regenerating the
++ * broker env var and this constant together.
++ */
++export const PREVIEW_CLIENT_ID = "grok_preview";
++export const PREVIEW_CLIENT_SECRET =
++  "8bcdb7fc5a33874ad933ca568918d5790388a0795e44c4d1dea691f801b17ec5";
++
++/** The shared auth broker issuer (OIDC discovery lives under it). */
++export const GROK_ISSUER_DEFAULT = "https://auth.grok.me";
++
++/**
++ * Host patterns whose callbacks the preview client accepts. Better Auth derives
++ * the live preview's real origin from the request host and validates it against
++ * this list (wildcard-matched), so the OAuth `redirect_uri` becomes the concrete
++ * `https://<preview-host>/api/auth/oauth2/callback/...` the broker allows.
++ */
++export const PREVIEW_ALLOWED_HOSTS = ["*.grok-sandbox.com"] as const;
+--- /dev/null
++++ b/src/lib/auth/providers.ts
+@@ -0,0 +1,31 @@
++/**
++ * The upstream identity providers this app offers for sign-in (via the broker).
++ *
++ * Source of truth for BOTH the server (`server.ts`, one `genericOAuth` provider
++ * per entry) and the client (`client.ts` / sign-in buttons). Kept in its own
++ * dependency-free module so the client can import it without pulling the
++ * server-only Better Auth instance (and `pg`) into the browser bundle.
++ *
++ * Each app federates to the shared **auth broker** (`GROK_AUTH_ISSUER`), which
++ * holds the real Google/X secrets. The app never sees them — it only knows its
++ * own per-app client id/secret and which upstream to ask the broker for (`idp`).
++ *
++ * To add an upstream (e.g. GitHub) once the broker supports it: add one entry
++ * here (`{ providerId: "grok-github", idp: "github", label: "GitHub" }`). The
++ * `providerId` is this app's local id and the OAuth callback path segment
++ * (`/api/auth/oauth2/callback/<providerId>`); `idp` is the hint the broker reads
++ * to pick the upstream (Better Auth's id for X is still `twitter`).
++ */
++export type GrokProvider = {
++  /** This app's local provider id; also the callback path segment. */
++  providerId: string;
++  /** Upstream hint the broker forwards to (Better Auth social id). */
++  idp: string;
++  /** Human label for the sign-in button. */
++  label: string;
++};
++
++export const GROK_PROVIDERS: readonly GrokProvider[] = [
++  { providerId: "grok-google", idp: "google", label: "Google" },
++  { providerId: "grok-x", idp: "twitter", label: "X" },
++];
+--- /dev/null
++++ b/src/lib/auth/provider.tsx
+@@ -0,0 +1,15 @@
++import type { ReactNode } from "react";
++
++/**
++ * App-wide client provider mounted once near the root (in `src/routes/__root.tsx`):
++ *
++ *   <AuthProvider><Outlet /></AuthProvider>
++ *
++ * Better Auth's React client (`@/lib/auth/client`) needs NO context provider —
++ * its `useSession()` works standalone — so this is a passthrough today. It's
++ * kept as the single, stable mount point for any future client-side providers
++ * (e.g. a toast or theme provider) without churning the root shell.
++ */
++export function AuthProvider({ children }: { children: ReactNode }) {
++  return <>{children}</>;
++}
+--- /dev/null
++++ b/src/lib/auth/server.ts
+@@ -0,0 +1,261 @@
++/**
++ * Self-hosted Better Auth for THIS app (server-only).
++ *
++ * Pre-wired for live preview + deploy — do not rewrite this file. To enable
++ * local email/password, flip the flag in `./email-password` only (see auth skill).
++ *
++ * The app runs its own Better Auth at `/api/auth/*`, so the session cookie stays
++ * on this app's own origin. Sign-in federates to the shared **Grok auth broker**
++ * (`GROK_AUTH_ISSUER`) via the `genericOAuth` plugin — the broker brokers the
++ * upstream sign-in methods (Google, X, …) and holds their shared secrets; this
++ * app only holds its own client id/secret and names the upstream it wants via
++ * each provider's `idp` hint.
++ *
++ * Tri-mode:
++ *   - Deployed: the deployer injects a per-app `GROK_AUTH_*` + `BETTER_AUTH_URL`
++ *     + `DATABASE_URL`, so real federated auth is persisted in Postgres.
++ *   - Sandbox live preview: no injection -> falls back to the shared **preview
++ *     client** (`./preview`) and derives the preview's `https://*.grok-sandbox.com`
++ *     origin from the request, so real sign-in works (no demo users). Sessions
++ *     and identities persist in the embedded PGLite DB (same DB as app data);
++ *     the process restart wipes both. Live-preview iframe clients use a bearer
++ *     token (partitioned cookies) — see `client.ts`.
++ *   - Off (`VITE_AUTH_ENABLED=false`, the shipped default): no providers;
++ *     `requireUserId` resolves a dev user with no database configured, and
++ *     throws fail-closed once `DATABASE_URL` is set (see `verify.server.ts`).
++ *
++ * NEVER import this from client code — it pulls in `pg` + the preview secret +
++ * server-only Better Auth internals. The client uses `@/lib/auth/client`;
++ * components read the user via `@/lib/auth/use-current-user`; server functions get
++ * a verified id via `@/lib/auth/middleware`.
++ */
++import { betterAuth } from "better-auth";
++import { bearer, genericOAuth } from "better-auth/plugins";
++import { tanstackStartCookies } from "better-auth/tanstack-start";
++import { getCookie } from "@tanstack/react-start/server";
++import { randomBytes } from "node:crypto";
++import { Pool } from "pg";
++import { ensureDbReady, getPglite } from "../db";
++import { emailAndPasswordEnabled } from "./email-password";
++import { GATE_PROVIDER_ID, gateIdentitySessions } from "./gate-session.server";
++import { GROK_PROVIDERS } from "./providers";
++import { pgliteDialect } from "./pglite-dialect";
++import {
++  GROK_ISSUER_DEFAULT,
++  PREVIEW_ALLOWED_HOSTS,
++  PREVIEW_CLIENT_ID,
++  PREVIEW_CLIENT_SECRET,
++} from "./preview";
++
++// Kick (and share) PGLite bootstrap as soon as the auth server module loads.
++void ensureDbReady();
++
++/**
++ * Preview secret must outlive module reloads: PGLite (and its session rows) is
++ * stored on `globalThis`, so an HMR re-eval of this file must NOT mint a new
++ * signing secret or every existing session becomes invalid mid-dev. Process
++ * restart clears both the secret and PGLite together.
++ */
++const globalAuthRef = globalThis as typeof globalThis & {
++  __grokAuthPreviewSecret__?: string;
++};
++function previewAuthSecret(): string {
++  globalAuthRef.__grokAuthPreviewSecret__ ??= randomBytes(32).toString("hex");
++  return globalAuthRef.__grokAuthPreviewSecret__;
++}
++
++/** Read an env var, treating empty/whitespace as unset. */
++const env = (key: string): string | undefined => {
++  const value = process.env[key]?.trim();
++  return value ? value : undefined;
++};
++
++// Explicit off-switch. The deployer sets `VITE_AUTH_ENABLED=true` when it
++// provisions auth; set it to "false" to force auth off everywhere (dev user).
++const authDisabled = env("VITE_AUTH_ENABLED") === "false";
++
++// Broker federation creds: the deployer injects a per-app client when deployed;
++// otherwise fall back to the shared live-preview client, which the broker accepts
++// for any `*.grok-sandbox.com` callback (see `./preview`).
++const grokIssuer = env("GROK_AUTH_ISSUER") ?? GROK_ISSUER_DEFAULT;
++const grokClientId = env("GROK_AUTH_CLIENT_ID") ?? PREVIEW_CLIENT_ID;
++const grokClientSecret = env("GROK_AUTH_CLIENT_SECRET") ?? PREVIEW_CLIENT_SECRET;
++
++/** True when federated sign-in is active (real auth is enforced). */
++export const authConfigured =
++  !authDisabled && Boolean(grokClientId && grokClientSecret);
++
++// This app's own Better Auth origin. When deployed the deployer injects the
++// public URL. In the sandbox live preview there's no fixed URL (each preview gets
++// a dynamic `*.grok-sandbox.com` host), so we hand Better Auth a dynamic baseURL:
++// it derives the origin per-request from the (proxied) host, validated against the
++// preview allowlist, which makes the OAuth `redirect_uri` the concrete preview URL
++// the broker's preview client accepts.
++const explicitBaseURL = env("BETTER_AUTH_URL");
++// Explicit `string[]` (not a readonly tuple) — Better Auth's DynamicBaseURLConfig
++// requires a mutable `allowedHosts: string[]`.
++const previewAllowedHosts: string[] = [...PREVIEW_ALLOWED_HOSTS];
++// Local `npm run dev` (port 8080 contract). Browsers may send Origin as any of
++// these for the same server — trusting only `localhost` rejects `127.0.0.1` and
++// breaks email/password with "Invalid origin".
++const LOCAL_DEV_ORIGINS: string[] = [
++  "http://localhost:8080",
++  "http://127.0.0.1:8080",
++  "http://[::1]:8080",
++];
++const baseURL = explicitBaseURL ?? {
++  // Include loopback hosts so dynamic baseURL resolves for local email/password
++  // (not only the preview wildcard).
++  allowedHosts: [...previewAllowedHosts, "localhost", "127.0.0.1", "[::1]"],
++  // `auto` → trust both http:// and https:// expansions of allowedHosts
++  // (preview is https; local dev is http).
++  protocol: "auto" as const,
++  fallback: "http://localhost:8080",
++};
++
++// Origins Better Auth accepts on credentialed POSTs (sign-up/sign-in, etc.).
++// Missing entries here surface as FORBIDDEN "Invalid origin".
++const trustedOrigins: string[] = explicitBaseURL
++  ? [explicitBaseURL, ...LOCAL_DEV_ORIGINS]
++  : [
++      // Host wildcards (matched against Origin's host)
++      ...previewAllowedHosts,
++      // Full-origin wildcards (matched against Origin)
++      ...previewAllowedHosts.flatMap((host) => [`https://${host}`, `http://${host}`]),
++      ...LOCAL_DEV_ORIGINS,
++    ];
++
++const databaseUrl = env("DATABASE_URL");
++
++// Static broker OAuth endpoints (skip OIDC discovery on every sign-in / callback).
++// Discovery would cost an extra network hop to the broker before the popup can
++// even redirect to Google/X — the live-preview popup felt stuck on the app for
++// that whole round-trip. These paths match the broker's discovery document.
++const issuerBase = grokIssuer.replace(/\/+$/, "");
++const grokAuthorizationUrl = `${issuerBase}/api/auth/oauth2/authorize`;
++const grokTokenUrl = `${issuerBase}/api/auth/oauth2/token`;
++const grokUserInfoUrl = `${issuerBase}/api/auth/oauth2/userinfo`;
++
++// Real Postgres when `DATABASE_URL` is set (deployed apps), else the app's
++// embedded PGLite (preview) via a Kysely dialect — so Better Auth persists to the
++// SAME DB as app data, including email/password users. Both use the Better Auth
++// schema from `migrations/auth/0001_auth.sql`, copied into `migrations/` when
++// the app turns sign-in on.
++const database = databaseUrl
++  ? new Pool({ connectionString: databaseUrl })
++  : { dialect: pgliteDialect(() => getPglite()), type: "postgres" as const };
++
++/** Session token cookie name — also read by the live-preview popup completion page. */
++export const SESSION_TOKEN_COOKIE = "__Host-grok-auth.session_token";
++
++// Built separately so the `betterAuth({...})` call stays easy to edit without
++// breaking brackets (models often trip on the conditional plugin spread).
++const grokOAuthPlugin = authConfigured
++  ? genericOAuth({
++      config: GROK_PROVIDERS.map(({ providerId, idp }) => ({
++        providerId,
++        clientId: grokClientId as string,
++        clientSecret: grokClientSecret as string,
++        // Prefer static endpoints over `discoveryUrl` so initiating (and
++        // completing) OAuth does not wait on a broker discovery fetch.
++        authorizationUrl: grokAuthorizationUrl,
++        tokenUrl: grokTokenUrl,
++        userInfoUrl: grokUserInfoUrl,
++        scopes: ["openid", "profile", "email"],
++        // `prompt: "login"` forces the broker to re-authenticate against the
++        // upstream on every sign-in instead of silently reusing an existing
++        // broker session. Combined with the broker sending Google
++        // `prompt=select_account`, the user always gets the account chooser
++        // and can pick (or switch) which account to sign in with.
++        authorizationUrlParams: { idp, prompt: "login" },
++      })),
++    })
++  : null;
++
++export const auth = betterAuth({
++  baseURL,
++  // Deployed apps inject BETTER_AUTH_SECRET. Preview: process-stable secret on
++  // globalThis so HMR doesn't invalidate PGLite-backed sessions (see above).
++  secret: env("BETTER_AUTH_SECRET") ?? previewAuthSecret(),
++  database,
++
++  // CSRF / origin check for credentialed auth POSTs (email sign-up/sign-in, …).
++  // See `trustedOrigins` construction above — must cover live preview hosts AND
++  // local loopback variants, or clients get "Invalid origin".
++  trustedOrigins,
++
++  // Encrypt broker-issued OAuth tokens at rest, and treat the broker's upstreams
++  // as trusted first-party identities. The broker owns identity and X emails are
++  // synthetic/unverified, so WITHOUT this a login can fail with
++  // `account_not_linked` (Better Auth refuses to attach an untrusted, unverified
++  // identity to an existing user). Google and X carry DISTINCT emails, so this
++  // never merges them into one user — they stay separate identities.
++  account: {
++    encryptOAuthTokens: true,
++    accountLinking: {
++      enabled: true,
++      trustedProviders: [
++        ...GROK_PROVIDERS.map((p) => p.providerId),
++        GATE_PROVIDER_ID,
++      ],
++      // X's synthetic email is never "verified", so don't gate linking on the
++      // local user's email-verified state.
++      requireLocalEmailVerified: false,
++    },
++  },
++
++  // Cache the session in the short-lived signed `session_data` cookie so reads
++  // (incl. the client's `/get-session`) skip the DB — this shrinks the "loading"
++  // window and reduces auth flicker. See the `auth` skill for the full
++  // flicker-prevention guidance (gate on `isPending`; SSR the session).
++  session: { cookieCache: { enabled: true, maxAge: 300 } },
++
++  // Local email/password — toggled only via `./email-password` (not a plugin).
++  ...(emailAndPasswordEnabled ? { emailAndPassword: { enabled: true } } : {}),
++
++  // `__Host-` prefixed cookies: the browser REFUSES any same-named cookie that
++  // carries a `Domain` attribute, so a sibling `*.grok.me` app cannot "toss" a
++  // `Domain=.grok.me` session cookie onto this app. `__Host-` requires Secure +
++  // Path=/ + no Domain; Better Auth otherwise uses `__Secure-` (which permits
++  // Domain), so we drop its auto prefix (`useSecureCookies: false`) and set
++  // Secure + the names ourselves. (Browsers allow Secure cookies on
++  // `http://localhost`, so local dev still works.)
++  advanced: {
++    useSecureCookies: false,
++    defaultCookieAttributes: { secure: true, sameSite: "lax", path: "/" },
++    cookies: {
++      session_token: { name: SESSION_TOKEN_COOKIE },
++      session_data: { name: "__Host-grok-auth.session_data" },
++      account_data: { name: "__Host-grok-auth.account_data" },
++      dont_remember: { name: "__Host-grok-auth.dont_remember" },
++    },
++  },
++
++  plugins: [
++    gateIdentitySessions(),
++
++    // One genericOAuth provider per upstream (when auth is on), all federating
++    // to the broker with the SAME client and differing only by the `idp` hint.
++    ...(grokOAuthPlugin ? [grokOAuthPlugin] : []),
++
++    // Accept `Authorization: Bearer <session-token>` as an alternative to the
++    // cookie. Needed for the LIVE PREVIEW: the app runs in an embedded iframe
++    // where cookies are partitioned, so after popup sign-in it authenticates with
++    // a bearer token instead (see `client.ts` / the `auth` skill). The hook only
++    // fires when an Authorization header is present, so the cookie path
++    // (deployed apps) is unaffected.
++    bearer(),
++
++    // Bridges Better Auth's Set-Cookie into TanStack Start responses. MUST be
++    // last so it runs after every other plugin's hooks.
++    tanstackStartCookies(),
++  ],
++});
++
++export function readSessionToken(): string | null {
++  return getCookie(SESSION_TOKEN_COOKIE) ?? null;
++}
++
++// Re-exported for convenience; the array lives in the dependency-free
++// `providers.ts` so the client can import it too.
++export { GROK_PROVIDERS } from "./providers";
+--- /dev/null
++++ b/src/lib/auth/sign-in-gate.test.ts
+@@ -0,0 +1,30 @@
++import { describe, it } from "node:test";
++import assert from "node:assert/strict";
++import { resolveSignInGateState } from "./sign-in-gate.ts";
++
++describe("resolveSignInGateState", () => {
++  it("is pending while the session check is in flight, user or not", () => {
++    assert.equal(
++      resolveSignInGateState({ isPending: true, hasUser: false }),
++      "pending",
++    );
++    assert.equal(
++      resolveSignInGateState({ isPending: true, hasUser: true }),
++      "pending",
++    );
++  });
++
++  it("is signed_in once a user is present", () => {
++    assert.equal(
++      resolveSignInGateState({ isPending: false, hasUser: true }),
++      "signed_in",
++    );
++  });
++
++  it("is signed_out only after the check resolved with no user", () => {
++    assert.equal(
++      resolveSignInGateState({ isPending: false, hasUser: false }),
++      "signed_out",
++    );
++  });
++});
+--- /dev/null
++++ b/src/lib/auth/sign-in-gate.ts
+@@ -0,0 +1,13 @@
++export type SignInGateState = "pending" | "signed_in" | "signed_out";
++
++export type SignInGateInput = {
++  isPending: boolean;
++  hasUser: boolean;
++};
++
++export function resolveSignInGateState(
++  input: SignInGateInput,
++): SignInGateState {
++  if (input.isPending) return "pending";
++  return input.hasUser ? "signed_in" : "signed_out";
++}
+--- /dev/null
++++ b/src/lib/auth/use-current-user.ts
+@@ -0,0 +1,86 @@
++import { useMemo } from "react";
++import { authClient, authEnabled } from "./client";
++
++/** Normalized user shape used across the app, auth on or off. */
++export type AppUser = {
++  id: string;
++  displayName: string | null;
++  primaryEmail: string | null;
++  profileImageUrl: string | null;
++  /** True when this is the sandbox/dev fallback (auth not configured). */
++  isDevFallback: boolean;
++};
++
++/**
++ * Stable fallback user, used ONLY when auth is disabled
++ * (`VITE_AUTH_ENABLED=false`, the shipped default). With auth on, the sandbox
++ * live preview does real sign-in via the baked preview client. Its id is
++ * `"dev-user"` — the SAME id `verify.server.ts` returns server-side — so per-user
++ * rows written in that mode belong to one consistent owner.
++ */
++export const DEV_USER: AppUser = {
++  id: "dev-user",
++  displayName: "Dev User",
++  primaryEmail: "dev@example.com",
++  profileImageUrl: null,
++  isDevFallback: true,
++};
++
++/** `useCurrentUserState()` result: the user plus the session-loading flag. */
++export type CurrentUserState = {
++  /** The user — `null` BOTH while the session loads and when signed out. */
++  user: AppUser | null;
++  /** True while the session is still resolving — don't treat `user: null` as signed out yet. */
++  isPending: boolean;
++};
++
++const DEV_STATE: CurrentUserState = { user: DEV_USER, isPending: false };
++
++/**
++ * Current user + loading state. Same behavior in live preview and when deployed:
++ *   - Auth enabled -> the real signed-in user; `user` is `null` while
++ *                            the session resolves (`isPending: true`) and when
++ *                            signed out (`isPending: false`). Session comes from
++ *                            Better Auth `useSession()` → `/api/auth/get-session`
++ *                            (cookie when deployed; bearer in live preview).
++ *   - Auth disabled (`VITE_AUTH_ENABLED=false`) -> `DEV_USER`, never pending.
++ *
++ * Protect a route by waiting out `isPending` before acting on `user` —
++ * redirecting on `user: null` alone bounces signed-in visitors to sign-in on
++ * every hard reload:
++ *
++ *   import { RedirectToSignIn } from "@/lib/auth/gates";
++ *   const { user, isPending } = useCurrentUserState();
++ *   if (isPending) return null;              // still resolving — don't redirect yet
++ *   if (!user) return <RedirectToSignIn />;  // definitely signed out
++ *
++ * `authEnabled` is a module-level constant fixed at load, so the guarded hook
++ * call keeps a stable hook order across every render of a given component.
++ */
++export function useCurrentUserState(): CurrentUserState {
++  if (!authEnabled) return DEV_STATE;
++  // eslint-disable-next-line react-hooks/rules-of-hooks -- authEnabled is constant for the app's lifetime
++  return useSessionUserState();
++}
++
++function useSessionUserState(): CurrentUserState {
++  const { data, isPending } = authClient.useSession();
++  const id = data?.user.id;
++  const displayName = data?.user.name ?? null;
++  const primaryEmail = data?.user.email ?? null;
++  const profileImageUrl = data?.user.image ?? null;
++  const user = useMemo<AppUser | null>(
++    () => (id ? { id, displayName, primaryEmail, profileImageUrl, isDevFallback: false } : null),
++    [id, displayName, primaryEmail, profileImageUrl],
++  );
++  return useMemo(() => ({ user, isPending }), [user, isPending]);
++}
++
++/**
++ * Convenience view of `useCurrentUserState().user` for display (e.g.
++ * `user?.displayName ?? "Guest"`). NOTE: `null` means *loading OR signed out* —
++ * for redirects/guards use `useCurrentUserState()` and check `isPending`.
++ */
++export function useCurrentUser(): AppUser | null {
++  return useCurrentUserState().user;
++}
+--- /dev/null
++++ b/src/lib/auth/verify.server.ts
+@@ -0,0 +1,97 @@
++import { getRequest } from "@tanstack/react-start/server";
++import { gateIdentityEnabled } from "./gate-identity.server";
++import { auth, authConfigured } from "./server";
++
++/**
++ * Server-side session resolution (server-only).
++ *
++ * Because this app runs its OWN Better Auth at same-origin `/api/auth/*`, the
++ * session cookie is sent with every request to this app — server functions AND
++ * SSR loaders included. So we resolve the user straight from the request cookies
++ * via `auth.api.getSession` (no client-minted JWT needed). Never trust a
++ * client-supplied user id — only the result of this verification.
++ */
++
++/** True when a real database is configured server-side. */
++const databaseConfigured = Boolean(process.env.DATABASE_URL?.trim());
++
++/** Re-export so callers can branch on it without importing `server.ts`. */
++export { authConfigured };
++
++if (databaseConfigured && !authConfigured) {
++  console.error(
++    "[auth] DATABASE_URL is set but auth is disabled (VITE_AUTH_ENABLED=false) " +
++      "— requireUserId() will reject every request (fail closed) rather than " +
++      "share one dev user on a real database.",
++  );
++}
++
++/** Dev fallback user id, used only when auth is disabled (VITE_AUTH_ENABLED=false). */
++export const DEV_USER_ID = "dev-user";
++
++/**
++ * Thrown by `requireUserId` when the caller has no valid session. Carries
++ * `status: 401`; the message is a stable contract — match
++ * `err.message === "Unauthorized"` client-side to send the visitor to sign-in.
++ */
++export class UnauthorizedError extends Error {
++  readonly status = 401;
++  constructor() {
++    super("Unauthorized");
++    this.name = "UnauthorizedError";
++  }
++}
++
++export type VerifiedUser = { id: string; email: string | null };
++
++/**
++ * Resolve the signed-in user from the current request, or `null` when auth isn't
++ * configured / nobody is signed in. Safe to call from server functions and SSR
++ * loaders.
++ *
++ * `bearerToken` is for the LIVE PREVIEW: the app runs in a partitioned iframe
++ * whose cookies don't reach the server, so `authMiddleware` forwards the session
++ * as a bearer token, which we present as `Authorization: Bearer …` (the `bearer`
++ * plugin resolves it). When deployed no token is passed and the cookie is used.
++ */
++export async function getSessionUser(
++  bearerToken?: string,
++): Promise<VerifiedUser | null> {
++  if (!authConfigured && !gateIdentityEnabled()) return null;
++  const request = getRequest();
++  if (!request) return null;
++  let headers = request.headers;
++  if (bearerToken) {
++    headers = new Headers(request.headers);
++    headers.set("Authorization", `Bearer ${bearerToken}`);
++  }
++  const session = await auth.api.getSession({ headers });
++  if (!session?.user) return null;
++  return { id: session.user.id, email: session.user.email ?? null };
++}
++
++/**
++ * Resolve the current user id for a server function, or throw when unauthorized.
++ * Prefer `authMiddleware` (`./middleware`), which calls this for you.
++ * - Auth enabled -> the verified session user id; throws
++ *   `UnauthorizedError` when signed out. Works in the sandbox preview too (real
++ *   sign-in via the baked preview client).
++ * - Auth disabled (`VITE_AUTH_ENABLED=false`) + `DATABASE_URL` set -> throw (fail
++ *   closed): one shared dev user on a real database would let every visitor
++ *   read/write everyone's rows.
++ * - Auth disabled + no database -> the shared dev user id.
++ */
++export async function requireUserId(bearerToken?: string): Promise<string> {
++  if (!authConfigured && !gateIdentityEnabled()) {
++    if (databaseConfigured) {
++      throw new Error(
++        "Auth is disabled (VITE_AUTH_ENABLED=false) but DATABASE_URL is set — " +
++          "refusing to fall back to the shared dev user against a real database.",
++      );
++    }
++    return DEV_USER_ID;
++  }
++  const user = await getSessionUser(bearerToken);
++  if (!user) throw new UnauthorizedError();
++  return user.id;
++}
+--- /dev/null
++++ b/src/lib/db.ts
+@@ -0,0 +1,238 @@
++import { pendingMigrations } from "../../scripts/migration-plan.mjs";
++
++/** Which database backend is active. */
++export type DbSource = "neon" | "pglite";
++
++// An empty/whitespace DATABASE_URL (an easy misconfig in deploy UIs) must mean
++// "unset" — otherwise production would silently run on the PGLite fallback.
++const rawDatabaseUrl =
++  typeof process !== "undefined" ? process.env.DATABASE_URL : undefined;
++const databaseUrl =
++  rawDatabaseUrl && rawDatabaseUrl.trim() ? rawDatabaseUrl : undefined;
++
++/**
++ * Active backend: real **Neon** when `DATABASE_URL` is set (deployed / configured
++ * sandbox), otherwise a local embedded **PGLite** (Postgres compiled to WASM) so
++ * the app has a working database even with nothing configured — the live preview
++ * included. Swap in Neon later by just setting `DATABASE_URL`; no code changes.
++ */
++export const dbSource: DbSource = databaseUrl ? "neon" : "pglite";
++
++/**
++ * Minimal shared SQL surface, satisfied by both Neon and PGLite. Both the
++ * tagged-template and `.query()` forms resolve to an array of row objects:
++ *
++ *   const sql = await getSql();
++ *   const rows = await sql`select * from todos where id = ${id}`; // parameterized
++ *   const rows2 = await sql.query("select * from todos where id = $1", [id]);
++ */
++export interface Sql {
++  <T = Record<string, unknown>>(
++    strings: TemplateStringsArray,
++    ...values: unknown[]
++  ): Promise<T[]>;
++  query<T = Record<string, unknown>>(
++    text: string,
++    params?: unknown[],
++  ): Promise<T[]>;
++}
++
++/**
++ * Init state lives on globalThis as promises: dev HMR creates new instances of
++ * this module, and two instances racing module-level state would open a second
++ * pool or run two concurrent PGLite migration passes (whose duplicate
++ * `_migrations` insert rejects — and would get memoized, poisoning every later
++ * `getSql()`). A failed init clears its slot so the next call retries.
++ */
++const globalRef = globalThis as typeof globalThis & {
++  __pgSqlPromise__?: Promise<Sql>;
++  __pgliteInstance__?: Promise<import("@electric-sql/pglite").PGlite>;
++  __pgliteMigrateChain__?: Promise<void>;
++};
++
++/**
++ * Result-type parity: Postgres sends every value as text plus a type OID — the
++ * JS value is the DRIVER's parsing choice, and pg and PGLite disagree (pg:
++ * int8 -> string, date -> local-midnight Date; PGLite: int8 -> BigInt, which
++ * JSON.stringify rejects, date -> UTC Date). Normalize both so preview and
++ * production return identical, JSON-safe shapes:
++ *   int8/bigint (incl. count(*)) -> number (past 2^53 loses precision — cast
++ *                                   `::text` if you ever need huge integers)
++ *   date                         -> 'YYYY-MM-DD' string
++ *   interval                     -> Postgres interval text
++ * numeric already comes back as a string on both (arbitrary precision).
++ */
++const OID_INT8 = 20;
++const OID_DATE = 1082;
++const OID_INTERVAL = 1186;
++const identity = (v: string) => v;
++
++type Run = <T>(text: string, params: unknown[]) => Promise<T[]>;
++
++/** Wrap a query runner in the tagged-template + `.query()` `Sql` surface. */
++function toSql(run: Run): Sql {
++  const sql = (async <T = Record<string, unknown>>(
++    strings: TemplateStringsArray,
++    ...values: unknown[]
++  ): Promise<T[]> => {
++    // Rebuild with $1, $2, … placeholders so values stay parameterized.
++    let text = strings[0];
++    for (let i = 0; i < values.length; i += 1) text += `$${i + 1}${strings[i + 1]}`;
++    return run<T>(text, values);
++  }) as unknown as Sql;
++  sql.query = <T = Record<string, unknown>>(text: string, params: unknown[] = []) =>
++    run<T>(text, params);
++  return sql;
++}
++
++function createNeonSql(): Promise<Sql> {
++  globalRef.__pgSqlPromise__ ??= (async () => {
++    // Regular Postgres driver: node-postgres (`pg`) — works directly with Neon's
++    // pooled endpoint. One pool per process; warm serverless instances reuse it.
++    const { Pool, types } = await import("pg");
++    types.setTypeParser(OID_INT8, Number);
++    types.setTypeParser(OID_DATE, identity);
++    types.setTypeParser(OID_INTERVAL, identity);
++    const pool = new Pool({ connectionString: databaseUrl });
++    return toSql(async <T>(text: string, params: unknown[]) => {
++      const res = await pool.query(text, params);
++      return res.rows as T[];
++    });
++  })().catch((err) => {
++    globalRef.__pgSqlPromise__ = undefined;
++    throw err;
++  });
++  return globalRef.__pgSqlPromise__;
++}
++
++async function createPgliteSql(): Promise<Sql> {
++  // Embedded Postgres, imported on demand so it never loads on the Neon path.
++  // One in-memory instance per process, shared across HMR module instances, so
++  // data survives source edits (it resets on dev-server restart).
++  globalRef.__pgliteInstance__ ??= (async () => {
++    const { PGlite } = await import("@electric-sql/pglite");
++    const pg = new PGlite({
++      parsers: {
++        [OID_INT8]: Number,
++        [OID_DATE]: identity,
++        [OID_INTERVAL]: identity,
++      },
++    });
++    await pg.waitReady;
++    await pg.exec(
++      "create table if not exists _migrations (name text primary key, applied_at timestamptz not null default now())",
++    );
++    return pg;
++  })().catch((err) => {
++    globalRef.__pgliteInstance__ = undefined;
++    throw err;
++  });
++  const pg = await globalRef.__pgliteInstance__;
++
++  // Apply migrations/ (the single schema source) so preview matches production.
++  // SQL is inlined by the bundler via import.meta.glob (no runtime fs); applied
++  // files are tracked in _migrations. The glob does not descend, so the opt-in
++  // auth schema under migrations/auth/ stays out. Runs once per module instance
++  // — so an HMR reload after adding a migration file applies it live — with
++  // passes serialized on a global chain so concurrent callers never
++  // double-apply.
++  const migrate = async (): Promise<void> => {
++    const migrations = import.meta.glob("/migrations/*.sql", {
++      query: "?raw",
++      import: "default",
++      eager: true,
++    }) as Record<string, string>;
++    const doneRows = await pg.query<{ name: string }>(
++      "select name from _migrations",
++    );
++    const done = doneRows.rows.map((r) => r.name);
++    for (const { name, path } of pendingMigrations(Object.keys(migrations), done)) {
++      // Apply + record atomically (parity with scripts/migrate.mjs) so a failed
++      // statement can't leave a file half-applied but untracked.
++      await pg.transaction(async (tx) => {
++        await tx.exec(migrations[path]);
++        await tx.query("insert into _migrations (name) values ($1)", [name]);
++      });
++    }
++  };
++  const pass = (globalRef.__pgliteMigrateChain__ ?? Promise.resolve())
++    .catch(() => undefined) // an earlier failed pass must not wedge the chain
++    .then(migrate);
++  globalRef.__pgliteMigrateChain__ = pass;
++  await pass;
++
++  return toSql(async <T>(text: string, params: unknown[]) => {
++    const result = await pg.query<T>(text, params);
++    return result.rows;
++  });
++}
++
++let sqlPromise: Promise<Sql> | null = null;
++
++async function createSql(): Promise<Sql> {
++  if (typeof window !== "undefined") {
++    throw new Error(
++      "@/lib/db is server-only — call getSql() from a createServerFn handler " +
++        "or a server route loader, never from client code.",
++    );
++  }
++  return dbSource === "neon" ? createNeonSql() : createPgliteSql();
++}
++
++/**
++ * Get the shared, **server-only** SQL client. Neon when `DATABASE_URL` is set,
++ * otherwise the local PGLite fallback. Memoized — safe to call per request.
++ *
++ * Schema comes from `migrations/*.sql`, auto-applied before the first query on
++ * both backends — define tables there, never inline in server functions.
++ */
++export function getSql(): Promise<Sql> {
++  sqlPromise ??= createSql().catch((err) => {
++    sqlPromise = null; // don't memoize failures — let the next call retry
++    throw err;
++  });
++  return sqlPromise;
++}
++
++/**
++ * The shared PGLite instance (preview only), with `migrations/*.sql` applied.
++ * Lets Better Auth persist to the SAME embedded DB as app data in preview (via a
++ * Kysely dialect). Throws when `DATABASE_URL` is set (that path uses Neon).
++ */
++export async function getPglite(): Promise<import("@electric-sql/pglite").PGlite> {
++  if (dbSource !== "pglite") {
++    throw new Error("getPglite() is only available on the PGLite fallback (no DATABASE_URL)");
++  }
++  await getSql();
++  const pg = await globalRef.__pgliteInstance__;
++  if (!pg) throw new Error("PGLite instance failed to initialize");
++  return pg;
++}
++
++/**
++ * Finish DB bootstrap before the server handles traffic.
++ *
++ * - **PGLite** (preview / no `DATABASE_URL`): open the in-memory DB and apply
++ *   `migrations/*.sql`. Idempotent — concurrent callers share one promise.
++ * - **Neon**: no-op (pool is created lazily on first query).
++ *
++ * Vite `configureServer` awaits this at dev startup; production imports of this
++ * module kick it off immediately (see bottom of file).
++ */
++export function ensureDbReady(): Promise<void> {
++  if (dbSource !== "pglite") return Promise.resolve();
++  return getSql().then(() => undefined);
++}
++
++// Server-only eager start: kick PGLite bootstrap as soon as this module loads in
++// Node. Client bundles never hit this path (`getSql` throws in the browser).
++const globalBoot = globalThis as typeof globalThis & {
++  __pgBootstrapPromise__?: Promise<void>;
++};
++if (typeof window === "undefined" && dbSource === "pglite") {
++  globalBoot.__pgBootstrapPromise__ ??= ensureDbReady().catch((err) => {
++    globalBoot.__pgBootstrapPromise__ = undefined;
++    console.error("[db] PGLite bootstrap failed:", err);
++    throw err;
++  });
++}
+--- /dev/null
++++ b/src/lib/env.server.ts
+@@ -0,0 +1,14 @@
++export function env(key: string): string | undefined {
++  const v = process.env[key]?.trim();
++  return v || undefined;
++}
++
++/**
++ * Workspace preview vs deployed app. The deployer writes GROK_PROJECT_ID on
++ * every publish; the sandbox preview never has it. Single source of truth for
++ * the split — gate audience, gate endpoints and connector-token semantics all
++ * key off this predicate.
++ */
++export function isWorkspacePreview(): boolean {
++  return !env("GROK_PROJECT_ID");
++}
+--- /dev/null
++++ b/src/lib/error-component.tsx
+@@ -0,0 +1,29 @@
++import type { ErrorComponentProps } from "@tanstack/react-router";
++import { TriangleAlert } from "lucide-react";
++
++const FALLBACK_MESSAGE = "An unexpected error occurred. Try reloading the page.";
++
++function errorMessage(error: unknown): string {
++  if (error instanceof Error && error.message) return error.message;
++  if (typeof error === "string" && error) return error;
++  return FALLBACK_MESSAGE;
++}
++
++export function AppErrorComponent({ error }: ErrorComponentProps) {
++  return (
++    <main
++      className={
++        "flex min-h-screen flex-col items-center justify-center gap-3 px-6 text-center " +
++        "bg-zinc-50 text-zinc-900 dark:bg-zinc-950 dark:text-zinc-50"
++      }
++    >
++      <span className="text-red-500" aria-hidden="true">
++        <TriangleAlert className="size-10" strokeWidth={2} />
++      </span>
++      <h1 className="text-lg font-semibold">Something went wrong</h1>
++      <p className="max-w-md text-sm break-words text-zinc-500 dark:text-zinc-400">
++        {errorMessage(error)}
++      </p>
++    </main>
++  );
++}
+--- /dev/null
++++ b/src/lib/multiplayer/index.ts
+@@ -0,0 +1,9 @@
++export { P2PRoom, defaultIceServers } from "./p2p";
++export type {
++  PeerInfo,
++  P2PRoomOptions,
++  SignalKind,
++  PeerRow,
++  SignalRow,
++  RtcPollResponse,
++} from "./p2p";
+--- /dev/null
++++ b/src/lib/multiplayer/p2p.ts
+@@ -0,0 +1,570 @@
++/**
++ * Full-mesh WebRTC rooms: one RTCPeerConnection per remote peer, signaled
++ * through /api/rtc (see signaling.server.ts), game data flowing directly
++ * browser-to-browser afterwards. Client-authoritative by construction — see
++ * the multiplayer-p2p skill for when NOT to use this.
++ *
++ * Negotiation follows the "perfect negotiation" pattern: on a glare (both
++ * sides offering at once) the polite peer — the lexicographically smaller id —
++ * rolls back and accepts, so pairs converge without wedging.
++ */
++
++export type SignalKind = "offer" | "answer" | "ice";
++
++/**
++ * Wire contract between this client and the signaling relay the app provides
++ * at /api/rtc (see the multiplayer-p2p skill for a reference implementation).
++ * The client only needs these shapes — the relay's storage is the app's choice.
++ */
++export interface PeerRow {
++  id: string;
++  name: string;
++}
++export interface SignalRow {
++  id: number;
++  from: string;
++  kind: SignalKind;
++  payload: unknown;
++}
++export interface RtcPollResponse {
++  peers: PeerRow[];
++  signals: SignalRow[];
++}
++
++export interface PeerInfo {
++  id: string;
++  name: string;
++  connectionState: RTCPeerConnectionState;
++  /** Selected local ICE candidate type: host | srflx | prflx | relay. */
++  candidateType: string | null;
++  /** Data-channel ping RTT (ms), measured every 2s once connected. */
++  rttMs: number | null;
++}
++
++export interface P2PRoomOptions {
++  room: string;
++  selfId: string;
++  name?: string;
++  /** Defaults to VITE_STUN_URLS (comma-separated) or Google public STUN. */
++  iceServers?: RTCIceServer[];
++  onPeersChanged?: (peers: PeerInfo[]) => void;
++  /** Fires for both the unreliable "state" and reliable "reliable" channels. */
++  onMessage?: (from: string, data: unknown, channel: "state" | "reliable") => void;
++  /** Fires once, on the first successful signaling poll (registration). */
++  onConnected?: () => void;
++}
++
++interface PeerSlot {
++  pc: RTCPeerConnection;
++  state?: RTCDataChannel;
++  reliable?: RTCDataChannel;
++  makingOffer: boolean;
++  ignoreOffer: boolean;
++  /** ICE candidates that arrived before the remote description (buffered). */
++  pendingCandidates: RTCIceCandidateInit[];
++  /** Last time this pair made observable progress toward connected. */
++  lastProgressAt: number;
++  /** Watchdog recreations (dialer) / stall windows (receiver) so far. */
++  recoveryAttempts: number;
++  /** Gave up after MAX_RECOVERY_ATTEMPTS — excluded from fast-poll pressure. */
++  terminal?: boolean;
++  /** One-shot: pc was already recreated to absorb a failing remote offer. */
++  recreatedForOffer?: boolean;
++  info: PeerInfo;
++  pingSentAt?: number;
++}
++
++const FAST_POLL_MS = 400;
++const IDLE_POLL_MS = 2000;
++const PING_INTERVAL_MS = 2000;
++const STALL_MS = 10_000;
++const MAX_RECOVERY_ATTEMPTS = 3;
++const SIGNAL_RETRY_DELAYS_MS = [250, 750];
++
++export function defaultIceServers(): RTCIceServer[] {
++  const urls = (import.meta.env.VITE_STUN_URLS as string | undefined)
++    ?.split(",")
++    .map((u) => u.trim())
++    .filter(Boolean);
++  // Two independent providers: ICE queries all of them in parallel during
++  // gathering, so either one being unreachable costs nothing.
++  return [
++    {
++      urls: urls?.length ? urls : ["stun:stun.l.google.com:19302", "stun:stun.cloudflare.com:3478"],
++    },
++  ];
++}
++
++export class P2PRoom {
++  private readonly opts: P2PRoomOptions;
++  private readonly peers = new Map<string, PeerSlot>();
++  /** Per-remote-peer signal delivery chains (order-preserving). */
++  private readonly signalQueues = new Map<string, Promise<void>>();
++  private cursor = 0;
++  private pollTimer: ReturnType<typeof setTimeout> | null = null;
++  private pingTimer: ReturnType<typeof setInterval> | null = null;
++  private closed = false;
++  private everPolled = false;
++  private lastPeersFingerprint = "";
++
++  constructor(opts: P2PRoomOptions) {
++    this.opts = opts;
++  }
++
++  /**
++   * The first poll IS the join: it registers this peer and returns the
++   * roster. A failed first poll (cold DB, offline tab) must not strand the
++   * room: the loop and timers start regardless and the next poll retries.
++   */
++  async join(): Promise<void> {
++    try {
++      await this.pollOnce();
++    } catch {
++      // First poll can fail transiently; the scheduled loop below retries.
++    }
++    if (this.closed) return;
++    this.schedulePoll(this.anyPairConnecting() ? FAST_POLL_MS : IDLE_POLL_MS);
++    this.pingTimer = setInterval(() => {
++      this.pingAll();
++      this.watchdog();
++    }, PING_INTERVAL_MS);
++  }
++
++  close(): void {
++    this.closed = true;
++    if (this.pollTimer) clearTimeout(this.pollTimer);
++    if (this.pingTimer) clearInterval(this.pingTimer);
++    for (const slot of this.peers.values()) slot.pc.close();
++    this.peers.clear();
++    // Leaving the roster is the teardown broadcast: everyone's next poll
++    // drops this peer and closes their side of the pair.
++    void fetch("/api/rtc", {
++      method: "POST",
++      headers: { "content-type": "application/json" },
++      body: JSON.stringify({ op: "leave", room: this.opts.room, peer: this.opts.selfId }),
++      keepalive: true,
++    }).catch(() => {});
++  }
++
++  /** Send on the unreliable game-state channel (drops stale packets). */
++  broadcast(data: unknown): void {
++    const wire = JSON.stringify({ t: "d", d: data });
++    for (const slot of this.peers.values()) {
++      if (slot.state?.readyState === "open") slot.state.send(wire);
++    }
++  }
++
++  /** Send reliably (ordered) to one peer, or to all when peerId is omitted. */
++  send(data: unknown, peerId?: string): void {
++    const wire = JSON.stringify({ t: "d", d: data });
++    const targets = peerId ? [this.peers.get(peerId)] : [...this.peers.values()];
++    for (const slot of targets) {
++      if (slot?.reliable?.readyState === "open") slot.reliable.send(wire);
++    }
++  }
++
++  peerList(): PeerInfo[] {
++    return [...this.peers.values()].map((s) => ({ ...s.info }));
++  }
++
++  // ── signaling loop ───────────────────────────────────────────────────────
++
++  private schedulePoll(delay: number): void {
++    if (this.closed) return;
++    if (this.pollTimer) clearTimeout(this.pollTimer);
++    this.pollTimer = setTimeout(() => void this.poll(), delay);
++  }
++
++  private anyPairConnecting(): boolean {
++    for (const s of this.peers.values()) {
++      // Terminal pairs (NAT-blocked after all recovery attempts) must not pin
++      // the session at the 400ms fast-poll rate.
++      if (s.terminal) continue;
++      if (s.info.connectionState !== "connected") return true;
++    }
++    return false;
++  }
++
++  private async pollOnce(): Promise<void> {
++    const params = new URLSearchParams({
++      room: this.opts.room,
++      peer: this.opts.selfId,
++      name: this.opts.name ?? "",
++      since: String(this.cursor),
++    });
++    const res = await fetch(`/api/rtc?${params}`);
++    if (this.closed) return;
++    if (!res.ok) throw new Error(`signaling poll failed: ${res.status}`);
++    const body = (await res.json()) as RtcPollResponse;
++    if (this.closed) return;
++    if (!this.everPolled) {
++      this.everPolled = true;
++      this.opts.onConnected?.();
++    }
++    this.reconcileRoster(body.peers);
++    const roster = new Set(body.peers.map((p) => p.id));
++    for (const sig of body.signals) {
++      this.cursor = Math.max(this.cursor, sig.id);
++      await this.onSignal(sig.from, sig.kind, sig.payload, roster);
++      if (this.closed) return;
++    }
++  }
++
++  private async poll(): Promise<void> {
++    if (this.closed) return;
++    try {
++      await this.pollOnce();
++    } catch {
++      // Transient poll failures are expected (tab sleep, deploy roll); retry.
++    }
++    this.schedulePoll(this.anyPairConnecting() ? FAST_POLL_MS : IDLE_POLL_MS);
++  }
++
++  private reconcileRoster(peers: { id: string; name: string }[]): void {
++    const alive = new Set(peers.map((p) => p.id));
++    for (const p of peers) {
++      if (p.id === this.opts.selfId) continue;
++      const existing = this.peers.get(p.id);
++      if (existing) {
++        existing.info.name = p.name;
++      } else {
++        // Exactly one side dials each pair; the other waits for the offer.
++        this.connectTo(p.id, p.name, this.opts.selfId > p.id);
++      }
++    }
++    for (const [id, slot] of this.peers) {
++      if (!alive.has(id)) {
++        slot.pc.close();
++        this.peers.delete(id);
++      }
++    }
++    this.emitPeers();
++  }
++
++  // ── per-pair connection ────────────────────────────────────────────────────
++
++  private connectTo(peerId: string, name: string, initiator: boolean): PeerSlot | null {
++    if (this.closed) return null;
++    const pc = new RTCPeerConnection({
++      iceServers: this.opts.iceServers ?? defaultIceServers(),
++    });
++    const slot: PeerSlot = {
++      pc,
++      makingOffer: false,
++      ignoreOffer: false,
++      pendingCandidates: [],
++      lastProgressAt: Date.now(),
++      recoveryAttempts: 0,
++      info: {
++        id: peerId,
++        name,
++        connectionState: pc.connectionState,
++        candidateType: null,
++        rttMs: null,
++      },
++    };
++    this.peers.set(peerId, slot);
++
++    pc.onicecandidate = (e) => {
++      if (e.candidate) void this.sendSignal(peerId, "ice", e.candidate.toJSON());
++    };
++    pc.onconnectionstatechange = () => {
++      slot.info.connectionState = pc.connectionState;
++      if (pc.connectionState === "connecting" || pc.connectionState === "connected") {
++        slot.lastProgressAt = Date.now();
++      }
++      if (pc.connectionState === "connected") {
++        slot.recoveryAttempts = 0;
++        slot.terminal = false;
++        void this.readCandidateType(slot);
++      }
++      this.emitPeers();
++      if (pc.connectionState === "failed") {
++        // Refires negotiationneeded → a fresh offer through signaling, so a
++        // lost offer or dead path cannot wedge the pair (glare-safe).
++        pc.restartIce();
++      }
++      if (pc.connectionState === "failed" || pc.connectionState === "disconnected") {
++        this.schedulePoll(FAST_POLL_MS);
++      }
++    };
++    pc.onnegotiationneeded = async () => {
++      try {
++        slot.makingOffer = true;
++        await pc.setLocalDescription();
++        await this.sendSignal(peerId, "offer", pc.localDescription!.toJSON());
++      } catch {
++        // A failed offer is retried on the next negotiationneeded.
++      } finally {
++        slot.makingOffer = false;
++      }
++    };
++    pc.ondatachannel = (e) => this.attachChannel(slot, e.channel);
++
++    if (initiator) {
++      // Creating the channels triggers negotiationneeded → the offer.
++      this.attachChannel(
++        slot,
++        pc.createDataChannel("state", { ordered: false, maxRetransmits: 0 }),
++      );
++      this.attachChannel(slot, pc.createDataChannel("reliable", { ordered: true }));
++    }
++    return slot;
++  }
++
++  private attachChannel(slot: PeerSlot, channel: RTCDataChannel): void {
++    if (channel.label === "state") slot.state = channel;
++    else slot.reliable = channel;
++    channel.onopen = () => {
++      slot.lastProgressAt = Date.now();
++    };
++    channel.onmessage = (e) => {
++      let msg: { t: string; d?: unknown };
++      try {
++        msg = JSON.parse(e.data as string) as { t: string; d?: unknown };
++      } catch {
++        return;
++      }
++      if (msg.t === "ping") {
++        if (slot.state?.readyState === "open") {
++          slot.state.send(JSON.stringify({ t: "pong" }));
++        }
++      } else if (msg.t === "pong") {
++        if (slot.pingSentAt) {
++          slot.info.rttMs = Math.round(performance.now() - slot.pingSentAt);
++          slot.pingSentAt = undefined;
++          this.emitPeers();
++        }
++      } else {
++        this.opts.onMessage?.(
++          slot.info.id,
++          msg.d,
++          channel.label === "state" ? "state" : "reliable",
++        );
++      }
++    };
++  }
++
++  /** Apply buffered ICE candidates once a remote description is in place. */
++  private async flushPendingCandidates(slot: PeerSlot): Promise<void> {
++    while (slot.pendingCandidates.length > 0) {
++      const candidate = slot.pendingCandidates.shift()!;
++      try {
++        await slot.pc.addIceCandidate(candidate);
++      } catch (err) {
++        if (!slot.ignoreOffer) console.warn("[p2p] addIceCandidate failed:", err);
++      }
++      if (this.closed) return;
++    }
++  }
++
++  private async onSignal(
++    from: string,
++    kind: SignalKind,
++    payload: unknown,
++    roster: Set<string>,
++  ): Promise<void> {
++    if (this.closed) return;
++    let slot = this.peers.get(from);
++    if (!slot) {
++      // New peers dial us in the same poll that adds them to the roster.
++      // Signals outlive membership, so drop senders the roster doesn't vouch for.
++      if (!roster.has(from)) return;
++      const created = this.connectTo(from, "", false);
++      if (!created) return;
++      slot = created;
++    }
++    const polite = this.opts.selfId < from;
++
++    try {
++      if (kind === "offer" || kind === "answer") {
++        const description = payload as RTCSessionDescriptionInit;
++        const collision =
++          kind === "offer" && (slot.makingOffer || slot.pc.signalingState !== "stable");
++        slot.ignoreOffer = !polite && collision;
++        if (slot.ignoreOffer) return;
++        try {
++          await slot.pc.setRemoteDescription(description); // implicit rollback when polite
++        } catch (err) {
++          // A pc resumed from suspend can be unable to take any new remote
++          // offer (stale DTLS fingerprint). Rebuild the pair once and apply
++          // the same offer to the fresh pc before giving up.
++          if (kind !== "offer" || slot.recreatedForOffer) throw err;
++          const attempts = slot.recoveryAttempts;
++          const name = slot.info.name;
++          slot.pc.close();
++          this.peers.delete(from);
++          const fresh = this.connectTo(from, name, false);
++          if (!fresh) return;
++          fresh.recoveryAttempts = attempts;
++          fresh.recreatedForOffer = true;
++          slot = fresh;
++          await slot.pc.setRemoteDescription(description);
++        }
++        if (this.closed) return;
++        await this.flushPendingCandidates(slot);
++        if (this.closed) return;
++        if (kind === "offer") {
++          await slot.pc.setLocalDescription();
++          if (this.closed) return;
++          await this.sendSignal(from, "answer", slot.pc.localDescription!.toJSON());
++        }
++      } else if (kind === "ice") {
++        const candidate = payload as RTCIceCandidateInit;
++        if (!slot.pc.remoteDescription) {
++          // Candidate raced ahead of its SDP — hold it until the description
++          // lands (flushed after every successful setRemoteDescription).
++          slot.pendingCandidates.push(candidate);
++          return;
++        }
++        try {
++          await slot.pc.addIceCandidate(candidate);
++        } catch (err) {
++          // The enclosing catch would swallow a rethrow; log the real signal.
++          if (!slot.ignoreOffer) console.warn("[p2p] addIceCandidate failed:", err);
++        }
++      }
++    } catch {
++      // Negotiation errors resolve on the next offer cycle; state is visible
++      // to the app via connectionState.
++    }
++  }
++
++  /**
++   * Signals are serialized per remote peer (a candidate must never overtake
++   * its SDP into the DB) and retried on failure with short backoff.
++   */
++  private sendSignal(to: string, kind: SignalKind, payload: unknown): Promise<void> {
++    const prev = this.signalQueues.get(to) ?? Promise.resolve();
++    const next = prev.then(() => this.postSignal(to, kind, payload));
++    this.signalQueues.set(
++      to,
++      next.catch(() => {}),
++    );
++    return next;
++  }
++
++  private async postSignal(to: string, kind: SignalKind, payload: unknown): Promise<void> {
++    for (let attempt = 0; ; attempt++) {
++      if (this.closed) return;
++      try {
++        const res = await fetch("/api/rtc", {
++          method: "POST",
++          headers: { "content-type": "application/json" },
++          body: JSON.stringify({
++            op: "signal",
++            room: this.opts.room,
++            from: this.opts.selfId,
++            to,
++            kind,
++            payload,
++          }),
++        });
++        if (res.ok) return;
++        throw new Error(`signal POST failed: ${res.status}`);
++      } catch (err) {
++        if (attempt >= SIGNAL_RETRY_DELAYS_MS.length) {
++          // Delivery gave up; the pair converges on the next offer cycle (or
++          // the watchdog rebuilds it). Logged once so failures are visible.
++          console.warn(`[p2p] signal ${kind} to ${to} failed after retries`, err);
++          return;
++        }
++        await new Promise((r) => setTimeout(r, SIGNAL_RETRY_DELAYS_MS[attempt]));
++      }
++    }
++  }
++
++  // ── diagnostics + recovery ────────────────────────────────────────────────────
++
++  private pingAll(): void {
++    const wire = JSON.stringify({ t: "ping" });
++    for (const slot of this.peers.values()) {
++      if (slot.state?.readyState !== "open") continue;
++      const stale =
++        slot.pingSentAt !== undefined && performance.now() - slot.pingSentAt > 2 * PING_INTERVAL_MS;
++      if (slot.pingSentAt === undefined || stale) {
++        // A lost pong must not freeze rttMs forever: expire and re-ping.
++        slot.pingSentAt = performance.now();
++        slot.state.send(wire);
++      }
++    }
++  }
++
++  /**
++   * Stuck-pair recovery, piggybacked on the ping interval. A pair that has
++   * made no progress for STALL_MS gets rebuilt by the dialer with a FRESH
++   * RTCPeerConnection (new DTLS identity — fixes the suspend/resume
++   * fingerprint wedge). After MAX_RECOVERY_ATTEMPTS the pair is terminal:
++   * visible to the app as its last connectionState, ignored by fast-poll.
++   */
++  private watchdog(): void {
++    if (this.closed) return;
++    const now = Date.now();
++    for (const [peerId, slot] of this.peers) {
++      // pc.close() and some suspend/resume wedges never fire
++      // connectionstatechange — read the LIVE state so a silently-dead pc
++      // still trips the stall timer instead of hiding behind a cached
++      // "connected". Only live progress states refresh the stall clock.
++      const live = slot.pc.connectionState;
++      if (live !== slot.info.connectionState) {
++        slot.info.connectionState = live;
++        if (live === "connecting" || live === "connected") slot.lastProgressAt = now;
++        this.emitPeers();
++      }
++      if (slot.terminal || live === "connected") continue;
++      if (now - slot.lastProgressAt <= STALL_MS) continue;
++      if (slot.recoveryAttempts >= MAX_RECOVERY_ATTEMPTS) {
++        slot.terminal = true;
++        this.emitPeers();
++        continue;
++      }
++      slot.recoveryAttempts += 1;
++      slot.lastProgressAt = now; // re-arm the stall window
++      if (this.opts.selfId > peerId) {
++        // We are the dialer: rebuild the pair from scratch.
++        const { name } = slot.info;
++        const attempts = slot.recoveryAttempts;
++        slot.pc.close();
++        this.peers.delete(peerId);
++        const fresh = this.connectTo(peerId, name, true);
++        if (fresh) fresh.recoveryAttempts = attempts;
++        this.schedulePoll(FAST_POLL_MS);
++      }
++      // Receiver side: count the stall window and wait for the dialer's
++      // fresh offer (onSignal absorbs it, recreating our pc if needed).
++    }
++  }
++
++  private async readCandidateType(slot: PeerSlot): Promise<void> {
++    // relay = TURN (none configured by default); srflx/host = direct path.
++    try {
++      const stats = await slot.pc.getStats();
++      let selected: RTCIceCandidatePairStats | undefined;
++      stats.forEach((s) => {
++        if (s.type === "candidate-pair" && (s as RTCIceCandidatePairStats).nominated) {
++          selected = s as RTCIceCandidatePairStats;
++        }
++      });
++      const localId = selected?.localCandidateId;
++      if (localId) {
++        const local = stats.get(localId) as { candidateType?: string } | undefined;
++        slot.info.candidateType = local?.candidateType ?? null;
++        this.emitPeers();
++      }
++    } catch {
++      // getStats is best-effort diagnostics only.
++    }
++  }
++
++  private emitPeers(): void {
++    // Only notify when something observable actually changed — React state
++    // setters otherwise re-render consumers on every poll/ping.
++    const list = this.peerList();
++    const fingerprint = JSON.stringify(
++      list.map((p) => [p.id, p.name, p.connectionState, p.candidateType, p.rttMs]),
++    );
++    if (fingerprint === this.lastPeersFingerprint) return;
++    this.lastPeersFingerprint = fingerprint;
++    this.opts.onPeersChanged?.(list);
++  }
++}

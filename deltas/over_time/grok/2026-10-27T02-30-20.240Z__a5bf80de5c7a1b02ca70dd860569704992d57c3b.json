@@ -1,0 +1,52 @@
+{
+  "baseline": false,
+  "binary": [],
+  "captured_at": "2026-10-27T02:30:20.240Z",
+  "commit": "a5bf80de5c7a1b02ca70dd860569704992d57c3b",
+  "directories": [],
+  "files": [
+    {
+      "added": 133,
+      "binary": false,
+      "hash_after": "sha256:1e2c01b465b9b3e62fa898e75d6b829291e5f24a0f0bf8ae89db1a336ee10b88",
+      "hash_before": "sha256:fca568239b2b16363ae2f46067d38ebe14ebf2f749707a8cb640b60ecebe9f3b",
+      "lines": 155,
+      "op": "modify",
+      "path": "docs/lmos_public.md",
+      "removed": 34,
+      "sha256": "sha256:1e2c01b465b9b3e62fa898e75d6b829291e5f24a0f0bf8ae89db1a336ee10b88"
+    },
+    {
+      "added": 31,
+      "binary": false,
+      "hash_after": "sha256:9c79df07c33ff6aa13876bdd1e7e6652aa1ecb377c7b7f029f7915d215ee4488",
+      "hash_before": "sha256:dfb1751c44916115bf7e35b6e50665754a0c806b2c52672f5ca4da78a9f9d6b6",
+      "lines": 47,
+      "op": "modify",
+      "path": "eslint.config.mjs",
+      "removed": 26,
+      "sha256": "sha256:9c79df07c33ff6aa13876bdd1e7e6652aa1ecb377c7b7f029f7915d215ee4488"
+    },
+    {
+      "added": 58,
+      "binary": false,
+      "hash_after": "sha256:f953cacc448c0c81ae4fe63e66b0e59569e840782ad279fdee201dff529363e9",
+      "hash_before": "sha256:418b88f27c1862bbe1b7cfc5d473a466c5ae6fba00ffe7c81486a113e0c16e1b",
+      "lines": 67,
+      "op": "modify",
+      "path": "migrations/auth/0001_auth.sql",
+      "removed": 49,
+      "sha256": "sha256:f953cacc448c0c81ae4fe63e66b0e59569e840782ad279fdee201dff529363e9"
+    }
+  ],
+  "files_added": 0,
+  "files_modified": 3,
+  "files_removed": 0,
+  "lines_added": 222,
+  "lines_removed": 109,
+  "model": "grok",
+  "parent_snapshot_id": "2026-10-27T02-28-10.359Z__bc6aef95e1df86dca13335a944e903ba9ef09708",
+  "patch": "deltas/over_time/grok/2026-10-27T02-30-20.240Z__a5bf80de5c7a1b02ca70dd860569704992d57c3b.patch",
+  "schema": "lmos.over_time.v1",
+  "snapshot_id": "2026-10-27T02-30-20.240Z__a5bf80de5c7a1b02ca70dd860569704992d57c3b"
+}

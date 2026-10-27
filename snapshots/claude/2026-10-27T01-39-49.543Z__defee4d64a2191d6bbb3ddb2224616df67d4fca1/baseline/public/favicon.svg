@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" role="img" aria-label="Handshake">
+  <rect width="32" height="32" rx="8" fill="#14110e"/>
+  <rect x="3" y="13" width="14" height="6" rx="3" fill="#f3ead7"/>
+  <rect x="15" y="13" width="14" height="6" rx="3" fill="#e07a3d"/>
+  <rect x="13" y="11.5" width="6" height="9" rx="2" fill="#a89880"/>
+</svg>

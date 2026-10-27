@@ -1,0 +1,693 @@
+{
+  "baseline": true,
+  "binary": [],
+  "captured_at": "2026-10-27T02:36:21.013Z",
+  "commit": "3a3cd7e97db24df091c0b1cfd90b06542ba1870a",
+  "directories": [
+    {
+      "bytes": 241,
+      "directory": ".dev.vars.example",
+      "files": 1,
+      "lines": 4
+    },
+    {
+      "bytes": 48,
+      "directory": ".gitignore",
+      "files": 1,
+      "lines": 5
+    },
+    {
+      "bytes": 15657,
+      "directory": "BUILD_LEDGER.md",
+      "files": 1,
+      "lines": 121
+    },
+    {
+      "bytes": 4718,
+      "directory": "README.md",
+      "files": 1,
+      "lines": 79
+    },
+    {
+      "bytes": 5739,
+      "directory": "SPEC.md",
+      "files": 1,
+      "lines": 155
+    },
+    {
+      "bytes": 639,
+      "directory": "package.json",
+      "files": 1,
+      "lines": 20
+    },
+    {
+      "bytes": 3736,
+      "directory": "preview",
+      "files": 1,
+      "lines": 82
+    },
+    {
+      "bytes": 283366,
+      "directory": "public",
+      "files": 31,
+      "lines": 6100
+    },
+    {
+      "bytes": 12644,
+      "directory": "scripts",
+      "files": 4,
+      "lines": 257
+    },
+    {
+      "bytes": 16894,
+      "directory": "server",
+      "files": 3,
+      "lines": 438
+    },
+    {
+      "bytes": 13461,
+      "directory": "src",
+      "files": 4,
+      "lines": 337
+    },
+    {
+      "bytes": 30322,
+      "directory": "test",
+      "files": 4,
+      "lines": 654
+    },
+    {
+      "bytes": 575,
+      "directory": "wrangler.jsonc",
+      "files": 1,
+      "lines": 18
+    }
+  ],
+  "files": [
+    {
+      "added": 18,
+      "binary": false,
+      "hash_after": "sha256:cd5bf4403d613e18e9fa8d8678c9b770e1014ddefa423dc5c7790222ea34b425",
+      "hash_before": null,
+      "lines": 18,
+      "op": "add",
+      "path": "wrangler.jsonc",
+      "removed": 0,
+      "sha256": "sha256:cd5bf4403d613e18e9fa8d8678c9b770e1014ddefa423dc5c7790222ea34b425"
+    },
+    {
+      "added": 79,
+      "binary": false,
+      "hash_after": "sha256:7007895f7f22c106b7a4af8e0e43691b274a35faa1111186d996b711d1b97288",
+      "hash_before": null,
+      "lines": 79,
+      "op": "add",
+      "path": "README.md",
+      "removed": 0,
+      "sha256": "sha256:7007895f7f22c106b7a4af8e0e43691b274a35faa1111186d996b711d1b97288"
+    },
+    {
+      "added": 20,
+      "binary": false,
+      "hash_after": "sha256:b4462b6ef182f91647abfb50e2d1dc06435a27186d35e83aa05c12ce941abe6a",
+      "hash_before": null,
+      "lines": 20,
+      "op": "add",
+      "path": "package.json",
+      "removed": 0,
+      "sha256": "sha256:b4462b6ef182f91647abfb50e2d1dc06435a27186d35e83aa05c12ce941abe6a"
+    },
+    {
+      "added": 155,
+      "binary": false,
+      "hash_after": "sha256:1e2c01b465b9b3e62fa898e75d6b829291e5f24a0f0bf8ae89db1a336ee10b88",
+      "hash_before": null,
+      "lines": 155,
+      "op": "add",
+      "path": "SPEC.md",
+      "removed": 0,
+      "sha256": "sha256:1e2c01b465b9b3e62fa898e75d6b829291e5f24a0f0bf8ae89db1a336ee10b88"
+    },
+    {
+      "added": 4,
+      "binary": false,
+      "hash_after": "sha256:1145eb885cdd4839e6b9ce73a545ed6dd16624ccf85c5fecdb1fa488730bece5",
+      "hash_before": null,
+      "lines": 4,
+      "op": "add",
+      "path": ".dev.vars.example",
+      "removed": 0,
+      "sha256": "sha256:1145eb885cdd4839e6b9ce73a545ed6dd16624ccf85c5fecdb1fa488730bece5"
+    },
+    {
+      "added": 121,
+      "binary": false,
+      "hash_after": "sha256:1da79ce49218bc0d81fd5b84d102b97c07cbad3bfd1e5d89ccf3cc039d3d0bb2",
+      "hash_before": null,
+      "lines": 121,
+      "op": "add",
+      "path": "BUILD_LEDGER.md",
+      "removed": 0,
+      "sha256": "sha256:1da79ce49218bc0d81fd5b84d102b97c07cbad3bfd1e5d89ccf3cc039d3d0bb2"
+    },
+    {
+      "added": 5,
+      "binary": false,
+      "hash_after": "sha256:c5aef4dd77ee6e19b295d1aabe4628670ab5bf422b4f9bbb2dc7c51fd87d2c94",
+      "hash_before": null,
+      "lines": 5,
+      "op": "add",
+      "path": ".gitignore",
+      "removed": 0,
+      "sha256": "sha256:c5aef4dd77ee6e19b295d1aabe4628670ab5bf422b4f9bbb2dc7c51fd87d2c94"
+    },
+    {
+      "added": 56,
+      "binary": false,
+      "hash_after": "sha256:c5a9bf37196c7a8c26b838f734db6f2741f51cb6b9e45911db2073ca91b0fe69",
+      "hash_before": null,
+      "lines": 56,
+      "op": "add",
+      "path": "test/helpers.mjs",
+      "removed": 0,
+      "sha256": "sha256:c5a9bf37196c7a8c26b838f734db6f2741f51cb6b9e45911db2073ca91b0fe69"
+    },
+    {
+      "added": 247,
+      "binary": false,
+      "hash_after": "sha256:6190fbb373701133a4b8bd608efdf6e0ca4a7edbeb90b215842fb902b335cb4c",
+      "hash_before": null,
+      "lines": 247,
+      "op": "add",
+      "path": "test/game.test.mjs",
+      "removed": 0,
+      "sha256": "sha256:6190fbb373701133a4b8bd608efdf6e0ca4a7edbeb90b215842fb902b335cb4c"
+    },
+    {
+      "added": 162,
+      "binary": false,
+      "hash_after": "sha256:ae5101a726944021179ea70ed1e497aceac8715d869b3bdc339b38d2867b0f73",
+      "hash_before": null,
+      "lines": 162,
+      "op": "add",
+      "path": "test/redteam.test.mjs",
+      "removed": 0,
+      "sha256": "sha256:ae5101a726944021179ea70ed1e497aceac8715d869b3bdc339b38d2867b0f73"
+    },
+    {
+      "added": 189,
+      "binary": false,
+      "hash_after": "sha256:ce2982d644bca1c7aeff1624ae275c6522bd6ab294dc994d690504b443647bfb",
+      "hash_before": null,
+      "lines": 189,
+      "op": "add",
+      "path": "test/invariants.test.mjs",
+      "removed": 0,
+      "sha256": "sha256:ce2982d644bca1c7aeff1624ae275c6522bd6ab294dc994d690504b443647bfb"
+    },
+    {
+      "added": 28,
+      "binary": false,
+      "hash_after": "sha256:9494c17a584cf668e12b5b41e5bf62512cd02494e42909ce1d7919af5dc24b09",
+      "hash_before": null,
+      "lines": 28,
+      "op": "add",
+      "path": "src/codes.js",
+      "removed": 0,
+      "sha256": "sha256:9494c17a584cf668e12b5b41e5bf62512cd02494e42909ce1d7919af5dc24b09"
+    },
+    {
+      "added": 3,
+      "binary": false,
+      "hash_after": "sha256:c79d90ea30d60365137b66789795b4c033dd5ba63fa295016884a23b6d45076e",
+      "hash_before": null,
+      "lines": 3,
+      "op": "add",
+      "path": "src/spec.js",
+      "removed": 0,
+      "sha256": "sha256:c79d90ea30d60365137b66789795b4c033dd5ba63fa295016884a23b6d45076e"
+    },
+    {
+      "added": 233,
+      "binary": false,
+      "hash_after": "sha256:57abbce264f3511c7453f6b66719f7054a3ed901a2abf87970d984ec2c6be6b5",
+      "hash_before": null,
+      "lines": 233,
+      "op": "add",
+      "path": "src/room.js",
+      "removed": 0,
+      "sha256": "sha256:57abbce264f3511c7453f6b66719f7054a3ed901a2abf87970d984ec2c6be6b5"
+    },
+    {
+      "added": 73,
+      "binary": false,
+      "hash_after": "sha256:49b747db7142b426a994789486683bb7f0b71bd00e22d75bd06fe24b5598e6e1",
+      "hash_before": null,
+      "lines": 73,
+      "op": "add",
+      "path": "src/worker.js",
+      "removed": 0,
+      "sha256": "sha256:49b747db7142b426a994789486683bb7f0b71bd00e22d75bd06fe24b5598e6e1"
+    },
+    {
+      "added": 160,
+      "binary": false,
+      "hash_after": "sha256:75bf3fc81e2ff4b668ee702f56778428faeaaa1e600d2e7cfed0462bac7a532d",
+      "hash_before": null,
+      "lines": 160,
+      "op": "add",
+      "path": "scripts/smoke.mjs",
+      "removed": 0,
+      "sha256": "sha256:75bf3fc81e2ff4b668ee702f56778428faeaaa1e600d2e7cfed0462bac7a532d"
+    },
+    {
+      "added": 64,
+      "binary": false,
+      "hash_after": "sha256:9c239b5f456f5047e6679cc8069a6274a9ccfeed156404f0360b67e1ab6cdd45",
+      "hash_before": null,
+      "lines": 64,
+      "op": "add",
+      "path": "scripts/simulate.mjs",
+      "removed": 0,
+      "sha256": "sha256:9c239b5f456f5047e6679cc8069a6274a9ccfeed156404f0360b67e1ab6cdd45"
+    },
+    {
+      "added": 7,
+      "binary": false,
+      "hash_after": "sha256:c1f686065605ed32a7ea4ead2f0f0b393f5600621cb71b1599be2a747ced3220",
+      "hash_before": null,
+      "lines": 7,
+      "op": "add",
+      "path": "scripts/spec-hash.mjs",
+      "removed": 0,
+      "sha256": "sha256:c1f686065605ed32a7ea4ead2f0f0b393f5600621cb71b1599be2a747ced3220"
+    },
+    {
+      "added": 26,
+      "binary": false,
+      "hash_after": "sha256:46c7a578072bd4baf10c66d2f91147976f19f6acd70ee74766e09a004d10cb50",
+      "hash_before": null,
+      "lines": 26,
+      "op": "add",
+      "path": "scripts/sim-lib.mjs",
+      "removed": 0,
+      "sha256": "sha256:46c7a578072bd4baf10c66d2f91147976f19f6acd70ee74766e09a004d10cb50"
+    },
+    {
+      "added": 189,
+      "binary": false,
+      "hash_after": "sha256:6fd01810268afbdcb2f45f922f60d6452642c9a9eb2ad42e2dab1f46fd97e47b",
+      "hash_before": null,
+      "lines": 189,
+      "op": "add",
+      "path": "server/cf-shim.mjs",
+      "removed": 0,
+      "sha256": "sha256:6fd01810268afbdcb2f45f922f60d6452642c9a9eb2ad42e2dab1f46fd97e47b"
+    },
+    {
+      "added": 156,
+      "binary": false,
+      "hash_after": "sha256:a7325b2f814070799ff5f095cab42738384086403616f34880f939a844723b0a",
+      "hash_before": null,
+      "lines": 156,
+      "op": "add",
+      "path": "server/dev.mjs",
+      "removed": 0,
+      "sha256": "sha256:a7325b2f814070799ff5f095cab42738384086403616f34880f939a844723b0a"
+    },
+    {
+      "added": 93,
+      "binary": false,
+      "hash_after": "sha256:0592fb42abe5c7ecf69757aff34d7ac7e3fb75202023956fec89300fbf6630b0",
+      "hash_before": null,
+      "lines": 93,
+      "op": "add",
+      "path": "server/ws.mjs",
+      "removed": 0,
+      "sha256": "sha256:0592fb42abe5c7ecf69757aff34d7ac7e3fb75202023956fec89300fbf6630b0"
+    },
+    {
+      "added": 82,
+      "binary": false,
+      "hash_after": "sha256:e1393fd40afeaa3b35a08ab6289561086d9fd53156fa6dd9030d8c7c5f066e65",
+      "hash_before": null,
+      "lines": 82,
+      "op": "add",
+      "path": "preview/build-preview.mjs",
+      "removed": 0,
+      "sha256": "sha256:e1393fd40afeaa3b35a08ab6289561086d9fd53156fa6dd9030d8c7c5f066e65"
+    },
+    {
+      "added": 5,
+      "binary": false,
+      "hash_after": "sha256:f97271d93dbc4e265030aa6f2e16058cba88b91b183be64737c01e71c56e6dc6",
+      "hash_before": null,
+      "lines": 5,
+      "op": "add",
+      "path": "public/_headers",
+      "removed": 0,
+      "sha256": "sha256:f97271d93dbc4e265030aa6f2e16058cba88b91b183be64737c01e71c56e6dc6"
+    },
+    {
+      "added": 20,
+      "binary": false,
+      "hash_after": "sha256:10e15c0243518f85405bb52f452ed778cf9ddc7cab0536884b8eaa7f46637f09",
+      "hash_before": null,
+      "lines": 20,
+      "op": "add",
+      "path": "public/index.html",
+      "removed": 0,
+      "sha256": "sha256:10e15c0243518f85405bb52f452ed778cf9ddc7cab0536884b8eaa7f46637f09"
+    },
+    {
+      "added": 472,
+      "binary": false,
+      "hash_after": "sha256:91e4c7ee347a3032777114526cde1a97e58347f8d9602d871b5a2ebbe1fc603f",
+      "hash_before": null,
+      "lines": 472,
+      "op": "add",
+      "path": "public/app/style.css",
+      "removed": 0,
+      "sha256": "sha256:91e4c7ee347a3032777114526cde1a97e58347f8d9602d871b5a2ebbe1fc603f"
+    },
+    {
+      "added": 233,
+      "binary": false,
+      "hash_after": "sha256:dcc5e1b128f034744e9756739a42c674f480fabb8f3a92b956fff3f763acf17f",
+      "hash_before": null,
+      "lines": 233,
+      "op": "add",
+      "path": "public/app/main.js",
+      "removed": 0,
+      "sha256": "sha256:dcc5e1b128f034744e9756739a42c674f480fabb8f3a92b956fff3f763acf17f"
+    },
+    {
+      "added": 128,
+      "binary": false,
+      "hash_after": "sha256:48d3d26fc9c5fb4caacfe93d640344461010340ac4754282a7331f02c93493b5",
+      "hash_before": null,
+      "lines": 128,
+      "op": "add",
+      "path": "public/app/text.js",
+      "removed": 0,
+      "sha256": "sha256:48d3d26fc9c5fb4caacfe93d640344461010340ac4754282a7331f02c93493b5"
+    },
+    {
+      "added": 64,
+      "binary": false,
+      "hash_after": "sha256:dc3c93fa8f77c98924b4cdd349ba20b9efa81644d5ebc50075512c9c0c37281b",
+      "hash_before": null,
+      "lines": 64,
+      "op": "add",
+      "path": "public/app/common.js",
+      "removed": 0,
+      "sha256": "sha256:dc3c93fa8f77c98924b4cdd349ba20b9efa81644d5ebc50075512c9c0c37281b"
+    },
+    {
+      "added": 165,
+      "binary": false,
+      "hash_after": "sha256:65d2c213c987082a87295092dddf1b58b111da1f1318bb0d17f04dc13276f358",
+      "hash_before": null,
+      "lines": 165,
+      "op": "add",
+      "path": "public/app/net.js",
+      "removed": 0,
+      "sha256": "sha256:65d2c213c987082a87295092dddf1b58b111da1f1318bb0d17f04dc13276f358"
+    },
+    {
+      "added": 167,
+      "binary": false,
+      "hash_after": "sha256:8992f775c41b8aa91c48ee31702959007caa3f58256950f29231294ed0e31a91",
+      "hash_before": null,
+      "lines": 167,
+      "op": "add",
+      "path": "public/app/lobby.js",
+      "removed": 0,
+      "sha256": "sha256:8992f775c41b8aa91c48ee31702959007caa3f58256950f29231294ed0e31a91"
+    },
+    {
+      "added": 125,
+      "binary": false,
+      "hash_after": "sha256:65cd5b30774e443b42a65ff267bdece85f1aeb8dc5648d8cd29fe889eaf6d006",
+      "hash_before": null,
+      "lines": 125,
+      "op": "add",
+      "path": "public/app/audio.js",
+      "removed": 0,
+      "sha256": "sha256:65cd5b30774e443b42a65ff267bdece85f1aeb8dc5648d8cd29fe889eaf6d006"
+    },
+    {
+      "added": 62,
+      "binary": false,
+      "hash_after": "sha256:cdf01665b04084de23163734ac105a1ec6b64c8000296eba59db11cb51663a09",
+      "hash_before": null,
+      "lines": 62,
+      "op": "add",
+      "path": "public/app/art.js",
+      "removed": 0,
+      "sha256": "sha256:cdf01665b04084de23163734ac105a1ec6b64c8000296eba59db11cb51663a09"
+    },
+    {
+      "added": 110,
+      "binary": false,
+      "hash_after": "sha256:c183435bef15b84d0d8b6177f1e40d793c33dda5e9800c94ee56b84833b0b007",
+      "hash_before": null,
+      "lines": 110,
+      "op": "add",
+      "path": "public/app/moments.js",
+      "removed": 0,
+      "sha256": "sha256:c183435bef15b84d0d8b6177f1e40d793c33dda5e9800c94ee56b84833b0b007"
+    },
+    {
+      "added": 120,
+      "binary": false,
+      "hash_after": "sha256:1f8cde0f01d002b93efd876b2f59ca61dc28e57866416295a30c9f4681004566",
+      "hash_before": null,
+      "lines": 120,
+      "op": "add",
+      "path": "public/app/home.js",
+      "removed": 0,
+      "sha256": "sha256:1f8cde0f01d002b93efd876b2f59ca61dc28e57866416295a30c9f4681004566"
+    },
+    {
+      "added": 86,
+      "binary": false,
+      "hash_after": "sha256:3845953b3d7e8936d577ae7625a14532e86190b14836860290b415e11ab70ac3",
+      "hash_before": null,
+      "lines": 86,
+      "op": "add",
+      "path": "public/app/dom.js",
+      "removed": 0,
+      "sha256": "sha256:3845953b3d7e8936d577ae7625a14532e86190b14836860290b415e11ab70ac3"
+    },
+    {
+      "added": 70,
+      "binary": false,
+      "hash_after": "sha256:7b8d6844aab577d6a5e71bbdbd792c677ee3526500af3bb0ca838326c4d6233f",
+      "hash_before": null,
+      "lines": 70,
+      "op": "add",
+      "path": "public/app/end.js",
+      "removed": 0,
+      "sha256": "sha256:7b8d6844aab577d6a5e71bbdbd792c677ee3526500af3bb0ca838326c4d6233f"
+    },
+    {
+      "added": 168,
+      "binary": false,
+      "hash_after": "sha256:086ca2525a0caf0805a35fd0202c49f3804210e1aba3110f0cbeb020234576a1",
+      "hash_before": null,
+      "lines": 168,
+      "op": "add",
+      "path": "public/app/sky.js",
+      "removed": 0,
+      "sha256": "sha256:086ca2525a0caf0805a35fd0202c49f3804210e1aba3110f0cbeb020234576a1"
+    },
+    {
+      "added": 571,
+      "binary": false,
+      "hash_after": "sha256:f867ada106c8469552d4f440865e11163b521f9e7ae0bd80c0b78b2721ca9632",
+      "hash_before": null,
+      "lines": 571,
+      "op": "add",
+      "path": "public/app/table.js",
+      "removed": 0,
+      "sha256": "sha256:f867ada106c8469552d4f440865e11163b521f9e7ae0bd80c0b78b2721ca9632"
+    },
+    {
+      "added": 97,
+      "binary": false,
+      "hash_after": "sha256:e50b7a5fb311aa59c96220dbfcb72c268d717c234d0a59c32474a72f30edf44e",
+      "hash_before": null,
+      "lines": 97,
+      "op": "add",
+      "path": "public/app/sheets.js",
+      "removed": 0,
+      "sha256": "sha256:e50b7a5fb311aa59c96220dbfcb72c268d717c234d0a59c32474a72f30edf44e"
+    },
+    {
+      "added": 98,
+      "binary": false,
+      "hash_after": "sha256:40fdbf46be7faee3fb9231e4185d6f5d51c8fd1d11d37d93f418359df88fecc7",
+      "hash_before": null,
+      "lines": 98,
+      "op": "add",
+      "path": "public/engine/sha256.js",
+      "removed": 0,
+      "sha256": "sha256:40fdbf46be7faee3fb9231e4185d6f5d51c8fd1d11d37d93f418359df88fecc7"
+    },
+    {
+      "added": 179,
+      "binary": false,
+      "hash_after": "sha256:28062927ce6d8b60a7451d74e7f8223dbfe4dfce117cb0e885a8783f826702da",
+      "hash_before": null,
+      "lines": 179,
+      "op": "add",
+      "path": "public/engine/constants.js",
+      "removed": 0,
+      "sha256": "sha256:28062927ce6d8b60a7451d74e7f8223dbfe4dfce117cb0e885a8783f826702da"
+    },
+    {
+      "added": 383,
+      "binary": false,
+      "hash_after": "sha256:3ff0f7fa0e736a4426d2d241ebf46901a70d624d80d8d5de7af2f1703c68e140",
+      "hash_before": null,
+      "lines": 383,
+      "op": "add",
+      "path": "public/engine/bots.js",
+      "removed": 0,
+      "sha256": "sha256:3ff0f7fa0e736a4426d2d241ebf46901a70d624d80d8d5de7af2f1703c68e140"
+    },
+    {
+      "added": 333,
+      "binary": false,
+      "hash_after": "sha256:6cfe4845288d0f2aa211752bc29f475203b59a05adb6cd31021fb5463efc1e81",
+      "hash_before": null,
+      "lines": 333,
+      "op": "add",
+      "path": "public/engine/core.js",
+      "removed": 0,
+      "sha256": "sha256:6cfe4845288d0f2aa211752bc29f475203b59a05adb6cd31021fb5463efc1e81"
+    },
+    {
+      "added": 176,
+      "binary": false,
+      "hash_after": "sha256:b527c71bb6a921e9871e7384c85281f5958c231efcc5cb539c956bc9f664d71f",
+      "hash_before": null,
+      "lines": 176,
+      "op": "add",
+      "path": "public/engine/narrator.js",
+      "removed": 0,
+      "sha256": "sha256:b527c71bb6a921e9871e7384c85281f5958c231efcc5cb539c956bc9f664d71f"
+    },
+    {
+      "added": 192,
+      "binary": false,
+      "hash_after": "sha256:be97ea57cfae6fed88a2dedbd9c139d1e32d8206ba2eadf7a91d72f1ba6799f3",
+      "hash_before": null,
+      "lines": 192,
+      "op": "add",
+      "path": "public/engine/ladder.js",
+      "removed": 0,
+      "sha256": "sha256:be97ea57cfae6fed88a2dedbd9c139d1e32d8206ba2eadf7a91d72f1ba6799f3"
+    },
+    {
+      "added": 274,
+      "binary": false,
+      "hash_after": "sha256:81180667cdb4daa052174b4010701b7e6f329ceda7121311f9822a45cbeef197",
+      "hash_before": null,
+      "lines": 274,
+      "op": "add",
+      "path": "public/engine/intents.js",
+      "removed": 0,
+      "sha256": "sha256:81180667cdb4daa052174b4010701b7e6f329ceda7121311f9822a45cbeef197"
+    },
+    {
+      "added": 749,
+      "binary": false,
+      "hash_after": "sha256:9fb7759bc42ec41a1cee2c6f01b6fd2cea0820694b209269d5792ca7a8d4e795",
+      "hash_before": null,
+      "lines": 749,
+      "op": "add",
+      "path": "public/engine/rules.js",
+      "removed": 0,
+      "sha256": "sha256:9fb7759bc42ec41a1cee2c6f01b6fd2cea0820694b209269d5792ca7a8d4e795"
+    },
+    {
+      "added": 148,
+      "binary": false,
+      "hash_after": "sha256:369b84bc7ee802e8cee234243729fa929b8c50b0485f38220697be4121ffbb6f",
+      "hash_before": null,
+      "lines": 148,
+      "op": "add",
+      "path": "public/engine/views.js",
+      "removed": 0,
+      "sha256": "sha256:369b84bc7ee802e8cee234243729fa929b8c50b0485f38220697be4121ffbb6f"
+    },
+    {
+      "added": 266,
+      "binary": false,
+      "hash_after": "sha256:6b89f0de2d80c897a08cacf3bd1c306b875843b55107f672aac979b7b994ee66",
+      "hash_before": null,
+      "lines": 266,
+      "op": "add",
+      "path": "public/engine/content.js",
+      "removed": 0,
+      "sha256": "sha256:6b89f0de2d80c897a08cacf3bd1c306b875843b55107f672aac979b7b994ee66"
+    },
+    {
+      "added": 218,
+      "binary": false,
+      "hash_after": "sha256:d5c30b39c02fbd5f31e5dd53267a5793b8e0a0ce6e12fbb257b9e49de69b5a1a",
+      "hash_before": null,
+      "lines": 218,
+      "op": "add",
+      "path": "public/engine/legal.js",
+      "removed": 0,
+      "sha256": "sha256:d5c30b39c02fbd5f31e5dd53267a5793b8e0a0ce6e12fbb257b9e49de69b5a1a"
+    },
+    {
+      "added": 347,
+      "binary": false,
+      "hash_after": "sha256:2f213ca7bf23c033926a6b7fe8e199fd4f86199ccaec732eafb4c47d7d4966c0",
+      "hash_before": null,
+      "lines": 347,
+      "op": "add",
+      "path": "public/engine/state.js",
+      "removed": 0,
+      "sha256": "sha256:2f213ca7bf23c033926a6b7fe8e199fd4f86199ccaec732eafb4c47d7d4966c0"
+    },
+    {
+      "added": 28,
+      "binary": false,
+      "hash_after": "sha256:5290788a92c6daf19e0215a5c361e549bd0a5f496c949c842a9a279d65ccd917",
+      "hash_before": null,
+      "lines": 28,
+      "op": "add",
+      "path": "public/engine/memory-io.js",
+      "removed": 0,
+      "sha256": "sha256:5290788a92c6daf19e0215a5c361e549bd0a5f496c949c842a9a279d65ccd917"
+    },
+    {
+      "added": 46,
+      "binary": false,
+      "hash_after": "sha256:a70f6e214bfef91f998a6421479365a46fb272cdf6d02d4a2b2627b95c380b4c",
+      "hash_before": null,
+      "lines": 46,
+      "op": "add",
+      "path": "public/engine/rng.js",
+      "removed": 0,
+      "sha256": "sha256:a70f6e214bfef91f998a6421479365a46fb272cdf6d02d4a2b2627b95c380b4c"
+    }
+  ],
+  "files_added": 54,
+  "files_modified": 0,
+  "files_removed": 0,
+  "genuine_build": true,
+  "lines_added": 8270,
+  "lines_removed": 0,
+  "model": "claude",
+  "parent_snapshot_id": null,
+  "patch": null,
+  "schema": "lmos.over_time.v1",
+  "snapshot_id": "2026-10-27T02-36-21.013Z__3a3cd7e97db24df091c0b1cfd90b06542ba1870a"
+}

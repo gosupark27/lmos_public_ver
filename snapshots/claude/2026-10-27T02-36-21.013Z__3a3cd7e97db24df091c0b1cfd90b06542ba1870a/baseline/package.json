@@ -1,0 +1,20 @@
+{
+  "name": "handshake",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Anonymous multiplayer social deduction on the westward trail, built from the Living Mirror OS sync file.",
+  "scripts": {
+    "start": "node --no-warnings server/dev.mjs",
+    "dev": "wrangler dev",
+    "deploy": "wrangler deploy",
+    "test": "node --test --test-reporter=spec test/*.test.mjs",
+    "sim": "node scripts/simulate.mjs",
+    "smoke": "node --no-warnings scripts/smoke.mjs",
+    "build:preview": "node preview/build-preview.mjs",
+    "spec-hash": "node scripts/spec-hash.mjs"
+  },
+  "engines": {
+    "node": ">=22"
+  }
+}
