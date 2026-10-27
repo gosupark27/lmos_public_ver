@@ -10,13 +10,15 @@ Reported build times, from the experiment notes: Claude about 57 minutes across 
 
 Enabled lines in `config/sources.txt` are fetched. Commented lines in the same shape are placeholders and are not fetched.
 
-| model | repo | state |
-| --- | --- | --- |
-| claude | [gosupark27/lmos-public-claude](https://github.com/gosupark27/lmos-public-claude) | enabled |
-| grok | `gosupark27/lmos-public-grok` | placeholder, not on GitHub at first seal |
-| chatgpt | `gosupark27/lmos-public-chatgpt` | placeholder |
-| gpt | `gosupark27/lmos-public-gpt` | placeholder |
-| openai | `gosupark27/lmos-public-openai` | placeholder |
+| model | repo | repo id | state |
+| --- | --- | --- | --- |
+| claude | [gosupark27/lmos-public-grok](https://github.com/gosupark27/lmos-public-grok) | 1435079605 | enabled. Label stays `claude` until Josh confirms a relabel. |
+| grok | [gosupark27/lmos_public_grok](https://github.com/gosupark27/lmos_public_grok) | 1435127338 | enabled. Partial copy of repo 1435079605, still arriving as `batch-NN` commits. Shared paths match byte for byte. Label stays `grok`. |
+| chatgpt | [gosupark27/lms_public_chatgpt](https://github.com/gosupark27/lms_public_chatgpt) | 1435128289 | placeholder. Empty, no commits. The spelling is `lms`, not `lmos`. |
+| gpt | `gosupark27/lmos_public_gpt` | — | placeholder, not visible |
+| openai | `gosupark27/lmos_public_openai` | — | placeholder, not visible |
+
+`gosupark27/lmos-public-claude` and `gosupark27/lmos-public-grok` are the same repository (id 1435079605). The underscore names `lmos_public_claude` and `lmos_public_chatgpt` are not visible. Do not add a second model line for id 1435079605.
 
 When a placeholder repo exists:
 
@@ -84,8 +86,11 @@ One JSON object per line. Times are ISO-8601 UTC. This is the shape of a file ev
 | `FILE_REMOVED` | Path existed in the parent and does not now. |
 | `FILE_MODIFIED` | Same path, different sha256. |
 | `SPEC_COMPARED` | The new tree was scored against `reference/concepts.json`. |
-| `CROSS_MODEL_DIVERGENCE` | Peer trees were compared, or the field `outcome` is `not_applicable` because only one model is sealed. |
+| `CROSS_MODEL_DIVERGENCE` | Peer trees were compared, or `outcome` is `not_applicable` because one repository is sealed. `detail.mode` `single_repository` means the names are aliases and no pair was scored. |
 | `SOURCE_UNAVAILABLE` | An enabled source could not be read. Repeated failures with the same message do not append again. |
+| `REPO_RENAMED` | The GitHub slug for a known repo id changed. `detail` has `old_name`, `new_name`, `repo_id`, and `detected_at`. The sealed label is not changed. |
+| `LABEL_MISMATCH` | The assigned label, the current slug, or the README heading disagree, or two lines resolved to one repo id. The sealed label is not changed. |
+| `MODEL_ATTRIBUTION_UNCERTAIN` | The tree does not identify one model cleanly. `outcome` is `uncertain`. The sealed label is left as Josh assigned it. |
 
 Hashes use the prefix `sha256:`. `hash_before` is null when the path was created. `hash_after` is null when it was removed.
 
@@ -128,4 +133,12 @@ Path bands in the cross-model report are a heuristic for reading a noisy tree: `
 python3 scripts/capture.py
 ```
 
-Run it whenever a source repo moves. An unchanged HEAD is a no-op.
+Run it whenever a source repo moves. An unchanged HEAD does not seal another snapshot. The first time a rename or a label question is observed, that observation is appended. The same observation does not append again.
+
+## Names and labels
+
+Each source line may end with `repo_id=<GitHub id>`. The id is the key. The slug is the current name. `state/repo_registry.json` maps an id to every name seen for it.
+
+The label in `config/sources.txt` is the one Josh assigned. Capture will not move `snapshots/claude` or rewrite a sealed manifest when the slug or the README heading changes. It appends `REPO_RENAMED`, `LABEL_MISMATCH`, or `MODEL_ATTRIBUTION_UNCERTAIN` and waits for Josh to confirm a relabel.
+
+Repo id 1435079605 is the only full tree. Its slug is `lmos-public-grok` and its README heading is `# lmos-public-claude`. Repo id 1435127338 (`lmos_public_grok`) is a second GitHub id receiving that same tree in `batch-NN` commits. Every file present there matches 1435079605 byte for byte, so the divergence score is missing files, not a second interpretation of the spec. `lms_public_chatgpt` (id 1435128289) has no commits. `lmos_public_claude` and `lmos_public_chatgpt` are not visible.

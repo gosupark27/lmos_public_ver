@@ -1,0 +1,52 @@
+{
+  "baseline": false,
+  "binary": [],
+  "captured_at": "2026-10-27T01:57:57.542Z",
+  "commit": "262aaa175740b02aa0d0d6ff258630a06e1acb8f",
+  "directories": [],
+  "files": [
+    {
+      "added": 373,
+      "binary": false,
+      "hash_after": "sha256:3dada9e907cf63d4127588268f38987e72108639e65a2694aebf4ee35aa9f309",
+      "hash_before": null,
+      "lines": 373,
+      "op": "add",
+      "path": "scripts/brand-check.test.mjs",
+      "removed": 0,
+      "sha256": "sha256:3dada9e907cf63d4127588268f38987e72108639e65a2694aebf4ee35aa9f309"
+    },
+    {
+      "added": 47,
+      "binary": false,
+      "hash_after": "sha256:c6fb865defe5a37bd94e3805b00311d4e8267daf92812e39f62b1213d947265e",
+      "hash_before": null,
+      "lines": 47,
+      "op": "add",
+      "path": "scripts/browser-guard.mjs",
+      "removed": 0,
+      "sha256": "sha256:c6fb865defe5a37bd94e3805b00311d4e8267daf92812e39f62b1213d947265e"
+    },
+    {
+      "added": 128,
+      "binary": false,
+      "hash_after": "sha256:5699614f7fa62515e25ba9cca6397db2770cf6feb9b973f3c19f2915874c53de",
+      "hash_before": null,
+      "lines": 128,
+      "op": "add",
+      "path": "scripts/browser-smoke-verdict.mjs",
+      "removed": 0,
+      "sha256": "sha256:5699614f7fa62515e25ba9cca6397db2770cf6feb9b973f3c19f2915874c53de"
+    }
+  ],
+  "files_added": 3,
+  "files_modified": 0,
+  "files_removed": 0,
+  "lines_added": 548,
+  "lines_removed": 0,
+  "model": "grok",
+  "parent_snapshot_id": "2026-10-27T01-57-04.540Z__d841b74eeba0bac25c0f730d7aee443876592079",
+  "patch": "deltas/over_time/grok/2026-10-27T01-57-57.542Z__262aaa175740b02aa0d0d6ff258630a06e1acb8f.patch",
+  "schema": "lmos.over_time.v1",
+  "snapshot_id": "2026-10-27T01-57-57.542Z__262aaa175740b02aa0d0d6ff258630a06e1acb8f"
+}

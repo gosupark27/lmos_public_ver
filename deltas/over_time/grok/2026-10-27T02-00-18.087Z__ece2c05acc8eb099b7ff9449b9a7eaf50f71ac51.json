@@ -1,0 +1,41 @@
+{
+  "baseline": false,
+  "binary": [],
+  "captured_at": "2026-10-27T02:00:18.087Z",
+  "commit": "ece2c05acc8eb099b7ff9449b9a7eaf50f71ac51",
+  "directories": [],
+  "files": [
+    {
+      "added": 541,
+      "binary": false,
+      "hash_after": "sha256:816c6b867c7230d739f69598202c0903e4332632293d548bde74c8d875ed8e5c",
+      "hash_before": null,
+      "lines": 541,
+      "op": "add",
+      "path": "scripts/grok-pwa-plugin.test.mjs",
+      "removed": 0,
+      "sha256": "sha256:816c6b867c7230d739f69598202c0903e4332632293d548bde74c8d875ed8e5c"
+    },
+    {
+      "added": 81,
+      "binary": false,
+      "hash_after": "sha256:f4db33fcf35ef3f25fca05d1b42494b6f607c44a4d728ed3e989e65a3a1ea9d0",
+      "hash_before": null,
+      "lines": 81,
+      "op": "add",
+      "path": "scripts/grok-pwa-shared.d.mts",
+      "removed": 0,
+      "sha256": "sha256:f4db33fcf35ef3f25fca05d1b42494b6f607c44a4d728ed3e989e65a3a1ea9d0"
+    }
+  ],
+  "files_added": 2,
+  "files_modified": 0,
+  "files_removed": 0,
+  "lines_added": 622,
+  "lines_removed": 0,
+  "model": "grok",
+  "parent_snapshot_id": "2026-10-27T01-59-16.646Z__2a3eef4c5d02aab99a10d941789b21a149d732a1",
+  "patch": "deltas/over_time/grok/2026-10-27T02-00-18.087Z__ece2c05acc8eb099b7ff9449b9a7eaf50f71ac51.patch",
+  "schema": "lmos.over_time.v1",
+  "snapshot_id": "2026-10-27T02-00-18.087Z__ece2c05acc8eb099b7ff9449b9a7eaf50f71ac51"
+}

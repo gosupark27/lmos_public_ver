@@ -281,8 +281,120 @@ def test_unavailable_is_logged_once() -> None:
         print("unavailable ok")
 
 
+def test_identity_rename_does_not_relabel() -> None:
+    with tempfile.TemporaryDirectory() as tmp:
+        root = Path(tmp) / "tracker"
+        sha = "a" * 40
+        snap_id = f"2026-10-27T00-00-00.000Z__{sha}"
+        snap = root / "snapshots" / "alpha" / snap_id
+        (snap / "baseline" / "public" / "__grok").mkdir(parents=True)
+        (snap / "baseline" / "README.md").write_text("# acme-grok\n", encoding="utf-8")
+        (snap / "baseline" / "package.json").write_text('{"name": "app-builder-workspace"}\n', encoding="utf-8")
+        (snap / "baseline" / "public" / "__grok" / "app.txt").write_text("scaffold\n", encoding="utf-8")
+        manifest = {
+            "model": "alpha",
+            "repo": "acme/old-name",
+            "repo_url": "https://github.com/acme/old-name",
+            "snapshot_id": snap_id,
+            "captured_at": "2026-10-27T00:00:00.000Z",
+            "baseline": True,
+            "branch": "main",
+            "commit": {
+                "sha": sha,
+                "author": "JJ Park",
+                "subject": "Rename project from acme-old to acme-grok",
+                "committed_at": "2026-10-27T00:00:00Z",
+                "url": f"https://github.com/acme/old-name/commit/{sha}",
+            },
+        }
+        (snap / "manifest.json").write_text(json.dumps(manifest), encoding="utf-8")
+        (snap / ".complete").write_text("done\n", encoding="utf-8")
+        manifest_bytes = (snap / "manifest.json").read_bytes()
+        sources = root / "config" / "sources.txt"
+        sources.parent.mkdir(parents=True)
+        sources.write_text(
+            "alpha acme/old-name\nbeta acme/old-name\n# chatgpt acme/missing\n# grok acme/empty-grok\n",
+            encoding="utf-8",
+        )
+        identity = {
+            "id": "10",
+            "full_name": "acme/new-name",
+            "html_url": "https://github.com/acme/new-name",
+            "pushed_at": "2026-10-27T00:00:00Z",
+            "created_at": "2026-10-27T00:00:00Z",
+            "description": "test",
+        }
+        empty = {
+            "id": "11",
+            "full_name": "acme/empty-grok",
+            "html_url": "https://github.com/acme/empty-grok",
+            "pushed_at": "2026-10-27T00:00:00Z",
+            "created_at": "2026-10-27T00:00:00Z",
+            "description": "",
+        }
+
+        def lookup(target: str):
+            if target in ("acme/old-name", "acme/new-name"):
+                return identity
+            if target == "acme/empty-grok":
+                return empty
+            if target == "acme/missing":
+                return None
+            raise AssertionError(target)
+
+        def head_of(target: str):
+            if target == "acme/old-name":
+                return sha
+            return None
+
+        when = "2026-10-27T01:00:00.000Z"
+        status = cap.apply_identity_audit(root, sources, set(), when, lookup=lookup, head_of=head_of)
+        if not status["changed"] or not status["wrote_cross"] or status["distinct_content"] != 1:
+            fail(f"identity audit did not record one repository: {status}")
+        kinds = {item["event_type"] for item in events(root)}
+        for required in ("REPO_RENAMED", "LABEL_MISMATCH", "MODEL_ATTRIBUTION_UNCERTAIN"):
+            if required not in kinds:
+                fail(f"missing {required}: {sorted(kinds)}")
+        renamed = next(item for item in events(root) if item["event_type"] == "REPO_RENAMED")
+        if renamed["detail"]["old_name"] != "acme/old-name" or renamed["detail"]["new_name"] != "acme/new-name":
+            fail(f"rename detail wrong: {renamed['detail']}")
+        if renamed["detail"]["repo_id"] != "10" or renamed["model"] != "alpha":
+            fail("rename event moved the label or lost the repo id")
+        uncertain = next(item for item in events(root) if item["event_type"] == "MODEL_ATTRIBUTION_UNCERTAIN")
+        if uncertain["outcome"] != "uncertain" or uncertain["model"] != "alpha":
+            fail("attribution event relabeled the snapshot")
+        text = sources.read_text(encoding="utf-8")
+        enabled, placeholders = cap.parse_sources(text)
+        if [item.model for item in enabled] != ["alpha"] or enabled[0].repo_id != "10":
+            fail(f"source line was not keyed by repo id: {text}")
+        if enabled[0].target != "acme/new-name":
+            fail(f"source was not updated to the current name: {text}")
+        if any(item.model == "beta" for item in enabled + placeholders):
+            fail(f"duplicate model is still a source line: {text}")
+        if "repo_id=10 is already tracked as alpha" not in text:
+            fail(f"duplicate line was not neutralized: {text}")
+        cross = json.loads(next((root / "deltas" / "cross_model").glob("single-10__*.json")).read_text(encoding="utf-8"))
+        if cross["mode"] != "single_repository" or cross["pairs"] != []:
+            fail(f"cross record invented a pair: {cross['mode']} {cross['pairs']}")
+        if cross["distinct_content_repos"] != 1:
+            fail("cross record counted more than one tree")
+        if (snap / "manifest.json").read_bytes() != manifest_bytes:
+            fail("identity audit rewrote the sealed manifest")
+        if json.loads((snap / "manifest.json").read_text(encoding="utf-8"))["model"] != "alpha":
+            fail("sealed model label changed")
+        before = events(root)
+        source_bytes = sources.read_bytes()
+        again = cap.apply_identity_audit(root, sources, cap.load_event_ids(root), "2026-10-27T02:00:00.000Z", lookup=lookup, head_of=head_of)
+        if again["changed"]:
+            fail("second identity audit wrote again")
+        if events(root) != before or sources.read_bytes() != source_bytes:
+            fail("second identity audit was not idempotent")
+        print("identity ok")
+
+
 if __name__ == "__main__":
     test_roundtrip_and_idempotency()
     test_enable_refuses_missing_and_accepts_local()
     test_unavailable_is_logged_once()
+    test_identity_rename_does_not_relabel()
     print("all capture tests passed")

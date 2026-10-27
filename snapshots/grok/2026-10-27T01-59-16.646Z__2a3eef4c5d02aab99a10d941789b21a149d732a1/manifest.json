@@ -1,0 +1,648 @@
+{
+  "baseline": false,
+  "baseline_path": null,
+  "branch": "main",
+  "captured_at": "2026-10-27T01:59:16.646Z",
+  "commit": {
+    "author": "JJ Park",
+    "committed_at": "2026-10-27T01:59:12Z",
+    "sha": "2a3eef4c5d02aab99a10d941789b21a149d732a1",
+    "subject": "Add original source (batch-04.json)",
+    "url": "https://github.com/gosupark27/lmos_public_grok/commit/2a3eef4c5d02aab99a10d941789b21a149d732a1"
+  },
+  "delta": {
+    "files_added": 5,
+    "files_modified": 0,
+    "files_removed": 0,
+    "lines_added": 1002,
+    "lines_removed": 0
+  },
+  "file_count": 24,
+  "files": [
+    {
+      "band": "other",
+      "binary": false,
+      "lines": 8,
+      "path": ".gitignore",
+      "sha256": "sha256:687bc2e1dcb6c2e34a8606d1c4a29f3ca8931eb4a46eccd7f8d614594bd02f43",
+      "size": 62
+    },
+    {
+      "band": "other",
+      "binary": false,
+      "lines": 6,
+      "path": ".prettierrc",
+      "sha256": "sha256:d5f90f76c5b68ce7be5ba077813f97e1983511b8c314764537345a538c1261f4",
+      "size": 90
+    },
+    {
+      "band": "other",
+      "binary": false,
+      "lines": 12,
+      "path": "README.md",
+      "sha256": "sha256:8361daa2a7a21e4d4d3295fd4272a79d4307e4af17bcbe9c873188d6bd305a33",
+      "size": 256
+    },
+    {
+      "band": "spec_copy",
+      "binary": false,
+      "lines": 155,
+      "path": "docs/lmos_public.md",
+      "sha256": "sha256:1e2c01b465b9b3e62fa898e75d6b829291e5f24a0f0bf8ae89db1a336ee10b88",
+      "size": 5739
+    },
+    {
+      "band": "other",
+      "binary": false,
+      "lines": 47,
+      "path": "eslint.config.mjs",
+      "sha256": "sha256:9c79df07c33ff6aa13876bdd1e7e6652aa1ecb377c7b7f029f7915d215ee4488",
+      "size": 1277
+    },
+    {
+      "band": "other",
+      "binary": false,
+      "lines": 6,
+      "path": "migrations/0002_rooms.sql",
+      "sha256": "sha256:62003a919fae3cda6dfafef7b1d2bf8f12036a7c34f43075c5a9e2a6b7bac515",
+      "size": 172
+    },
+    {
+      "band": "harness",
+      "binary": false,
+      "lines": 67,
+      "path": "migrations/auth/0001_auth.sql",
+      "sha256": "sha256:f953cacc448c0c81ae4fe63e66b0e59569e840782ad279fdee201dff529363e9",
+      "size": 2739
+    },
+    {
+      "band": "other",
+      "binary": false,
+      "lines": 97,
+      "path": "package.json",
+      "sha256": "sha256:c138a44993e23d255bdc0d2054f692f0ef61df5718deb44701d756fa3b99cb50",
+      "size": 3542
+    },
+    {
+      "band": "harness",
+      "binary": false,
+      "lines": 13,
+      "path": "public/__grok/install/assets/homescreen/glass-puzzle.svg",
+      "sha256": "sha256:a677c9356c23d1e699559ddbffac97cd135c2782cd893fb34f3738f6d11bee17",
+      "size": 1811
+    },
+    {
+      "band": "harness",
+      "binary": false,
+      "lines": 10,
+      "path": "public/__grok/install/assets/homescreen/glass-share.svg",
+      "sha256": "sha256:efad1b4b507a68c1f1af4aad2c93e8c24076224aa593da86677697f543d026d6",
+      "size": 2388
+    },
+    {
+      "band": "harness",
+      "binary": false,
+      "lines": 6,
+      "path": "public/__grok/install/assets/homescreen/logo-grok.svg",
+      "sha256": "sha256:0654e3e59cce69856f38525cbfe4ab3a9ef52d4b64c8532dd0bc1a3f34fcb5b1",
+      "size": 1059
+    },
+    {
+      "band": "harness",
+      "binary": false,
+      "lines": 6,
+      "path": "public/__grok/install/assets/homescreen/plus.svg",
+      "sha256": "sha256:c2c94be46aa2c3c2fda95d7c6f2fc6d0b656d1f5847828d5d95b5a81a6f4f20d",
+      "size": 2401
+    },
+    {
+      "band": "harness",
+      "binary": false,
+      "lines": 375,
+      "path": "public/__grok/install/styles.css",
+      "sha256": "sha256:7e8e881302f58e54a9c07e7be395692d3de20fdaa27ce358531cc8dcca472cb6",
+      "size": 6717
+    },
+    {
+      "band": "other",
+      "binary": false,
+      "lines": 6,
+      "path": "public/favicon.svg",
+      "sha256": "sha256:44f09753c1535943fab35571b3299259a9621c6566d23709c359e85248d75c89",
+      "size": 361
+    },
+    {
+      "band": "other",
+      "binary": false,
+      "lines": 34,
+      "path": "scripts/app-env-plugin.mjs",
+      "sha256": "sha256:92962d2361a98413c0cef80b31266d49b063cf4ecf6421bb99f57f6eef4ed7b6",
+      "size": 1278
+    },
+    {
+      "band": "other",
+      "binary": false,
+      "lines": 227,
+      "path": "scripts/brand-check.mjs",
+      "sha256": "sha256:318f33ce7b29b55c386cc8847084068777880f795a5082043229bb06686be035",
+      "size": 9609
+    },
+    {
+      "band": "other",
+      "binary": false,
+      "lines": 373,
+      "path": "scripts/brand-check.test.mjs",
+      "sha256": "sha256:3dada9e907cf63d4127588268f38987e72108639e65a2694aebf4ee35aa9f309",
+      "size": 15084
+    },
+    {
+      "band": "other",
+      "binary": false,
+      "lines": 47,
+      "path": "scripts/browser-guard.mjs",
+      "sha256": "sha256:c6fb865defe5a37bd94e3805b00311d4e8267daf92812e39f62b1213d947265e",
+      "size": 1724
+    },
+    {
+      "band": "other",
+      "binary": false,
+      "lines": 128,
+      "path": "scripts/browser-smoke-verdict.mjs",
+      "sha256": "sha256:5699614f7fa62515e25ba9cca6397db2770cf6feb9b973f3c19f2915874c53de",
+      "size": 4663
+    },
+    {
+      "band": "other",
+      "binary": false,
+      "lines": 416,
+      "path": "scripts/browser-smoke-verdict.test.mjs",
+      "sha256": "sha256:48b3924b41d606f94a9b8faae47ff350b84978fdd5ab3f6ca01640ed4c7087d7",
+      "size": 15643
+    },
+    {
+      "band": "other",
+      "binary": false,
+      "lines": 177,
+      "path": "scripts/browser-smoke.mjs",
+      "sha256": "sha256:2e1cc3136f33bd74b73b4b3dba812e74ac299c24893b9a7c406e9bbeaf46571f",
+      "size": 6042
+    },
+    {
+      "band": "other",
+      "binary": false,
+      "lines": 109,
+      "path": "scripts/check-auth-invariant.mjs",
+      "sha256": "sha256:d712203c4bc92c197c342e5c91660fc5a141a31171f22f35c505a0bff45f98ee",
+      "size": 4203
+    },
+    {
+      "band": "other",
+      "binary": false,
+      "lines": 110,
+      "path": "scripts/check-auth-invariant.test.mjs",
+      "sha256": "sha256:75a58f44dffb2fc77eb47473638646f607dba26a68a6900156031c7b6227cf3c",
+      "size": 4218
+    },
+    {
+      "band": "harness",
+      "binary": false,
+      "lines": 190,
+      "path": "scripts/grok-pwa-plugin.mjs",
+      "sha256": "sha256:36331d0bc0664debb5068bd6869d3089dc41555b7770c9ccb577d8845958835c",
+      "size": 6615
+    }
+  ],
+  "model": "grok",
+  "parent_snapshot_id": "2026-10-27T01-57-57.542Z__262aaa175740b02aa0d0d6ff258630a06e1acb8f",
+  "repo": "gosupark27/lmos_public_grok",
+  "repo_id": "1435127338",
+  "repo_url": "https://github.com/gosupark27/lmos_public_grok",
+  "schema": "lmos.snapshot.v1",
+  "snapshot_id": "2026-10-27T01-59-16.646Z__2a3eef4c5d02aab99a10d941789b21a149d732a1",
+  "spec": {
+    "concepts": [
+      {
+        "count": null,
+        "covered": true,
+        "evidence": [
+          "README.md"
+        ],
+        "id": "anonymous_room_codes",
+        "label": "Anonymous play addressed by room code",
+        "section": "Handshake"
+      },
+      {
+        "count": null,
+        "covered": true,
+        "evidence": [
+          "public/__grok/install/styles.css"
+        ],
+        "id": "phone_first",
+        "label": "Phone-first layout",
+        "section": "Handshake"
+      },
+      {
+        "count": null,
+        "covered": false,
+        "evidence": [],
+        "id": "four_archetypes",
+        "label": "Four archetypes: Kingmaker, Populist, Shadow Broker, Idealist",
+        "section": "Archetypes"
+      },
+      {
+        "count": null,
+        "covered": false,
+        "evidence": [],
+        "id": "relinquish",
+        "label": "Each archetype gives something up",
+        "section": "Archetypes"
+      },
+      {
+        "count": 0,
+        "covered": false,
+        "evidence": [],
+        "id": "twelve_characters",
+        "label": "Twelve characters, slots filled at build time",
+        "section": "Characters"
+      },
+      {
+        "count": null,
+        "covered": false,
+        "evidence": [],
+        "id": "three_tiers",
+        "label": "Beginner, intermediate, and advanced tiers",
+        "section": "Scenarios"
+      },
+      {
+        "count": 0,
+        "covered": false,
+        "evidence": [],
+        "id": "nine_titled_beats",
+        "label": "At least nine titled scenario beats",
+        "section": "Scenarios"
+      },
+      {
+        "count": null,
+        "covered": false,
+        "evidence": [],
+        "id": "canon_66",
+        "label": "66-event canon with 57 parked and nine loaded",
+        "section": "Scenarios"
+      },
+      {
+        "count": null,
+        "covered": false,
+        "evidence": [],
+        "id": "lever_heat",
+        "label": "Heat lever",
+        "section": "Levers"
+      },
+      {
+        "count": null,
+        "covered": true,
+        "evidence": [
+          "scripts/grok-pwa-plugin.mjs"
+        ],
+        "id": "lever_boundary",
+        "label": "Boundary lever",
+        "section": "Levers"
+      },
+      {
+        "count": null,
+        "covered": true,
+        "evidence": [
+          "public/__grok/install/styles.css"
+        ],
+        "id": "lever_power",
+        "label": "Power lever, who is treated as leading",
+        "section": "Levers"
+      },
+      {
+        "count": null,
+        "covered": true,
+        "evidence": [
+          "scripts/brand-check.mjs"
+        ],
+        "id": "lever_silence",
+        "label": "Silence lever",
+        "section": "Levers"
+      },
+      {
+        "count": null,
+        "covered": false,
+        "evidence": [],
+        "id": "lever_influence",
+        "label": "Influence lever",
+        "section": "Levers"
+      },
+      {
+        "count": null,
+        "covered": false,
+        "evidence": [],
+        "id": "lever_hidden",
+        "label": "Hidden lever",
+        "section": "Levers"
+      },
+      {
+        "count": null,
+        "covered": false,
+        "evidence": [],
+        "id": "lever_presence",
+        "label": "Presence as a visible state",
+        "section": "Levers"
+      },
+      {
+        "count": null,
+        "covered": false,
+        "evidence": [],
+        "id": "presence_not_an_action",
+        "label": "Presence cannot be targeted, voted, or accused",
+        "section": "Levers"
+      },
+      {
+        "count": null,
+        "covered": false,
+        "evidence": [],
+        "id": "secret_elo",
+        "label": "Secret Elo as truthfulness, words against hands",
+        "section": "Secret Elo"
+      },
+      {
+        "count": null,
+        "covered": false,
+        "evidence": [],
+        "id": "trinity_names",
+        "label": "Trinity names for Elo, narrator, and steward",
+        "section": "Secret Elo"
+      },
+      {
+        "count": null,
+        "covered": false,
+        "evidence": [],
+        "id": "saboteur_prodigal",
+        "label": "Mid-game saboteur and a prodigal seat",
+        "section": "Saboteur"
+      },
+      {
+        "count": null,
+        "covered": true,
+        "evidence": [
+          "README.md"
+        ],
+        "id": "clients_send_intents",
+        "label": "Clients send intents, not state",
+        "section": "State boundaries"
+      },
+      {
+        "count": null,
+        "covered": true,
+        "evidence": [
+          "scripts/brand-check.mjs"
+        ],
+        "id": "server_clock",
+        "label": "Clock is server-owned",
+        "section": "State boundaries"
+      },
+      {
+        "count": null,
+        "covered": true,
+        "evidence": [
+          "README.md"
+        ],
+        "id": "secrets_stay_off_client",
+        "label": "Server-only secrets stay off the client view",
+        "section": "State boundaries"
+      },
+      {
+        "count": null,
+        "covered": false,
+        "evidence": [],
+        "id": "bot_on_disconnect",
+        "label": "A bot takes a live seat that disconnects",
+        "section": "State boundaries"
+      },
+      {
+        "count": null,
+        "covered": false,
+        "evidence": [],
+        "id": "outbreak",
+        "label": "Outbreak is a simultaneous broadcast",
+        "section": "State boundaries"
+      },
+      {
+        "count": null,
+        "covered": false,
+        "evidence": [],
+        "id": "delta_sync",
+        "label": "Refresh is a public snapshot plus a private delta",
+        "section": "State boundaries"
+      },
+      {
+        "count": null,
+        "covered": false,
+        "evidence": [],
+        "id": "imposter_cap",
+        "label": "Imposter count starts at one and stacks to a cap",
+        "section": "Invariants"
+      },
+      {
+        "count": null,
+        "covered": false,
+        "evidence": [],
+        "id": "sacrifice_idempotent",
+        "label": "Sacrifice is idempotent",
+        "section": "Invariants"
+      },
+      {
+        "count": null,
+        "covered": false,
+        "evidence": [],
+        "id": "unguessable_codes",
+        "label": "Room codes are not guessable",
+        "section": "Invariants"
+      },
+      {
+        "count": null,
+        "covered": false,
+        "evidence": [],
+        "id": "ledger_append_only",
+        "label": "Ledger appends and does not mutate",
+        "section": "Ledger"
+      },
+      {
+        "count": null,
+        "covered": false,
+        "evidence": [],
+        "id": "heat_does_not_flash",
+        "label": "Heat simmers and cannot flash",
+        "section": "Levers"
+      },
+      {
+        "count": null,
+        "covered": true,
+        "evidence": [
+          "scripts/browser-smoke-verdict.mjs",
+          "public/__grok/install/styles.css"
+        ],
+        "id": "rating_ladder",
+        "label": "Rating ladder from A-minus through S-plus, decimals to hundredths",
+        "section": "Rating"
+      },
+      {
+        "count": null,
+        "covered": false,
+        "evidence": [],
+        "id": "sealed_x",
+        "label": "X is sealed and discoverable, not climbed",
+        "section": "Rating"
+      },
+      {
+        "count": null,
+        "covered": false,
+        "evidence": [],
+        "id": "sunrise_screen",
+        "label": "Sunrise loading screen",
+        "section": "Sunrise"
+      },
+      {
+        "count": null,
+        "covered": false,
+        "evidence": [],
+        "id": "tier_colors",
+        "label": "Yellow, red, blue, and pink tier colors",
+        "section": "Sunrise"
+      },
+      {
+        "count": null,
+        "covered": false,
+        "evidence": [],
+        "id": "fracture_or_desync",
+        "label": "Desync or a Rome-to-1775 fracture",
+        "section": "Sunrise"
+      },
+      {
+        "count": null,
+        "covered": false,
+        "evidence": [],
+        "id": "sees_you",
+        "label": "The game admits it sees the player",
+        "section": "Sunrise"
+      },
+      {
+        "count": null,
+        "covered": false,
+        "evidence": [],
+        "id": "host_only",
+        "label": "Only the host creates and configures the room",
+        "section": "Entrance"
+      },
+      {
+        "count": null,
+        "covered": false,
+        "evidence": [],
+        "id": "flashlight",
+        "label": "Flashlight cursor",
+        "section": "Entrance"
+      },
+      {
+        "count": null,
+        "covered": false,
+        "evidence": [],
+        "id": "bells",
+        "label": "Bells stack when someone joins",
+        "section": "Entrance"
+      },
+      {
+        "count": null,
+        "covered": false,
+        "evidence": [],
+        "id": "builder_marks",
+        "label": "Builder checkmarks learned by playing",
+        "section": "Entrance"
+      },
+      {
+        "count": null,
+        "covered": false,
+        "evidence": [],
+        "id": "trail_economy",
+        "label": "Weight, sacrifice, trade, and a destination",
+        "section": "Oregon"
+      },
+      {
+        "count": null,
+        "covered": false,
+        "evidence": [],
+        "id": "oregon_named",
+        "label": "Names the Oregon Trail frame",
+        "section": "Oregon"
+      },
+      {
+        "count": null,
+        "covered": false,
+        "evidence": [],
+        "id": "peace_four",
+        "label": "Peace victory from four independent sacrifices",
+        "section": "Milestones"
+      },
+      {
+        "count": null,
+        "covered": false,
+        "evidence": [],
+        "id": "dupr_five",
+        "label": "Five DUPR-mapped tiers",
+        "section": "Entrance"
+      },
+      {
+        "count": null,
+        "covered": false,
+        "evidence": [],
+        "id": "invite_leave_on_read",
+        "label": "Invitees accept or leave the invite on read",
+        "section": "Entrance"
+      },
+      {
+        "count": null,
+        "covered": false,
+        "evidence": [],
+        "id": "edge_conflicts",
+        "label": "Conflicting intents or a stale round are rejected",
+        "section": "Edge cases"
+      }
+    ],
+    "coverage": 0.1957,
+    "covered": 9,
+    "extra_surfaces": [
+      {
+        "evidence": [
+          "package.json"
+        ],
+        "id": "auth_login_stack",
+        "label": "A login or auth toolkit is in the tree. The spec says no login.",
+        "severity": "tension"
+      },
+      {
+        "evidence": [
+          "scripts/brand-check.mjs"
+        ],
+        "id": "grok_pwa_harness",
+        "label": "Grok PWA install shell is in the tree.",
+        "severity": "harness"
+      },
+      {
+        "evidence": [
+          "package.json"
+        ],
+        "id": "preview_host_bridge",
+        "label": "Preview-host bridge or path-prefix tooling is in the tree.",
+        "severity": "harness"
+      }
+    ],
+    "gap_score": 80.4,
+    "rubric_sha256": "sha256:8aeb68c400f809a9a609b9f67caac430344f6ebd2a9832c94edcae5d7e3bdb02",
+    "spec_sha256": "sha256:1e2c01b465b9b3e62fa898e75d6b829291e5f24a0f0bf8ae89db1a336ee10b88",
+    "total": 46
+  },
+  "total_bytes": 97693,
+  "total_lines": 2625,
+  "tree_sha256": "sha256:27b567922a3441d8a3462b4178ec6b9e17f8701b9a9db27edfa4fd9aebab8527"
+}

@@ -3,7 +3,9 @@
 
 The first sealed snapshot of a model stores a full byte copy. Later snapshots
 store a unified text patch plus raw bytes only for binary files that changed.
-Re-running against an unchanged commit writes nothing.
+Re-running against an unchanged commit does not seal another snapshot. A GitHub
+rename or a label question is appended once, then the same observation writes
+nothing. The model label on an existing seal is not rewritten.
 """
 
 from __future__ import annotations
@@ -17,13 +19,17 @@ import shutil
 import subprocess
 import sys
 import tempfile
+import urllib.error
+import urllib.request
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
 from pathlib import Path
 
 SCHEMA = "lmos.tracker.v1"
 SENSOR = "lmos-tracker/capture.py"
-SOURCE_LINE = re.compile(r"^(?P<model>[a-z][a-z0-9_-]{0,31})\s+(?P<target>\S+)\s*$")
+SOURCE_LINE = re.compile(
+    r"^(?P<model>[a-z][a-z0-9_-]{0,31})\s+(?P<target>\S+)(?:\s+repo_id=(?P<repo_id>\d+))?\s*$"
+)
 GITHUB_REPO = re.compile(r"^[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+$")
 EVENT_FIELDS = (
     "timestamp",
@@ -53,6 +59,7 @@ class Source:
     model: str
     target: str
     enabled: bool
+    repo_id: str | None = None
 
 
 @dataclass
@@ -77,6 +84,7 @@ class Tree:
     committed_at: str
     author: str
     subject: str
+    repo_id: str | None = None
     files: dict[str, Rec] = field(default_factory=dict)
 
 
@@ -155,9 +163,20 @@ def parse_sources(text: str) -> tuple[list[Source], list[Source]]:
         if model in seen:
             raise SystemExit(f"duplicate model id in sources: {model}")
         seen.add(model)
-        source = Source(model, match.group("target"), enabled=not commented)
+        source = Source(
+            model,
+            match.group("target"),
+            enabled=not commented,
+            repo_id=match.group("repo_id"),
+        )
         (placeholders if commented else enabled).append(source)
     return enabled, placeholders
+
+
+def format_source(model: str, target: str, repo_id: str | None) -> str:
+    if repo_id:
+        return f"{model} {target} repo_id={repo_id}"
+    return f"{model} {target}"
 
 
 def uncomment_model(text: str, model: str) -> tuple[str, bool]:
@@ -168,7 +187,7 @@ def uncomment_model(text: str, model: str) -> tuple[str, bool]:
         if stripped.startswith("#"):
             match = SOURCE_LINE.match(stripped[1:].strip())
             if match and match.group("model") == model:
-                lines.append(f"{match.group('model')} {match.group('target')}")
+                lines.append(format_source(match.group("model"), match.group("target"), match.group("repo_id")))
                 changed = True
                 continue
         lines.append(raw)
@@ -241,6 +260,7 @@ def read_tree_from_git(source: Source, dest: Path) -> Tree:
         committed_at=committed,
         author=author,
         subject=subject,
+        repo_id=source.repo_id,
         files=files,
     )
 
@@ -1090,6 +1110,7 @@ def capture_model(root: Path, tree: Tree, captured_at: str, known_ids: set[str])
         "model": tree.model,
         "repo": tree.repo,
         "repo_url": tree.repo_url,
+        "repo_id": tree.repo_id,
         "branch": tree.branch,
         "baseline": baseline,
         "baseline_path": f"snapshots/{tree.model}/{snapshot_id}/baseline" if baseline else None,
@@ -1571,6 +1592,20 @@ def write_cross(root: Path, captured_at: str, placeholders: list[Source], known_
     else:
         mean = round(sum(pair["score"] for pair in pairs) / len(pairs), 1)
         summary = f"Sealed models: {', '.join(names)}. Mean pairwise divergence {mean}."
+        for pair in pairs:
+            if not pair["shared_count"] or pair["changed"]:
+                continue
+            if not pair["only_b"]:
+                smaller, larger, missing = pair["b"], pair["a"], len(pair["only_a"])
+            elif not pair["only_a"]:
+                smaller, larger, missing = pair["a"], pair["b"], len(pair["only_b"])
+            else:
+                continue
+            summary += (
+                f" {smaller} is a byte-identical subset of {larger}: "
+                f"{pair['identical_count']} shared paths match and {missing} paths exist only in {larger}. "
+                "The score is missing files, not conflicting edits."
+            )
     model_rows = []
     for manifest in latest:
         model_rows.append(
@@ -1763,10 +1798,1032 @@ def write_trends(root: Path) -> None:
             )
         )
     md.append("")
+    pair_summary = latest_pair_summary(root)
+    if pair_summary:
+        md.append(pair_summary)
+        md.append("")
+    md.extend(identity_lines(root))
     md.append("CSV: `trends/snapshots.csv`.")
     md.append("")
     write_if_changed(root / "trends" / "snapshots.csv", csv_text)
     write_if_changed(root / "TRENDS.md", "\n".join(md))
+
+
+def latest_pair_summary(root: Path) -> str | None:
+    base = root / "deltas" / "cross_model"
+    if not base.exists():
+        return None
+    best = None
+    best_at = ""
+    for path in base.glob("*.json"):
+        try:
+            payload = json.loads(path.read_text(encoding="utf-8"))
+        except (OSError, json.JSONDecodeError):
+            continue
+        if payload.get("mode") != "cross_model":
+            continue
+        captured = payload.get("captured_at") or ""
+        if captured >= best_at:
+            best_at = captured
+            best = payload.get("summary")
+    return best
+
+
+def identity_lines(root: Path) -> list[str]:
+    path = root / "state" / "repo_registry.json"
+    if not path.exists():
+        return []
+    registry = json.loads(path.read_text(encoding="utf-8"))
+    repos = registry.get("repos") or {}
+    if not repos:
+        return []
+    lines = [
+        "## Identity",
+        "",
+        "Repository id is the GitHub id and does not change when the slug changes. The model column above is the label Josh assigned. A rename or a mismatch does not relabel `snapshots/<model>`.",
+        "",
+        "| repo_id | label | current name | commits | attribution | names |",
+        "| --- | --- | --- | --- | --- | --- |",
+    ]
+    for repo_id in sorted(repos):
+        item = repos[repo_id]
+        lines.append(
+            "| {repo_id} | {label} | {name} | {commits} | {attr} | {names} |".format(
+                repo_id=item.get("repo_id") or repo_id,
+                label=item.get("model_label") or "",
+                name=item.get("current_full_name") or "",
+                commits="yes" if item.get("commits") else "no",
+                attr=item.get("attribution") or "",
+                names=", ".join(item.get("names") or []),
+            )
+        )
+    lines.append("")
+    for repo_id in sorted(repos):
+        note = repos[repo_id].get("note")
+        if note:
+            lines.append(f"- `{repo_id}`: {note}")
+    lines.append("")
+    return lines
+
+
+PROBE_LINE = re.compile(r"^#\s+PROBE\s+(?P<target>\S+)\s*$")
+MODEL_TOKENS = ("chatgpt", "claude", "openai", "grok", "gpt")
+REGISTRY_SCHEMA = "lmos.repo_registry.v1"
+EMPTY_LINE_STATS = {"added": 0, "removed": 0, "binary": False}
+
+
+def is_github_target(target: str) -> bool:
+    try:
+        return target_kind(target) == "github"
+    except RuntimeError:
+        return False
+
+
+def parse_probes(text: str) -> list[str]:
+    found: list[str] = []
+    for raw in text.splitlines():
+        match = PROBE_LINE.match(raw.strip())
+        if match:
+            found.append(match.group("target"))
+    return found
+
+
+def memo_lookup(lookup):
+    cache: dict[str, dict | None] = {}
+
+    def wrapped(target: str) -> dict | None:
+        if target not in cache:
+            try:
+                cache[target] = lookup(target)
+            except Exception as exc:
+                print(f"identity lookup skipped for {target}: {exc}", file=sys.stderr)
+                cache[target] = None
+        return cache[target]
+
+    return wrapped
+
+
+def github_identity(target: str) -> dict | None:
+    """Return the canonical GitHub repo record. HTTP 404 is absence. Other errors raise."""
+    url = f"https://api.github.com/repos/{target}"
+    request = urllib.request.Request(
+        url,
+        headers={
+            "Accept": "application/vnd.github+json",
+            "User-Agent": "lmos-tracker",
+            "X-GitHub-Api-Version": "2022-11-28",
+        },
+    )
+    token = os.environ.get("GITHUB_TOKEN") or os.environ.get("GH_TOKEN")
+    if token:
+        request.add_header("Authorization", f"Bearer {token}")
+    try:
+        with urllib.request.urlopen(request, timeout=30) as response:
+            payload = json.loads(response.read().decode())
+    except urllib.error.HTTPError as exc:
+        if exc.code == 404:
+            return None
+        raise RuntimeError(f"{target}: HTTP {exc.code}") from exc
+    except urllib.error.URLError as exc:
+        raise RuntimeError(f"{target}: {exc.reason}") from exc
+    return {
+        "id": str(payload["id"]),
+        "full_name": payload["full_name"],
+        "html_url": payload.get("html_url") or f"https://github.com/{payload['full_name']}",
+        "pushed_at": payload.get("pushed_at"),
+        "created_at": payload.get("created_at"),
+        "description": payload.get("description") or "",
+        "size": payload.get("size"),
+    }
+
+
+def github_recent_commits(target: str, limit: int = 30) -> list[dict]:
+    url = f"https://api.github.com/repos/{target}/commits?per_page={limit}"
+    request = urllib.request.Request(
+        url,
+        headers={
+            "Accept": "application/vnd.github+json",
+            "User-Agent": "lmos-tracker",
+            "X-GitHub-Api-Version": "2022-11-28",
+        },
+    )
+    token = os.environ.get("GITHUB_TOKEN") or os.environ.get("GH_TOKEN")
+    if token:
+        request.add_header("Authorization", f"Bearer {token}")
+    try:
+        with urllib.request.urlopen(request, timeout=30) as response:
+            payload = json.loads(response.read().decode())
+    except urllib.error.HTTPError as exc:
+        if exc.code in (404, 409):
+            return []
+        raise RuntimeError(f"{target} commits: HTTP {exc.code}") from exc
+    except urllib.error.URLError as exc:
+        raise RuntimeError(f"{target} commits: {exc.reason}") from exc
+    commits = []
+    for item in payload:
+        commit = item.get("commit") or {}
+        author = (commit.get("author") or {}).get("name") or ""
+        message = commit.get("message") or ""
+        commits.append(
+            {
+                "sha": item.get("sha"),
+                "author": author,
+                "committed_at": (commit.get("author") or {}).get("date"),
+                "subject": message.splitlines()[0] if message else "",
+            }
+        )
+    return commits
+
+
+def advertised_head(target: str) -> str | None:
+    if not is_github_target(target):
+        return None
+    _, fetch = github_urls(target)
+    try:
+        proc = run(["git", "ls-remote", fetch, "HEAD"], check=False)
+    except Exception:
+        return None
+    if proc.returncode != 0:
+        return None
+    lines = [line for line in proc.stdout.splitlines() if line.strip()]
+    if not lines:
+        return None
+    return lines[0].split()[0]
+
+
+def finish_text(text: str, original: str) -> str:
+    if (original.endswith("\n") or not original) and not text.endswith("\n"):
+        text += "\n"
+    return text
+
+
+def replace_source_line(text: str, model: str, new_line: str) -> str:
+    lines: list[str] = []
+    for raw in text.splitlines():
+        stripped = raw.strip()
+        body = stripped[1:].strip() if stripped.startswith("#") else stripped
+        match = SOURCE_LINE.match(body) if body else None
+        if match and match.group("model") == model:
+            lines.append(new_line)
+            continue
+        lines.append(raw)
+    return finish_text("\n".join(lines), text)
+
+
+def tokens_in(text: str) -> list[str]:
+    found: list[str] = []
+    if re.search(r"chatgpt", text, re.IGNORECASE):
+        found.append("chatgpt")
+    if re.search(r"claude", text, re.IGNORECASE):
+        found.append("claude")
+    if re.search(r"openai", text, re.IGNORECASE):
+        found.append("openai")
+    if re.search(r"grok", text, re.IGNORECASE):
+        found.append("grok")
+    if re.search(r"(?<![a-z])gpt(?![a-z])", text, re.IGNORECASE):
+        found.append("gpt")
+    return found
+
+
+def short_hash(payload: object) -> str:
+    raw = json.dumps(payload, sort_keys=True, ensure_ascii=False)
+    return hashlib.sha256(raw.encode()).hexdigest()[:12]
+
+
+def load_registry(root: Path) -> dict:
+    path = root / "state" / "repo_registry.json"
+    if not path.exists():
+        return {"schema": REGISTRY_SCHEMA, "repos": {}}
+    return json.loads(path.read_text(encoding="utf-8"))
+
+
+def model_manifests(root: Path, model: str) -> list[dict]:
+    return [load_manifest(path) for path in sealed_snapshots(root, model) if is_complete(path)]
+
+
+def claim_sources(enabled: list[Source], identities: dict[str, dict | None]) -> tuple[list[Source], dict[str, str]]:
+    """First enabled source to claim a GitHub id is kept. Later sources that resolve to it are skipped."""
+    claimed: dict[str, str] = {}
+    dupes: dict[str, str] = {}
+    keepers: list[Source] = []
+    for source in enabled:
+        ident = identities.get(source.model)
+        if not ident:
+            keepers.append(source)
+            continue
+        actual = str(ident["id"])
+        if source.repo_id and source.repo_id != actual:
+            keepers.append(source)
+            continue
+        if actual in claimed:
+            dupes[source.model] = claimed[actual]
+            continue
+        claimed[actual] = source.model
+        keepers.append(source)
+    return keepers, dupes
+
+
+def is_grok_fingerprint(path: str) -> bool:
+    lower = path.lower()
+    return "__grok" in lower or "grok-pwa" in lower or lower.startswith(".grok/") or "/.grok/" in lower
+
+
+def tree_texts(files: dict[str, bytes]) -> dict[str, str]:
+    texts: dict[str, str] = {}
+    for path, data in files.items():
+        if b"\0" in data:
+            continue
+        texts[path] = data.decode("utf-8", errors="replace")
+    return texts
+
+
+def first_heading(text: str) -> str | None:
+    for line in text.splitlines():
+        if line.startswith("#"):
+            return line.strip()
+    return None
+
+
+def assess_attribution(files: dict[str, bytes], manifests: list[dict], label: str, full_name: str) -> dict:
+    texts = tree_texts(files)
+    heading = first_heading(texts.get("README.md", ""))
+    package_name = None
+    if "package.json" in texts:
+        try:
+            package_name = json.loads(texts["package.json"]).get("name")
+        except json.JSONDecodeError:
+            package_name = None
+    fingerprints = sorted(path for path in texts if is_grok_fingerprint(path))
+    word_counts = {token: 0 for token in ("claude", "anthropic", "chatgpt", "openai", "grok")}
+    generated_model: list[str] = []
+    generated_other: list[str] = []
+    markers = {"og.grok": 0, "virtual:grok-og-identity": 0, ".grok/": 0}
+    for path, text in texts.items():
+        if path == "docs/lmos_public.md":
+            continue
+        body = text
+        if path.lower() == "readme.md":
+            lines = text.splitlines()
+            if lines and lines[0].startswith("#"):
+                body = "\n".join(lines[1:])
+        for token, pattern in (
+            ("claude", r"claude"),
+            ("anthropic", r"anthropic"),
+            ("chatgpt", r"chatgpt"),
+            ("openai", r"openai"),
+            ("grok", r"grok"),
+        ):
+            word_counts[token] += len(re.findall(pattern, body, flags=re.IGNORECASE))
+        for line in text.splitlines():
+            if "generated by" not in line.lower():
+                continue
+            shown = f"{path}: {line.strip()}"
+            if re.search(r"generated by\s+(claude|anthropic|grok|chatgpt|openai|gpt)\b", line, re.IGNORECASE):
+                generated_model.append(shown)
+            elif len(generated_other) < 5:
+                generated_other.append(shown)
+        markers["og.grok"] += body.lower().count("og.grok")
+        markers["virtual:grok-og-identity"] += body.lower().count("virtual:grok-og-identity")
+        markers[".grok/"] += body.lower().count(".grok/")
+    authors = sorted({item["commit"].get("author") or "" for item in manifests if item.get("commit")})
+    subjects = [item["commit"].get("subject") or "" for item in manifests if item.get("commit")]
+    name_tokens = tokens_in(full_name)
+    heading_tokens = tokens_in(heading or "")
+    conflicts: list[str] = []
+    supports: list[str] = []
+    if name_tokens and label not in name_tokens:
+        conflicts.append(
+            f"GitHub full_name {full_name} names {', '.join(name_tokens)}, and the assigned label is {label}."
+        )
+    elif name_tokens and label in name_tokens:
+        supports.append(f"GitHub full_name {full_name} contains the assigned label {label}.")
+    if heading and heading_tokens and label not in heading_tokens:
+        conflicts.append(f"README heading {heading} does not contain the assigned label {label}.")
+    elif heading and label in heading_tokens:
+        supports.append(f"README heading {heading} matches the assigned label {label}.")
+    if heading_tokens and name_tokens and set(heading_tokens).isdisjoint(name_tokens):
+        conflicts.append(
+            f"README heading {heading} and GitHub name {full_name} name different models."
+        )
+    if fingerprints and label != "grok":
+        conflicts.append(
+            f"{len(fingerprints)} paths are Grok app-builder harness files (public/__grok, scripts/grok-pwa). "
+            "That is a scaffold fingerprint, not a signature on the game code, and it is not zero."
+        )
+    elif fingerprints and label == "grok":
+        supports.append(f"{len(fingerprints)} paths are Grok app-builder harness files.")
+    if word_counts["claude"] == 0 and word_counts["anthropic"] == 0 and label == "claude":
+        conflicts.append(
+            "Outside the README heading and the spec copy, the tree has no claude or anthropic strings."
+        )
+    if not generated_model:
+        supports.append(
+            "No line says the tree was generated by Claude, Grok, ChatGPT, or OpenAI. "
+            + (
+                "Other generated-by lines: " + "; ".join(generated_other) + "."
+                if generated_other
+                else "No generated-by line names a model."
+            )
+        )
+    else:
+        conflicts.append("A generated-by line names a model: " + "; ".join(generated_model) + ".")
+    if package_name:
+        supports.append(f"package.json name is {package_name}, which does not name a model.")
+    if authors:
+        supports.append(
+            "Sealed commit authors are " + ", ".join(author for author in authors if author) + ", the GitHub account rather than a model id."
+        )
+    retitles = [subject for subject in subjects if subject.lower().startswith("rename project")]
+    if retitles:
+        conflicts.append("Commit subjects retitle the project: " + "; ".join(retitles) + ".")
+    conclusion = "uncertain" if conflicts else "consistent"
+    return {
+        "conclusion": conclusion,
+        "assigned_label": label,
+        "label_left_unchanged": True,
+        "full_name": full_name,
+        "readme_heading": heading,
+        "package_name": package_name,
+        "name_tokens": name_tokens,
+        "heading_tokens": heading_tokens,
+        "fingerprint_paths": fingerprints,
+        "word_counts_outside_heading_and_spec": word_counts,
+        "content_markers": markers,
+        "generated_by_model": generated_model,
+        "generated_by_other": generated_other,
+        "supports_assigned_label": supports,
+        "weighs_against_assigned_label": conflicts,
+        "authors": authors,
+        "retitle_subjects": retitles,
+    }
+
+
+def mismatch_reasons(label: str, full_name: str, heading: str | None) -> list[str]:
+    reasons: list[str] = []
+    name_tokens = tokens_in(full_name)
+    heading_tokens = tokens_in(heading or "")
+    if name_tokens and label not in name_tokens:
+        reasons.append(f"GitHub full_name {full_name} does not contain the assigned label {label}.")
+    if heading and heading_tokens and label not in heading_tokens:
+        reasons.append(f"README heading {heading} does not contain the assigned label {label}.")
+    if heading_tokens and name_tokens and set(heading_tokens).isdisjoint(name_tokens):
+        reasons.append(f"README heading {heading} and GitHub name {full_name} name different models.")
+    return reasons
+
+
+def identity_event(
+    *,
+    timestamp: str,
+    event_id: str,
+    event_type: str,
+    severity: str,
+    outcome: str,
+    model: str,
+    repo: str,
+    repo_url: str | None,
+    commit: str | None,
+    snapshot_id: str | None,
+    message: str,
+    detail: dict,
+) -> dict:
+    return make_event(
+        timestamp=timestamp,
+        event_id=event_id,
+        event_type=event_type,
+        severity=severity,
+        outcome=outcome,
+        model=model,
+        repo=repo,
+        repo_url=repo_url,
+        commit=commit,
+        commit_url=f"{repo_url}/commit/{commit}" if repo_url and commit else None,
+        branch="main",
+        snapshot_id=snapshot_id,
+        path=None,
+        hash_before=None,
+        hash_after=None,
+        line_stats=EMPTY_LINE_STATS,
+        message=message,
+        detail=detail,
+    )
+
+
+def render_single_cross(payload: dict) -> str:
+    lines = [
+        f"# Cross-model diff {payload['captured_at']}",
+        "",
+        payload["summary"],
+        "",
+        "## Distinct repositories with a tree",
+        "",
+        "| repo_id | label | current name | head | sealed snapshot |",
+        "| --- | --- | --- | --- | --- |",
+    ]
+    for row in payload["content_repos"]:
+        lines.append(
+            f"| {row['repo_id']} | {row['label']} | {row['full_name']} | `{row['head'][:12]}` | {row['snapshot_id']} |"
+        )
+    lines.extend(
+        [
+            "",
+            "Pairwise divergence was not computed. A score between two names of one repository would compare a tree to itself.",
+            "",
+        ]
+    )
+    if payload.get("names"):
+        lines.append("Names seen for this id: " + ", ".join(f"`{name}`" for name in payload["names"]) + ".")
+        lines.append("")
+    if payload.get("over_time"):
+        over = payload["over_time"]
+        changed = ", ".join(over["paths"]) if over["paths"] else "none"
+        lines.append(
+            f"Over time, label {over['model']} moved from `{over['parent_commit'][:12]}` to `{over['commit'][:12]}`. "
+            f"Changed paths: {changed}. That delta is `deltas/over_time/{over['model']}/{over['snapshot_id']}.md`."
+        )
+        lines.append("")
+    if payload["empty_repositories"]:
+        lines.append("## Repositories with no commits")
+        lines.append("")
+        lines.append("These ids exist and advertise no HEAD. They are not a second build and they are not scored.")
+        lines.append("")
+        lines.append("| label | repo_id | name | created_at | pushed_at |")
+        lines.append("| --- | --- | --- | --- | --- |")
+        for row in payload["empty_repositories"]:
+            lines.append(
+                f"| {row['model']} | {row['repo_id']} | {row['full_name']} | {row.get('created_at') or ''} | {row.get('pushed_at') or ''} |"
+            )
+        lines.append("")
+    if payload.get("unsealed_with_commits"):
+        lines.append("## Placeholders that already have commits")
+        lines.append("")
+        lines.append("These were not sealed. Enable the line once Josh wants that label tracked.")
+        lines.append("")
+        for row in payload["unsealed_with_commits"]:
+            lines.append(f"- {row['model']}: `{row['full_name']}` `{row['head']}`")
+        lines.append("")
+    if payload["not_found"]:
+        lines.append("## Names that are not visible")
+        lines.append("")
+        lines.append("HTTP 404 for the connected account. No event is logged for a missing name.")
+        lines.append("")
+        for row in payload["not_found"]:
+            lines.append(f"- `{row['target']}`")
+        lines.append("")
+    lines.append("The sealed model label is unchanged until Josh confirms a relabel.")
+    lines.append("")
+    return "\n".join(lines)
+
+
+def apply_identity_audit(
+    root: Path,
+    sources_path: Path,
+    known: set[str],
+    captured_at: str,
+    lookup=github_identity,
+    head_of=None,
+    commits_of=None,
+) -> dict:
+    """Record renames and label questions. Does not relabel a sealed snapshot."""
+    text = sources_path.read_text(encoding="utf-8")
+    enabled, placeholders = parse_sources(text)
+    probes = parse_probes(text)
+    interesting = [source.target for source in enabled + placeholders if is_github_target(source.target)]
+    interesting.extend(target for target in probes if is_github_target(target))
+    if not interesting:
+        return {"changed": False, "wrote_cross": False, "distinct_content": 0}
+    if head_of is None:
+        head_of = advertised_head
+    if commits_of is None:
+        commits_of = lambda target: []
+    identities: dict[str, dict | None] = {}
+    for target in interesting:
+        identities[target] = lookup(target)
+    by_model = {source.model: identities.get(source.target) for source in enabled}
+    keepers, dupes = claim_sources(enabled, by_model)
+    events: list[dict] = []
+    registry = load_registry(root)
+    repos: dict[str, dict] = registry.setdefault("repos", {})
+    new_text = text
+    content_rows = []
+    empty_rows = []
+    not_found = []
+    unsealed = []
+    wrote_cross = False
+
+    for source in enabled:
+        ident = identities.get(source.target)
+        if ident and source.repo_id and source.repo_id != str(ident["id"]):
+            events.append(
+                identity_event(
+                    timestamp=captured_at,
+                    event_id=f"evt-label-id-{source.model}-{source.repo_id}-{ident['id']}",
+                    event_type="LABEL_MISMATCH",
+                    severity="warning",
+                    outcome="flagged",
+                    model=source.model,
+                    repo=source.target,
+                    repo_url=ident.get("html_url"),
+                    commit=None,
+                    snapshot_id=None,
+                    message=(
+                        f"configured repo_id {source.repo_id} for {source.model} does not match "
+                        f"GitHub id {ident['id']} ({ident['full_name']}). The source line was not retargeted."
+                    ),
+                    detail={
+                        "configured_repo_id": source.repo_id,
+                        "observed_repo_id": str(ident["id"]),
+                        "observed_full_name": ident["full_name"],
+                        "assigned_label": source.model,
+                        "retargeted": False,
+                    },
+                )
+            )
+
+    for model, keeper in dupes.items():
+        ident = by_model.get(model) or {}
+        repo_id = str(ident.get("id") or "")
+        new_text = replace_source_line(
+            new_text,
+            model,
+            f"# NOTE {model} disabled: repo_id={repo_id} is already tracked as {keeper}",
+        )
+        events.append(
+            identity_event(
+                timestamp=captured_at,
+                event_id=f"evt-label-dup-{repo_id}-{model}-{keeper}",
+                event_type="LABEL_MISMATCH",
+                severity="warning",
+                outcome="flagged",
+                model=model,
+                repo=ident.get("full_name"),
+                repo_url=ident.get("html_url"),
+                commit=None,
+                snapshot_id=None,
+                message=(
+                    f"skip {model}: repo_id {repo_id} is already tracked as {keeper}. "
+                    "The same repository is not counted as two models."
+                ),
+                detail={
+                    "repo_id": repo_id,
+                    "skipped_label": model,
+                    "kept_label": keeper,
+                    "full_name": ident.get("full_name"),
+                    "retargeted": False,
+                },
+            )
+        )
+
+    claimed_ids = {}
+    for source in keepers:
+        ident = identities.get(source.target)
+        if not ident:
+            continue
+        if source.repo_id and source.repo_id != str(ident["id"]):
+            continue
+        claimed_ids[str(ident["id"])] = source
+
+    for source in placeholders:
+        if not is_github_target(source.target):
+            continue
+        ident = identities.get(source.target)
+        if ident is None:
+            not_found.append({"model": source.model, "target": source.target})
+            continue
+        repo_id = str(ident["id"])
+        if repo_id in claimed_ids:
+            keeper = claimed_ids[repo_id]
+            new_text = replace_source_line(
+                new_text,
+                source.model,
+                f"# NOTE {source.model} disabled: repo_id={repo_id} is already tracked as {keeper.model}",
+            )
+            events.append(
+                identity_event(
+                    timestamp=captured_at,
+                    event_id=f"evt-label-dup-{repo_id}-{source.model}-{keeper.model}",
+                    event_type="LABEL_MISMATCH",
+                    severity="warning",
+                    outcome="flagged",
+                    model=source.model,
+                    repo=ident["full_name"],
+                    repo_url=ident.get("html_url"),
+                    commit=None,
+                    snapshot_id=None,
+                    message=(
+                        f"placeholder {source.model} resolves to repo_id {repo_id}, already tracked as {keeper.model}. "
+                        "It was commented out so enabling it cannot seal a second copy."
+                    ),
+                    detail={
+                        "repo_id": repo_id,
+                        "skipped_label": source.model,
+                        "kept_label": keeper.model,
+                        "full_name": ident["full_name"],
+                        "requested_name": source.target,
+                    },
+                )
+            )
+            continue
+        head = head_of(source.target)
+        if not head:
+            empty_rows.append(
+                {
+                    "model": source.model,
+                    "target": source.target,
+                    "repo_id": repo_id,
+                    "full_name": ident["full_name"],
+                    "html_url": ident.get("html_url"),
+                    "created_at": ident.get("created_at"),
+                    "pushed_at": ident.get("pushed_at"),
+                }
+            )
+            new_text = replace_source_line(new_text, source.model, f"# {format_source(source.model, ident['full_name'], repo_id)}")
+            continue
+        # A placeholder that grows a real HEAD is reported and left commented.
+        unsealed.append(
+            {
+                "model": source.model,
+                "target": source.target,
+                "repo_id": repo_id,
+                "full_name": ident["full_name"],
+                "head": head,
+            }
+        )
+
+    for target in probes:
+        ident = identities.get(target)
+        if ident is None:
+            if not any(row["target"] == target for row in not_found):
+                not_found.append({"model": None, "target": target})
+            continue
+        repo_id = str(ident["id"])
+        previous = repos.get(repo_id) or {}
+        names = set(previous.get("names") or [])
+        names.add(target)
+        names.add(ident["full_name"])
+        if repo_id in repos:
+            repos[repo_id]["names"] = sorted(names)
+
+    for source in keepers:
+        ident = identities.get(source.target)
+        if not ident or (source.repo_id and source.repo_id != str(ident["id"])):
+            continue
+        repo_id = str(ident["id"])
+        latest = latest_complete(root, source.model)
+        if latest is None:
+            continue
+        manifest = load_manifest(latest)
+        manifests = model_manifests(root, source.model)
+        full_name = ident["full_name"]
+        new_text = replace_source_line(new_text, source.model, format_source(source.model, full_name, repo_id))
+        try:
+            files = load_tree_bytes(root, source.model, manifest["snapshot_id"])
+        except (OSError, RuntimeError, FileNotFoundError) as exc:
+            print(f"attribution skipped for {source.model}: {exc}", file=sys.stderr)
+            files = {}
+        assessment = assess_attribution(files, manifests, source.model, full_name) if files else None
+        heading = assessment["readme_heading"] if assessment else None
+        sealed_names = [item["repo"] for item in manifests]
+        old_name = next((name for name in sealed_names if name != full_name), None)
+        previous = repos.get(repo_id) or {}
+        names = set(previous.get("names") or [])
+        names.update(sealed_names)
+        names.add(full_name)
+        names.add(source.target)
+        renames = list(previous.get("renames") or [])
+        detected_at = previous.get("detected_at") or captured_at
+        rename_detected = None
+        if old_name:
+            rename_detected = next(
+                (row["detected_at"] for row in renames if row["old_name"] == old_name and row["new_name"] == full_name),
+                None,
+            )
+            if rename_detected is None:
+                rename_detected = captured_at
+                renames.append({"old_name": old_name, "new_name": full_name, "detected_at": rename_detected, "repo_id": repo_id})
+        commit_rows = [
+            {
+                "sha": item["commit"]["sha"],
+                "subject": item["commit"].get("subject"),
+                "committed_at": item["commit"].get("committed_at"),
+                "author": item["commit"].get("author"),
+                "recorded_repo": item["repo"],
+            }
+            for item in manifests
+            if item.get("commit")
+        ]
+        try:
+            remote_commits = commits_of(full_name) or []
+        except Exception as exc:
+            print(f"commit list skipped for {full_name}: {exc}", file=sys.stderr)
+            remote_commits = []
+        if old_name:
+            retitles = [row["subject"] for row in commit_rows if (row.get("subject") or "").lower().startswith("rename project")]
+            message = (
+                f"GitHub repo id {repo_id} is {full_name}. "
+                f"The sealed manifest recorded {old_name}."
+            )
+            if retitles:
+                message += " Commit subjects that retitle the project: " + "; ".join(retitles) + "."
+                message += " Those commits do not by themselves change the GitHub slug."
+            events.append(
+                identity_event(
+                    timestamp=rename_detected,
+                    event_id=f"evt-rename-{repo_id}-{short_hash([old_name, full_name])}",
+                    event_type="REPO_RENAMED",
+                    severity="warning",
+                    outcome="success",
+                    model=source.model,
+                    repo=full_name,
+                    repo_url=ident.get("html_url"),
+                    commit=manifest["commit"]["sha"],
+                    snapshot_id=manifest["snapshot_id"],
+                    message=message,
+                    detail={
+                        "old_name": old_name,
+                        "new_name": full_name,
+                        "repo_id": repo_id,
+                        "detected_at": rename_detected,
+                        "created_at": ident.get("created_at"),
+                        "pushed_at": ident.get("pushed_at"),
+                        "description": ident.get("description"),
+                        "sealed_commits": commit_rows,
+                        "label_left_unchanged": source.model,
+                    },
+                )
+            )
+        reasons = mismatch_reasons(source.model, full_name, heading)
+        if reasons:
+            events.append(
+                identity_event(
+                    timestamp=detected_at,
+                    event_id=f"evt-label-{repo_id}-{short_hash([source.model, full_name, heading])}",
+                    event_type="LABEL_MISMATCH",
+                    severity="warning",
+                    outcome="flagged",
+                    model=source.model,
+                    repo=full_name,
+                    repo_url=ident.get("html_url"),
+                    commit=manifest["commit"]["sha"],
+                    snapshot_id=manifest["snapshot_id"],
+                    message=" ".join(reasons) + f" The sealed label stays {source.model} until Josh confirms a relabel.",
+                    detail={
+                        "assigned_label": source.model,
+                        "current_full_name": full_name,
+                        "readme_heading": heading,
+                        "repo_id": repo_id,
+                        "reasons": reasons,
+                        "label_left_unchanged": True,
+                        "detected_at": detected_at,
+                    },
+                )
+            )
+        if assessment and assessment["conclusion"] == "uncertain":
+            # The question is the label, the slug, and the heading. A later batch
+            # of the same tree must not append a new event just because a word count moved.
+            question = {
+                "label": source.model,
+                "full_name": full_name,
+                "heading": heading,
+                "conclusion": assessment["conclusion"],
+                "name_tokens": assessment["name_tokens"],
+                "heading_tokens": assessment["heading_tokens"],
+                "grok_harness": bool(assessment["fingerprint_paths"]),
+                "generated_by_model": bool(assessment["generated_by_model"]),
+            }
+            events.append(
+                identity_event(
+                    timestamp=detected_at,
+                    event_id=f"evt-attrib-{repo_id}-{short_hash(question)}",
+                    event_type="MODEL_ATTRIBUTION_UNCERTAIN",
+                    severity="notice",
+                    outcome="uncertain",
+                    model=source.model,
+                    repo=full_name,
+                    repo_url=ident.get("html_url"),
+                    commit=manifest["commit"]["sha"],
+                    snapshot_id=manifest["snapshot_id"],
+                    message=(
+                        f"Attribution for repo_id {repo_id} is uncertain. "
+                        f"The sealed label stays {source.model} until Josh confirms it."
+                    ),
+                    detail=assessment,
+                )
+            )
+        note = (
+            f"Assigned label {source.model} left unchanged. GitHub full_name is {full_name}. "
+            f"README heading is {heading or 'absent'}. "
+            f"Conclusion: {assessment['conclusion'] if assessment else 'unreadable'}."
+        )
+        repos[repo_id] = {
+            "repo_id": repo_id,
+            "model_label": source.model,
+            "names": sorted(names),
+            "current_full_name": full_name,
+            "html_url": ident.get("html_url"),
+            "head": manifest["commit"]["sha"],
+            "pushed_at": ident.get("pushed_at"),
+            "created_at": ident.get("created_at"),
+            "description": ident.get("description") or "",
+            "detected_at": detected_at,
+            "attribution": assessment["conclusion"] if assessment else "unreadable",
+            "readme_heading": heading,
+            "sealed_repo_name": sealed_names[0] if sealed_names else source.target,
+            "snapshot_id": manifest["snapshot_id"],
+            "commits": True,
+            "renames": renames,
+            "note": note,
+            "remote_commit_authors": sorted({row["author"] for row in remote_commits if row.get("author")}),
+            "cross_captured_at": dict(previous.get("cross_captured_at") or {}),
+        }
+        content_rows.append(
+            {
+                "repo_id": repo_id,
+                "label": source.model,
+                "full_name": full_name,
+                "head": manifest["commit"]["sha"],
+                "snapshot_id": manifest["snapshot_id"],
+                "html_url": ident.get("html_url"),
+                "pushed_at": ident.get("pushed_at"),
+                "created_at": ident.get("created_at"),
+            }
+        )
+
+    for row in empty_rows:
+        repo_id = row["repo_id"]
+        previous = repos.get(repo_id) or {}
+        names = set(previous.get("names") or [])
+        names.add(row["target"])
+        names.add(row["full_name"])
+        repos[repo_id] = {
+            "repo_id": repo_id,
+            "model_label": row["model"],
+            "names": sorted(names),
+            "current_full_name": row["full_name"],
+            "html_url": row.get("html_url"),
+            "head": None,
+            "pushed_at": row.get("pushed_at"),
+            "created_at": row.get("created_at"),
+            "description": "",
+            "detected_at": previous.get("detected_at") or captured_at,
+            "attribution": "no_commits",
+            "readme_heading": None,
+            "sealed_repo_name": None,
+            "snapshot_id": None,
+            "commits": False,
+            "renames": previous.get("renames") or [],
+            "note": f"{row['full_name']} (repo_id {repo_id}) advertises no commits. It is not a build and it was not scored.",
+            "remote_commit_authors": [],
+            "cross_captured_at": previous.get("cross_captured_at") or {},
+        }
+
+    for target in probes:
+        ident = identities.get(target)
+        if not ident:
+            continue
+        repo_id = str(ident["id"])
+        if repo_id in repos:
+            names = set(repos[repo_id].get("names") or [])
+            names.add(target)
+            names.add(ident["full_name"])
+            repos[repo_id]["names"] = sorted(names)
+
+    changed = False
+    if append_events(root, events, known):
+        changed = True
+    if new_text != text:
+        sources_path.write_text(new_text, encoding="utf-8")
+        changed = True
+
+    distinct = len({row["repo_id"] for row in content_rows})
+    if distinct == 1 and content_rows:
+        row = content_rows[0]
+        entry = repos[row["repo_id"]]
+        cross_times = entry.setdefault("cross_captured_at", {})
+        cross_at = cross_times.get(row["head"]) or captured_at
+        cross_times[row["head"]] = cross_at
+        over = None
+        over_path = root / "deltas" / "over_time" / row["label"] / f"{row['snapshot_id']}.json"
+        if over_path.exists():
+            summary = json.loads(over_path.read_text(encoding="utf-8"))
+            if summary.get("parent_snapshot_id"):
+                parent = next(
+                    (item for item in model_manifests(root, row["label"]) if item["snapshot_id"] == summary["parent_snapshot_id"]),
+                    None,
+                )
+                over = {
+                    "model": row["label"],
+                    "snapshot_id": row["snapshot_id"],
+                    "commit": summary.get("commit"),
+                    "parent_commit": parent["commit"]["sha"] if parent else "",
+                    "paths": [item["path"] for item in summary.get("files") or [] if item.get("op") != "unchanged"],
+                }
+        not_found_rows = sorted(not_found, key=lambda item: item["target"])
+        empty_sorted = sorted(empty_rows, key=lambda item: item["repo_id"])
+        summary_text = (
+            f"One distinct repository has a tree: GitHub id {row['repo_id']} "
+            f"({row['full_name']}), sealed under the label {row['label']}. "
+            f"HEAD {row['head']} is that seal. "
+            "Other names of this id are aliases. Pairwise divergence was not computed."
+        )
+        if empty_sorted:
+            summary_text += " Empty repositories were listed and not scored: " + ", ".join(
+                item["full_name"] for item in empty_sorted
+            ) + "."
+        payload = {
+            "schema": "lmos.cross_model.v1",
+            "captured_at": cross_at,
+            "mode": "single_repository",
+            "summary": summary_text,
+            "distinct_content_repos": 1,
+            "snapshot_ids": [item["snapshot_id"] for item in all_latest_manifests(root)],
+            "pairs": [],
+            "pairwise": "not_computed",
+            "content_repos": content_rows,
+            "empty_repositories": empty_sorted,
+            "not_found": not_found_rows,
+            "unsealed_with_commits": sorted(unsealed, key=lambda item: item["target"]),
+            "names": entry.get("names") or [],
+            "over_time": over,
+            "divergence_method": "not_computed. Two names of one GitHub repo id are not a pair.",
+        }
+        stamp = f"single-{row['repo_id']}__{row['head']}"
+        base = root / "deltas" / "cross_model"
+        if write_if_changed(base / f"{stamp}.json", dump_json(payload)):
+            changed = True
+        if write_if_changed(base / f"{stamp}.md", render_single_cross(payload)):
+            changed = True
+        cross_event = identity_event(
+            timestamp=cross_at,
+            event_id=f"evt-cross-single-{row['repo_id']}-{row['head'][:12]}",
+            event_type="CROSS_MODEL_DIVERGENCE",
+            severity="notice",
+            outcome="not_applicable",
+            model="cross",
+            repo=row["full_name"],
+            repo_url=row.get("html_url"),
+            commit=row["head"],
+            snapshot_id=stamp,
+            message=summary_text,
+            detail={
+                "mode": "single_repository",
+                "repo_id": row["repo_id"],
+                "names": entry.get("names"),
+                "pairs": [],
+                "distinct_content_repos": 1,
+                "empty_repositories": [item["full_name"] for item in empty_sorted],
+                "not_found": [item["target"] for item in not_found_rows],
+            },
+        )
+        # identity_event puts path None. Point the cross event at the markdown file.
+        cross_event["path"] = f"deltas/cross_model/{stamp}.md"
+        if append_events(root, [cross_event], known):
+            changed = True
+        wrote_cross = True
+
+    registry["schema"] = REGISTRY_SCHEMA
+    if write_if_changed(root / "state" / "repo_registry.json", dump_json(registry)):
+        changed = True
+    return {"changed": changed, "wrote_cross": wrote_cross, "distinct_content": distinct}
 
 
 def unavailable_event(source: Source, message: str, captured_at: str) -> dict:
@@ -1835,8 +2892,19 @@ def capture(root: Path, sources_path: Path, enable: list[str]) -> int:
     known = load_event_ids(root)
     repaired = repair_incomplete(root, known)
     captured_at = utc_now()
+    lookup = memo_lookup(github_identity)
+    identities = {
+        source.model: lookup(source.target) if is_github_target(source.target) else None for source in enabled
+    }
+    keepers, dupes = claim_sources(enabled, identities)
+    for model, keeper in dupes.items():
+        print(f"skip {model}: same GitHub repo as {keeper}")
     new_seal = False
-    for source in enabled:
+    for source in keepers:
+        ident = identities.get(source.model)
+        if ident and (not source.repo_id or source.repo_id == str(ident["id"])):
+            source.repo_id = str(ident["id"])
+            source.target = ident["full_name"]
         try:
             remote_sha = probe_head(source)
         except Exception as exc:
@@ -1870,10 +2938,22 @@ def capture(root: Path, sources_path: Path, enable: list[str]) -> int:
         result = capture_model(root, tree, captured_at, known)
         if not result.get("skipped"):
             new_seal = True
+    identity = apply_identity_audit(
+        root,
+        sources_path,
+        known,
+        captured_at,
+        lookup=lookup,
+        commits_of=github_recent_commits,
+    )
     if new_seal or repaired or needs_cross(root) or (all_manifests(root) and not (root / "TRENDS.md").exists()):
-        # Use one stamp for a run that sealed something. Repairs of derived
-        # views use the current time so the missing cross file is created once.
-        write_cross(root, captured_at, placeholders, known)
+        # A single-repository audit already wrote the cross record. Writing the
+        # spec-only record as well would describe aliases as missing models.
+        if not identity["wrote_cross"]:
+            _, placeholders = parse_sources(sources_path.read_text(encoding="utf-8"))
+            write_cross(root, captured_at, placeholders, known)
+        write_trends(root)
+    elif identity["changed"]:
         write_trends(root)
     elif not new_seal and not failures:
         print("no changes")

@@ -1,12 +1,35 @@
-# One source per line: <model_id> <github-owner>/<repo>
-# A commented line in that shape is a placeholder. It is not fetched.
-# Enable one by deleting the leading hash, or run:
-#   python3 scripts/capture.py --enable <model_id>
-# A local git checkout may be used in place of owner/repo (absolute path).
+# model_id owner/repo [repo_id=N]
+# model_id is the label Josh assigned. repo_id is the immutable GitHub id.
+# Two lines that resolve to the same repo_id are one repository. The later line is not sealed.
+# A rename updates the owner/repo text and appends REPO_RENAMED. It does not change the label.
+#
+# Repo 1435079605 was created as gosupark27/lmos-public-claude (2026-10-27T00:38:41Z).
+# GitHub now serves that same id as gosupark27/lmos-public-grok. The sealed label stays claude
+# until Josh confirms a relabel. Do not point another model line at repo_id 1435079605.
 
-claude gosupark27/lmos-public-claude
+claude gosupark27/lmos_public_claude repo_id=1435079605
 
-# grok gosupark27/lmos-public-grok
-# chatgpt gosupark27/lmos-public-chatgpt
-# gpt gosupark27/lmos-public-gpt
-# openai gosupark27/lmos-public-openai
+# Distinct repo id, sealed under the label grok. Commits are "Add original source
+# (batch-NN.json)". Every file sealed so far matches repo 1435079605 byte for byte.
+# That is a partial copy, not a finished second build. The README heading in the
+# copy is "# lmos-public-claude".
+grok gosupark27/lmos_public_grok repo_id=1435127338
+
+# Empty. Advertises no commits, so it is not scored.
+# chatgpt gosupark27/lms_public_chatgpt repo_id=1435128289
+
+# Names that 404 for the connected account. PROBE lines are checked and are not model lines.
+# The chatgpt placeholder above is the empty repo that does exist. Its spelling is lms, not lmos.
+# PROBE gosupark27/lmos_public_claude
+# PROBE gosupark27/lmos_public_chatgpt
+# PROBE gosupark27/lmos-public-chatgpt
+# PROBE gosupark27/lmos_public_gpt
+# PROBE gosupark27/lmos_public_openai
+# PROBE gosupark27/lmos-public-gpt
+# PROBE gosupark27/lmos-public-openai
+# PROBE gosupark27/lmos-public-claude
+# PROBE gosupark27/lms_public_claude
+# PROBE gosupark27/lms_public_grok
+
+# gpt gosupark27/lmos_public_gpt
+# openai gosupark27/lmos_public_openai

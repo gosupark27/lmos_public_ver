@@ -18,7 +18,7 @@ Python 3.11 or newer. The script uses the standard library plus `git`, `diff`, a
 
 ## Idempotency
 
-An unchanged commit does nothing: no clone of the tree, no new snapshot, no appended event, no rewritten trend file. The probe is `git ls-remote` for GitHub and `git rev-parse` for a local checkout.
+An unchanged commit does not clone the tree and does not seal another snapshot. The first observation of a GitHub rename or a label question appends one event and can write `state/repo_registry.json`. Repeating that observation writes nothing. The probe is `git ls-remote` for GitHub and `git rev-parse` for a local checkout. The GitHub id is read from the API and stored as `repo_id=` on the source line. A sealed model label is not rewritten from that id.
 
 If a seal is interrupted before `.complete`, the next run either finishes appending the already-written event excerpt or deletes the partial snapshot and captures again. Event ids are deterministic per commit, so a replay does not duplicate lines.
 
@@ -27,8 +27,10 @@ If a seal is interrupted before `.complete`, the next run either finishes append
 Placeholders are commented lines in `config/sources.txt`:
 
 ```
-# grok gosupark27/lmos-public-grok
+# grok gosupark27/lmos_public_grok repo_id=1435127338
 ```
+
+`repo_id` is optional and, once known, required for honesty. Two lines with the same id are one repository. The later one is commented out and a `LABEL_MISMATCH` is appended. A commented `PROBE owner/repo` line is checked for existence and is not a model.
 
 One command, once that repo exists:
 
@@ -49,7 +51,9 @@ A local checkout works in place of `owner/repo` if the target is an absolute pat
 - `deltas/over_time/<model>/<snapshot id>.patch` — unified text diff from the previous seal. Later trees are rebuilt by applying these patches to the baseline.
 - `deltas/over_time/<model>/<snapshot id>.blobs/` — raw bytes for binary files that changed.
 - `deltas/over_time/<model>/<snapshot id>.md` and `.json` — the path-level add, remove, and modify list.
-- `deltas/cross_model/<UTC stamp>.md` and `.json` — peer diff, or a spec comparison when only one model is sealed.
+- `deltas/cross_model/<UTC stamp>.md` and `.json` — peer diff when two labels have trees, or a spec comparison when identity could not be checked.
+- `deltas/cross_model/single-<repo id>__<sha>.md` — one GitHub id has the only tree. Pairs are empty. Aliases are not scored against each other.
+- `state/repo_registry.json` — repo id, current slug, names seen, and the assigned label.
 - `trends/snapshots.csv` and `TRENDS.md` — one row per snapshot. Rebuilt from manifests. Not append-only.
 - `logs/events.jsonl` — append-only.
 
