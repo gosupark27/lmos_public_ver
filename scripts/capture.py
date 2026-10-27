@@ -434,23 +434,56 @@ def export_text(files: dict[str, bytes], dest: Path) -> None:
         target.write_bytes(data)
 
 
+def _header_path(line: str) -> str:
+    return line[4:].split("\t", 1)[0].strip()
+
+
+def _old_file_header(line: str) -> bool:
+    if not line.startswith("--- "):
+        return False
+    path = _header_path(line)
+    return path == "/dev/null" or path.startswith("a/") or path.startswith("old/")
+
+
+def _new_file_header(line: str) -> bool:
+    if not line.startswith("+++ "):
+        return False
+    path = _header_path(line)
+    return path == "/dev/null" or path.startswith("b/") or path.startswith("new/")
+
+
+def _file_header_pair(line: str, nxt: str, third: str) -> bool:
+    """True when two lines are a unified-diff file header, not a hunk body.
+
+    A removed source line that begins with `-- ` is also `--- ` in the diff.
+    Those lines have no tab-separated timestamp and are not followed by `+++ `.
+    """
+    if not (_old_file_header(line) and _new_file_header(nxt)):
+        return False
+    return third == "" or third.startswith("@@")
+
+
 def normalize_diff(raw: str) -> str:
     lines: list[str] = []
     for line in raw.splitlines(keepends=True):
         if line.startswith("Binary files ") or line.startswith("diff -ruN "):
             continue
+        # diff -ruN file headers always carry a tab and a timestamp.
+        # Hunk lines such as `--- Better Auth schema` do not.
         if line.startswith("--- ") or line.startswith("+++ "):
-            meta, _, rest = line.partition("\t")
-            path = meta[4:]
-            epoch = rest.startswith("1970-01-01")
-            if path.startswith("old/"):
-                label = "/dev/null" if epoch else "a/" + path[4:]
-            elif path.startswith("new/"):
-                label = "/dev/null" if epoch else "b/" + path[4:]
-            else:
-                label = path
-            lines.append(f"{meta[:4]}{label}\n")
-            continue
+            meta, sep, rest = line.partition("\t")
+            path = meta[4:].strip()
+            header = sep == "\t" and (path.startswith(("old/", "new/")) or path == "/dev/null")
+            if header:
+                epoch = rest.startswith("1970-01-01")
+                if path.startswith("old/"):
+                    label = "/dev/null" if epoch else "a/" + path[4:]
+                elif path.startswith("new/"):
+                    label = "/dev/null" if epoch else "b/" + path[4:]
+                else:
+                    label = path
+                lines.append(f"{meta[:4]}{label}\n")
+                continue
         lines.append(line if line.endswith("\n") else line + "\n")
     return "".join(lines)
 
@@ -476,31 +509,28 @@ def text_patch(old: dict[str, bytes], new: dict[str, bytes]) -> str:
 
 def split_patch(patch: str) -> dict[str, str]:
     """Map a relative path to its unified-diff chunk."""
+    rows = patch.splitlines(keepends=True)
     chunks: dict[str, list[str]] = {}
     current: str | None = None
-    for line in patch.splitlines(keepends=True):
-        if line.startswith("--- "):
-            current = None
-            chunks.setdefault("__pending__", [])
-            # start a new chunk on the next +++ 
-            bucket: list[str] = [line]
-            chunks["__open__"] = bucket
-            continue
-        if line.startswith("+++ ") and "__open__" in chunks:
-            label = line[4:].strip()
-            if label == "/dev/null":
-                minus = chunks["__open__"][0][4:].strip()
+    index = 0
+    while index < len(rows):
+        line = rows[index]
+        nxt = rows[index + 1] if index + 1 < len(rows) else ""
+        third = rows[index + 2] if index + 2 < len(rows) else ""
+        if _file_header_pair(line, nxt, third):
+            plus = _header_path(nxt)
+            minus = _header_path(line)
+            if plus == "/dev/null":
                 path = minus[2:] if minus.startswith("a/") else minus
             else:
-                path = label[2:] if label.startswith("b/") else label
+                path = plus[2:] if plus.startswith(("b/", "new/")) else plus
             current = path
-            chunks[current] = chunks.pop("__open__")
-            chunks[current].append(line)
+            chunks[current] = [line, nxt]
+            index += 2
             continue
-        if current and current in chunks:
-            chunks[current].append(line)
-    chunks.pop("__pending__", None)
-    chunks.pop("__open__", None)
+        if current is not None:
+            chunks.setdefault(current, []).append(line)
+        index += 1
     return {path: "".join(body) for path, body in chunks.items()}
 
 
@@ -508,11 +538,20 @@ def line_stats_from_chunk(chunk: str, binary: bool) -> dict:
     if binary:
         return {"added": 0, "removed": 0, "binary": True}
     added = removed = 0
-    for line in chunk.splitlines():
-        if line.startswith("+") and not line.startswith("+++"):
+    rows = chunk.splitlines()
+    index = 0
+    while index < len(rows):
+        line = rows[index]
+        nxt = rows[index + 1] if index + 1 < len(rows) else ""
+        third = rows[index + 2] if index + 2 < len(rows) else ""
+        if _file_header_pair(line, nxt, third):
+            index += 2
+            continue
+        if line.startswith("+"):
             added += 1
-        elif line.startswith("-") and not line.startswith("---"):
+        elif line.startswith("-"):
             removed += 1
+        index += 1
     return {"added": added, "removed": removed, "binary": False}
 
 
@@ -553,17 +592,31 @@ def binary_changes(old: dict[str, Rec], new: dict[str, Rec]) -> list[dict]:
 def apply_text_patch(tree: Path, patch: str) -> None:
     if not patch.strip():
         return
+    # GNU patch treats a hunk line that starts with `--- ` as a new file header.
+    # git apply honors the @@ counts, so a removed `-- ` comment survives.
+    git_dir = tree / ".git"
+    created = not git_dir.exists()
+    if created:
+        init = subprocess.run(["git", "init", "-q"], cwd=tree, capture_output=True, text=True)
+        if init.returncode != 0:
+            detail = (init.stderr or init.stdout or "").strip()
+            raise RuntimeError(f"git init failed before apply: {detail[:400]}")
+    env = os.environ.copy()
+    env["GIT_DIR"] = str(git_dir)
+    env["GIT_WORK_TREE"] = str(tree)
     proc = subprocess.run(
-        ["patch", "-p1", "--forward", "--batch", "--silent"],
+        ["git", "apply", "--whitespace=nowarn", "-p1", "-"],
         cwd=tree,
         input=patch,
         text=True,
         capture_output=True,
+        env=env,
     )
-    rejects = list(tree.rglob("*.rej"))
-    if proc.returncode != 0 or rejects:
+    if created and git_dir.exists():
+        shutil.rmtree(git_dir)
+    if proc.returncode != 0:
         detail = (proc.stderr or proc.stdout or "").strip()
-        raise RuntimeError(f"patch failed: {detail[:400]} rejects={rejects}")
+        raise RuntimeError(f"patch failed: {detail[:400]}")
 
 
 def rebuild_bytes(old: dict[str, bytes], patch: str, binary_ops: list[dict], blobs: dict[str, bytes]) -> dict[str, bytes]:
@@ -1644,9 +1697,16 @@ def write_cross(root: Path, captured_at: str, placeholders: list[Source], known_
                 f"{pair['identical_count']} shared paths match and {missing} paths exist only in {larger}. "
                 "The score is missing files, not conflicting edits."
             )
-        partial_models = [item["model"] for item in latest if item.get("completeness") == "partial"]
+        partial_models = [item for item in latest if item.get("completeness") == "partial"]
         if partial_models:
-            summary += " PARTIAL: " + ", ".join(partial_models) + " is still receiving batch commits."
+            bits = []
+            for item in partial_models:
+                subject = ((item.get("commit") or {}).get("subject")) or ""
+                if BATCH_SUBJECT.search(subject):
+                    bits.append(f"{item['model']} is still receiving batch commits")
+                else:
+                    bits.append(f"{item['model']} batch history still repeats or skips")
+            summary += " PARTIAL: " + "; ".join(bits) + "."
     model_rows = []
     for manifest in latest:
         model_rows.append(
@@ -1850,9 +1910,16 @@ def write_trends(root: Path) -> None:
             extra.append(f"repeated batches {detail['repeated_batches']}")
         if detail.get("missing_batches"):
             extra.append(f"missing batches {detail['missing_batches']}")
+        subject = ((manifest.get("commit") or {}).get("subject")) or ""
+        if BATCH_SUBJECT.search(subject):
+            head_sentence = "HEAD is still an Add original source batch commit."
+        elif subject:
+            head_sentence = f"HEAD `{subject}` is not a batch commit."
+        else:
+            head_sentence = "HEAD is not a batch commit."
         md.append(
             f"`{manifest['model']}` `{manifest['commit']['sha'][:12]}` is PARTIAL. "
-            "HEAD is still an Add original source batch commit. "
+            f"{head_sentence} "
             f"Batches seen: {span}."
             + ((" " + "; ".join(extra) + ".") if extra else "")
         )
@@ -1863,6 +1930,7 @@ def write_trends(root: Path) -> None:
         md.append(pair_summary)
         md.append("")
     md.extend(identity_lines(root))
+    md.extend(prompt_lines(root))
     md.append("CSV: `trends/snapshots.csv`.")
     md.append("")
     write_if_changed(root / "trends" / "snapshots.csv", csv_text)
@@ -1991,6 +2059,13 @@ def identity_lines(root: Path) -> list[str]:
 
 PROBE_LINE = re.compile(r"^#\s+PROBE\s+(?P<target>\S+)\s*$")
 ALIAS_LINE = re.compile(r"^#\s+ALIASES\s+(?P<repo_id>\d+)\s+(?P<names>.+?)\s*$")
+PROMPT_LINE = re.compile(
+    r"^#\s+PROMPT\s+(?P<model>[a-z][a-z0-9_-]{0,31})\s+(?P<version>\S+)"
+    r"(?:\s+sha256=(?P<sha>\S+))?"
+    r"(?:\s+file=(?P<file>\S+))?"
+    r"(?:\s+status=(?P<status>\S+))?"
+    r"\s*$"
+)
 HOP_LINE = re.compile(
     r"^#\s+ALIAS_HOP\s+(?P<repo_id>\d+)\s+(?P<old>\S+)\s+(?P<new>\S+)"
     r"(?:\s+observed_at=(?P<observed>\S+))?\s*$"
@@ -2130,6 +2205,65 @@ def parse_aliases(text: str) -> dict[str, list[str]]:
             if name not in bucket:
                 bucket.append(name)
     return found
+
+
+def parse_prompts(text: str) -> list[dict]:
+    found = []
+    for raw in text.splitlines():
+        match = PROMPT_LINE.match(raw.strip())
+        if not match:
+            continue
+        found.append(
+            {
+                "model": match.group("model"),
+                "version": match.group("version"),
+                "sha256": match.group("sha") or "pending",
+                "file": match.group("file") or "pending",
+                "status": match.group("status") or "recorded",
+            }
+        )
+    return found
+
+
+def prompt_lines(root: Path) -> list[str]:
+    path = root / "config" / "sources.txt"
+    if not path.exists():
+        return []
+    prompts = parse_prompts(path.read_text(encoding="utf-8"))
+    if not prompts:
+        return []
+    lines = [
+        "## Prompt versions",
+        "",
+        "Each model ran a named prompt. The SHA-256 is the pinned spec file when that file is in this tracker. `pending` means the text is not here yet.",
+        "",
+        "| model | prompt | file | sha256 | status |",
+        "| --- | --- | --- | --- | --- |",
+    ]
+    for item in prompts:
+        sha = item["sha256"]
+        shown = sha if sha == "pending" or len(sha) < 16 else f"{sha[:8]}…{sha[-4:]}"
+        lines.append(
+            f"| {item['model']} | {item['version']} | {item['file']} | `{shown}` | {item['status']} |"
+        )
+    lines.append("")
+    by_version: dict[str, list[str]] = {}
+    for item in prompts:
+        by_version.setdefault(item["version"], []).append(item["model"])
+    if "PV-0.9.0-full" in by_version and "PV-0.10-lite" in by_version:
+        full = ", ".join(by_version["PV-0.9.0-full"])
+        lite = ", ".join(by_version["PV-0.10-lite"])
+        lines.append(
+            f"{full} ran PV-0.9.0-full (`reference/lmos_public.md`). {lite} is assigned PV-0.10-lite, the lightweight prompt, and that text is still pending. "
+            "ChatGPT versus Claude or Grok is a big prompt against a lightweight prompt. Model and prompt are confounded. It is not a model-versus-model comparison."
+        )
+        lines.append("")
+    elif len(by_version) > 1:
+        lines.append(
+            "More than one prompt version is assigned. A comparison across those versions confounds model and prompt. It is not a model-versus-model comparison."
+        )
+        lines.append("")
+    return lines
 
 
 def parse_hops(text: str) -> list[dict]:
@@ -2299,7 +2433,11 @@ def partial_upload(subjects: list[str]) -> dict | None:
     missing = [number for number in range(unique[0], unique[-1] + 1) if number not in present]
     if not latest_is_batch and not repeated and not missing:
         return None
-    reasons = ["HEAD is still an Add original source batch commit"]
+    reasons = []
+    if latest_is_batch:
+        reasons.append("HEAD is still an Add original source batch commit")
+    else:
+        reasons.append("HEAD is no longer a batch commit")
     if repeated:
         reasons.append("batch numbers repeat")
     if missing:
@@ -2308,6 +2446,7 @@ def partial_upload(subjects: list[str]) -> dict | None:
     return {
         "status": "partial",
         "reason": reason,
+        "head_is_batch": latest_is_batch,
         "batch_numbers": unique,
         "repeated_batches": repeated,
         "missing_batches": missing,
@@ -3409,6 +3548,39 @@ def apply_identity_audit(
                     },
                 )
             )
+            if current_slug == expected:
+                events.append(
+                    identity_event(
+                        timestamp=row.get("updated_at") or captured_at,
+                        event_id=f"evt-label-resolved-{repo_id}-{row['model']}",
+                        event_type="LABEL_MISMATCH_RESOLVED",
+                        severity="notice",
+                        outcome="resolved",
+                        model=row["model"],
+                        repo=row["full_name"],
+                        repo_url=row.get("html_url"),
+                        commit=None,
+                        snapshot_id=None,
+                        message=(
+                            f"The naming mismatch for repo_id {repo_id} is resolved. "
+                            + ", ".join(bad_aliases)
+                            + f" now redirects to {row['full_name']}, which matches {expected}. "
+                            "The earlier LABEL_MISMATCH for that created name stays in the log. "
+                            "The repository is still empty. The tracker did not rename the source."
+                        ),
+                        detail={
+                            "resolves": "LABEL_MISMATCH",
+                            "resolved_event_id": f"evt-label-typo-{repo_id}-{short_hash(bad_aliases)}",
+                            "repo_id": repo_id,
+                            "node_id": row.get("node_id"),
+                            "old_names": bad_aliases,
+                            "current_full_name": row["full_name"],
+                            "expected_pattern": expected,
+                            "commits": False,
+                            "source_renamed_by_tracker": False,
+                        },
+                    )
+                )
         apply_alias_hops(
             events,
             renames,
@@ -3562,6 +3734,31 @@ def apply_identity_audit(
             changed = True
         wrote_cross = True
 
+    prompt_versions = parse_prompts(text)
+    if prompt_versions:
+        registry["prompt_versions"] = prompt_versions
+        for item in prompt_versions:
+            events.append(
+                identity_event(
+                    timestamp=captured_at,
+                    event_id=f"evt-prompt-{item['model']}-{short_hash([item['version'], item['sha256'], item['file']])}",
+                    event_type="PROMPT_VERSION_RECORDED",
+                    severity="info",
+                    outcome="success",
+                    model=item["model"],
+                    repo=None,
+                    repo_url=None,
+                    commit=None,
+                    snapshot_id=None,
+                    message=(
+                        f"{item['model']} is assigned prompt {item['version']} "
+                        f"({item['file']}, sha256 {item['sha256']}, status {item['status']})."
+                    ),
+                    detail=item,
+                )
+            )
+        if append_events(root, events, known):
+            changed = True
     if any(source.attribution in ("confirmed", "assigned") for source in keepers):
         slots: dict[str, dict] = {}
         for source in keepers:

@@ -1,0 +1,941 @@
+{
+  "baseline": false,
+  "baseline_path": null,
+  "branch": "main",
+  "captured_at": "2026-10-27T02:28:10.359Z",
+  "commit": {
+    "author": "Claude",
+    "committed_at": "2026-10-27T02:04:09Z",
+    "sha": "3a3cd7e97db24df091c0b1cfd90b06542ba1870a",
+    "subject": "Replace repo contents with Claude's Handshake build",
+    "url": "https://github.com/gosupark27/lmos_public_claude/commit/3a3cd7e97db24df091c0b1cfd90b06542ba1870a"
+  },
+  "completeness": "complete",
+  "delta": {
+    "files_added": 51,
+    "files_modified": 3,
+    "files_removed": 97,
+    "lines_added": 8257,
+    "lines_removed": 14195
+  },
+  "file_count": 54,
+  "files": [
+    {
+      "band": "other",
+      "binary": false,
+      "lines": 4,
+      "path": ".dev.vars.example",
+      "sha256": "sha256:1145eb885cdd4839e6b9ce73a545ed6dd16624ccf85c5fecdb1fa488730bece5",
+      "size": 241
+    },
+    {
+      "band": "other",
+      "binary": false,
+      "lines": 5,
+      "path": ".gitignore",
+      "sha256": "sha256:c5aef4dd77ee6e19b295d1aabe4628670ab5bf422b4f9bbb2dc7c51fd87d2c94",
+      "size": 48
+    },
+    {
+      "band": "other",
+      "binary": false,
+      "lines": 121,
+      "path": "BUILD_LEDGER.md",
+      "sha256": "sha256:1da79ce49218bc0d81fd5b84d102b97c07cbad3bfd1e5d89ccf3cc039d3d0bb2",
+      "size": 15657
+    },
+    {
+      "band": "other",
+      "binary": false,
+      "lines": 79,
+      "path": "README.md",
+      "sha256": "sha256:7007895f7f22c106b7a4af8e0e43691b274a35faa1111186d996b711d1b97288",
+      "size": 4718
+    },
+    {
+      "band": "spec_copy",
+      "binary": false,
+      "lines": 155,
+      "path": "SPEC.md",
+      "sha256": "sha256:1e2c01b465b9b3e62fa898e75d6b829291e5f24a0f0bf8ae89db1a336ee10b88",
+      "size": 5739
+    },
+    {
+      "band": "other",
+      "binary": false,
+      "lines": 20,
+      "path": "package.json",
+      "sha256": "sha256:b4462b6ef182f91647abfb50e2d1dc06435a27186d35e83aa05c12ce941abe6a",
+      "size": 639
+    },
+    {
+      "band": "other",
+      "binary": false,
+      "lines": 82,
+      "path": "preview/build-preview.mjs",
+      "sha256": "sha256:e1393fd40afeaa3b35a08ab6289561086d9fd53156fa6dd9030d8c7c5f066e65",
+      "size": 3736
+    },
+    {
+      "band": "other",
+      "binary": false,
+      "lines": 5,
+      "path": "public/_headers",
+      "sha256": "sha256:f97271d93dbc4e265030aa6f2e16058cba88b91b183be64737c01e71c56e6dc6",
+      "size": 431
+    },
+    {
+      "band": "other",
+      "binary": false,
+      "lines": 62,
+      "path": "public/app/art.js",
+      "sha256": "sha256:cdf01665b04084de23163734ac105a1ec6b64c8000296eba59db11cb51663a09",
+      "size": 8855
+    },
+    {
+      "band": "other",
+      "binary": false,
+      "lines": 125,
+      "path": "public/app/audio.js",
+      "sha256": "sha256:65cd5b30774e443b42a65ff267bdece85f1aeb8dc5648d8cd29fe889eaf6d006",
+      "size": 4236
+    },
+    {
+      "band": "other",
+      "binary": false,
+      "lines": 64,
+      "path": "public/app/common.js",
+      "sha256": "sha256:dc3c93fa8f77c98924b4cdd349ba20b9efa81644d5ebc50075512c9c0c37281b",
+      "size": 2269
+    },
+    {
+      "band": "other",
+      "binary": false,
+      "lines": 86,
+      "path": "public/app/dom.js",
+      "sha256": "sha256:3845953b3d7e8936d577ae7625a14532e86190b14836860290b415e11ab70ac3",
+      "size": 2600
+    },
+    {
+      "band": "other",
+      "binary": false,
+      "lines": 70,
+      "path": "public/app/end.js",
+      "sha256": "sha256:7b8d6844aab577d6a5e71bbdbd792c677ee3526500af3bb0ca838326c4d6233f",
+      "size": 5206
+    },
+    {
+      "band": "other",
+      "binary": false,
+      "lines": 120,
+      "path": "public/app/home.js",
+      "sha256": "sha256:1f8cde0f01d002b93efd876b2f59ca61dc28e57866416295a30c9f4681004566",
+      "size": 6707
+    },
+    {
+      "band": "other",
+      "binary": false,
+      "lines": 167,
+      "path": "public/app/lobby.js",
+      "sha256": "sha256:8992f775c41b8aa91c48ee31702959007caa3f58256950f29231294ed0e31a91",
+      "size": 10742
+    },
+    {
+      "band": "other",
+      "binary": false,
+      "lines": 233,
+      "path": "public/app/main.js",
+      "sha256": "sha256:dcc5e1b128f034744e9756739a42c674f480fabb8f3a92b956fff3f763acf17f",
+      "size": 7457
+    },
+    {
+      "band": "other",
+      "binary": false,
+      "lines": 110,
+      "path": "public/app/moments.js",
+      "sha256": "sha256:c183435bef15b84d0d8b6177f1e40d793c33dda5e9800c94ee56b84833b0b007",
+      "size": 4968
+    },
+    {
+      "band": "other",
+      "binary": false,
+      "lines": 165,
+      "path": "public/app/net.js",
+      "sha256": "sha256:65d2c213c987082a87295092dddf1b58b111da1f1318bb0d17f04dc13276f358",
+      "size": 5487
+    },
+    {
+      "band": "other",
+      "binary": false,
+      "lines": 97,
+      "path": "public/app/sheets.js",
+      "sha256": "sha256:e50b7a5fb311aa59c96220dbfcb72c268d717c234d0a59c32474a72f30edf44e",
+      "size": 5277
+    },
+    {
+      "band": "other",
+      "binary": false,
+      "lines": 168,
+      "path": "public/app/sky.js",
+      "sha256": "sha256:086ca2525a0caf0805a35fd0202c49f3804210e1aba3110f0cbeb020234576a1",
+      "size": 5802
+    },
+    {
+      "band": "other",
+      "binary": false,
+      "lines": 472,
+      "path": "public/app/style.css",
+      "sha256": "sha256:91e4c7ee347a3032777114526cde1a97e58347f8d9602d871b5a2ebbe1fc603f",
+      "size": 25849
+    },
+    {
+      "band": "other",
+      "binary": false,
+      "lines": 571,
+      "path": "public/app/table.js",
+      "sha256": "sha256:f867ada106c8469552d4f440865e11163b521f9e7ae0bd80c0b78b2721ca9632",
+      "size": 33320
+    },
+    {
+      "band": "other",
+      "binary": false,
+      "lines": 128,
+      "path": "public/app/text.js",
+      "sha256": "sha256:48d3d26fc9c5fb4caacfe93d640344461010340ac4754282a7331f02c93493b5",
+      "size": 8063
+    },
+    {
+      "band": "other",
+      "binary": false,
+      "lines": 383,
+      "path": "public/engine/bots.js",
+      "sha256": "sha256:3ff0f7fa0e736a4426d2d241ebf46901a70d624d80d8d5de7af2f1703c68e140",
+      "size": 17657
+    },
+    {
+      "band": "other",
+      "binary": false,
+      "lines": 179,
+      "path": "public/engine/constants.js",
+      "sha256": "sha256:28062927ce6d8b60a7451d74e7f8223dbfe4dfce117cb0e885a8783f826702da",
+      "size": 7546
+    },
+    {
+      "band": "other",
+      "binary": false,
+      "lines": 266,
+      "path": "public/engine/content.js",
+      "sha256": "sha256:6b89f0de2d80c897a08cacf3bd1c306b875843b55107f672aac979b7b994ee66",
+      "size": 16816
+    },
+    {
+      "band": "other",
+      "binary": false,
+      "lines": 333,
+      "path": "public/engine/core.js",
+      "sha256": "sha256:6cfe4845288d0f2aa211752bc29f475203b59a05adb6cd31021fb5463efc1e81",
+      "size": 11968
+    },
+    {
+      "band": "other",
+      "binary": false,
+      "lines": 274,
+      "path": "public/engine/intents.js",
+      "sha256": "sha256:81180667cdb4daa052174b4010701b7e6f329ceda7121311f9822a45cbeef197",
+      "size": 10894
+    },
+    {
+      "band": "other",
+      "binary": false,
+      "lines": 192,
+      "path": "public/engine/ladder.js",
+      "sha256": "sha256:be97ea57cfae6fed88a2dedbd9c139d1e32d8206ba2eadf7a91d72f1ba6799f3",
+      "size": 8540
+    },
+    {
+      "band": "other",
+      "binary": false,
+      "lines": 218,
+      "path": "public/engine/legal.js",
+      "sha256": "sha256:d5c30b39c02fbd5f31e5dd53267a5793b8e0a0ce6e12fbb257b9e49de69b5a1a",
+      "size": 8441
+    },
+    {
+      "band": "other",
+      "binary": false,
+      "lines": 28,
+      "path": "public/engine/memory-io.js",
+      "sha256": "sha256:5290788a92c6daf19e0215a5c361e549bd0a5f496c949c842a9a279d65ccd917",
+      "size": 979
+    },
+    {
+      "band": "other",
+      "binary": false,
+      "lines": 176,
+      "path": "public/engine/narrator.js",
+      "sha256": "sha256:b527c71bb6a921e9871e7384c85281f5958c231efcc5cb539c956bc9f664d71f",
+      "size": 8896
+    },
+    {
+      "band": "other",
+      "binary": false,
+      "lines": 46,
+      "path": "public/engine/rng.js",
+      "sha256": "sha256:a70f6e214bfef91f998a6421479365a46fb272cdf6d02d4a2b2627b95c380b4c",
+      "size": 1446
+    },
+    {
+      "band": "other",
+      "binary": false,
+      "lines": 749,
+      "path": "public/engine/rules.js",
+      "sha256": "sha256:9fb7759bc42ec41a1cee2c6f01b6fd2cea0820694b209269d5792ca7a8d4e795",
+      "size": 30662
+    },
+    {
+      "band": "other",
+      "binary": false,
+      "lines": 98,
+      "path": "public/engine/sha256.js",
+      "sha256": "sha256:40fdbf46be7faee3fb9231e4185d6f5d51c8fd1d11d37d93f418359df88fecc7",
+      "size": 4493
+    },
+    {
+      "band": "other",
+      "binary": false,
+      "lines": 347,
+      "path": "public/engine/state.js",
+      "sha256": "sha256:2f213ca7bf23c033926a6b7fe8e199fd4f86199ccaec732eafb4c47d7d4966c0",
+      "size": 10765
+    },
+    {
+      "band": "other",
+      "binary": false,
+      "lines": 148,
+      "path": "public/engine/views.js",
+      "sha256": "sha256:369b84bc7ee802e8cee234243729fa929b8c50b0485f38220697be4121ffbb6f",
+      "size": 5827
+    },
+    {
+      "band": "other",
+      "binary": false,
+      "lines": 20,
+      "path": "public/index.html",
+      "sha256": "sha256:10e15c0243518f85405bb52f452ed778cf9ddc7cab0536884b8eaa7f46637f09",
+      "size": 1167
+    },
+    {
+      "band": "other",
+      "binary": false,
+      "lines": 26,
+      "path": "scripts/sim-lib.mjs",
+      "sha256": "sha256:46c7a578072bd4baf10c66d2f91147976f19f6acd70ee74766e09a004d10cb50",
+      "size": 1124
+    },
+    {
+      "band": "other",
+      "binary": false,
+      "lines": 64,
+      "path": "scripts/simulate.mjs",
+      "sha256": "sha256:9c239b5f456f5047e6679cc8069a6274a9ccfeed156404f0360b67e1ab6cdd45",
+      "size": 3687
+    },
+    {
+      "band": "other",
+      "binary": false,
+      "lines": 160,
+      "path": "scripts/smoke.mjs",
+      "sha256": "sha256:75bf3fc81e2ff4b668ee702f56778428faeaaa1e600d2e7cfed0462bac7a532d",
+      "size": 7261
+    },
+    {
+      "band": "other",
+      "binary": false,
+      "lines": 7,
+      "path": "scripts/spec-hash.mjs",
+      "sha256": "sha256:c1f686065605ed32a7ea4ead2f0f0b393f5600621cb71b1599be2a747ced3220",
+      "size": 572
+    },
+    {
+      "band": "other",
+      "binary": false,
+      "lines": 189,
+      "path": "server/cf-shim.mjs",
+      "sha256": "sha256:6fd01810268afbdcb2f45f922f60d6452642c9a9eb2ad42e2dab1f46fd97e47b",
+      "size": 6714
+    },
+    {
+      "band": "other",
+      "binary": false,
+      "lines": 156,
+      "path": "server/dev.mjs",
+      "sha256": "sha256:a7325b2f814070799ff5f095cab42738384086403616f34880f939a844723b0a",
+      "size": 6413
+    },
+    {
+      "band": "other",
+      "binary": false,
+      "lines": 93,
+      "path": "server/ws.mjs",
+      "sha256": "sha256:0592fb42abe5c7ecf69757aff34d7ac7e3fb75202023956fec89300fbf6630b0",
+      "size": 3767
+    },
+    {
+      "band": "other",
+      "binary": false,
+      "lines": 28,
+      "path": "src/codes.js",
+      "sha256": "sha256:9494c17a584cf668e12b5b41e5bf62512cd02494e42909ce1d7919af5dc24b09",
+      "size": 1172
+    },
+    {
+      "band": "other",
+      "binary": false,
+      "lines": 233,
+      "path": "src/room.js",
+      "sha256": "sha256:57abbce264f3511c7453f6b66719f7054a3ed901a2abf87970d984ec2c6be6b5",
+      "size": 9313
+    },
+    {
+      "band": "other",
+      "binary": false,
+      "lines": 3,
+      "path": "src/spec.js",
+      "sha256": "sha256:c79d90ea30d60365137b66789795b4c033dd5ba63fa295016884a23b6d45076e",
+      "size": 263
+    },
+    {
+      "band": "other",
+      "binary": false,
+      "lines": 73,
+      "path": "src/worker.js",
+      "sha256": "sha256:49b747db7142b426a994789486683bb7f0b71bd00e22d75bd06fe24b5598e6e1",
+      "size": 2713
+    },
+    {
+      "band": "other",
+      "binary": false,
+      "lines": 247,
+      "path": "test/game.test.mjs",
+      "sha256": "sha256:6190fbb373701133a4b8bd608efdf6e0ca4a7edbeb90b215842fb902b335cb4c",
+      "size": 10832
+    },
+    {
+      "band": "other",
+      "binary": false,
+      "lines": 56,
+      "path": "test/helpers.mjs",
+      "sha256": "sha256:c5a9bf37196c7a8c26b838f734db6f2741f51cb6b9e45911db2073ca91b0fe69",
+      "size": 2498
+    },
+    {
+      "band": "other",
+      "binary": false,
+      "lines": 189,
+      "path": "test/invariants.test.mjs",
+      "sha256": "sha256:ce2982d644bca1c7aeff1624ae275c6522bd6ab294dc994d690504b443647bfb",
+      "size": 8593
+    },
+    {
+      "band": "other",
+      "binary": false,
+      "lines": 162,
+      "path": "test/redteam.test.mjs",
+      "sha256": "sha256:ae5101a726944021179ea70ed1e497aceac8715d869b3bdc339b38d2867b0f73",
+      "size": 8399
+    },
+    {
+      "band": "other",
+      "binary": false,
+      "lines": 18,
+      "path": "wrangler.jsonc",
+      "sha256": "sha256:cd5bf4403d613e18e9fa8d8678c9b770e1014ddefa423dc5c7790222ea34b425",
+      "size": 575
+    }
+  ],
+  "model": "claude",
+  "node_id": "R_kgDOVYmTtQ",
+  "parent_snapshot_id": "2026-10-27T01-56-07.023Z__46018f12b4d208c79da82c0888b51541f6c85fba",
+  "partial_detail": null,
+  "repo": "gosupark27/lmos_public_claude",
+  "repo_id": "1435079605",
+  "repo_url": "https://github.com/gosupark27/lmos_public_claude",
+  "schema": "lmos.snapshot.v1",
+  "snapshot_id": "2026-10-27T02-28-10.359Z__3a3cd7e97db24df091c0b1cfd90b06542ba1870a",
+  "spec": {
+    "concepts": [
+      {
+        "count": null,
+        "covered": true,
+        "evidence": [
+          "BUILD_LEDGER.md"
+        ],
+        "id": "anonymous_room_codes",
+        "label": "Anonymous play addressed by room code",
+        "section": "Handshake"
+      },
+      {
+        "count": null,
+        "covered": true,
+        "evidence": [
+          "BUILD_LEDGER.md"
+        ],
+        "id": "phone_first",
+        "label": "Phone-first layout",
+        "section": "Handshake"
+      },
+      {
+        "count": null,
+        "covered": true,
+        "evidence": [
+          "BUILD_LEDGER.md",
+          "BUILD_LEDGER.md",
+          "BUILD_LEDGER.md",
+          "BUILD_LEDGER.md"
+        ],
+        "id": "four_archetypes",
+        "label": "Four archetypes: Kingmaker, Populist, Shadow Broker, Idealist",
+        "section": "Archetypes"
+      },
+      {
+        "count": null,
+        "covered": true,
+        "evidence": [
+          "public/engine/constants.js"
+        ],
+        "id": "relinquish",
+        "label": "Each archetype gives something up",
+        "section": "Archetypes"
+      },
+      {
+        "count": 12,
+        "covered": true,
+        "evidence": [
+          "public/engine/content.js"
+        ],
+        "id": "twelve_characters",
+        "label": "Twelve characters, slots filled at build time",
+        "section": "Characters"
+      },
+      {
+        "count": null,
+        "covered": true,
+        "evidence": [
+          "BUILD_LEDGER.md",
+          "BUILD_LEDGER.md",
+          "BUILD_LEDGER.md"
+        ],
+        "id": "three_tiers",
+        "label": "Beginner, intermediate, and advanced tiers",
+        "section": "Scenarios"
+      },
+      {
+        "count": 0,
+        "covered": false,
+        "evidence": [],
+        "id": "nine_titled_beats",
+        "label": "At least nine titled scenario beats",
+        "section": "Scenarios"
+      },
+      {
+        "count": null,
+        "covered": true,
+        "evidence": [
+          "BUILD_LEDGER.md"
+        ],
+        "id": "canon_66",
+        "label": "66-event canon with 57 parked and nine loaded",
+        "section": "Scenarios"
+      },
+      {
+        "count": null,
+        "covered": true,
+        "evidence": [
+          "BUILD_LEDGER.md"
+        ],
+        "id": "lever_heat",
+        "label": "Heat lever",
+        "section": "Levers"
+      },
+      {
+        "count": null,
+        "covered": true,
+        "evidence": [
+          "BUILD_LEDGER.md"
+        ],
+        "id": "lever_boundary",
+        "label": "Boundary lever",
+        "section": "Levers"
+      },
+      {
+        "count": null,
+        "covered": true,
+        "evidence": [
+          "public/app/text.js"
+        ],
+        "id": "lever_power",
+        "label": "Power lever, who is treated as leading",
+        "section": "Levers"
+      },
+      {
+        "count": null,
+        "covered": true,
+        "evidence": [
+          "BUILD_LEDGER.md"
+        ],
+        "id": "lever_silence",
+        "label": "Silence lever",
+        "section": "Levers"
+      },
+      {
+        "count": null,
+        "covered": true,
+        "evidence": [
+          "BUILD_LEDGER.md"
+        ],
+        "id": "lever_influence",
+        "label": "Influence lever",
+        "section": "Levers"
+      },
+      {
+        "count": null,
+        "covered": true,
+        "evidence": [
+          "test/redteam.test.mjs"
+        ],
+        "id": "lever_hidden",
+        "label": "Hidden lever",
+        "section": "Levers"
+      },
+      {
+        "count": null,
+        "covered": true,
+        "evidence": [
+          "BUILD_LEDGER.md"
+        ],
+        "id": "lever_presence",
+        "label": "Presence as a visible state",
+        "section": "Levers"
+      },
+      {
+        "count": null,
+        "covered": false,
+        "evidence": [
+          "BUILD_LEDGER.md",
+          "contradicted by test/invariants.test.mjs"
+        ],
+        "id": "presence_not_an_action",
+        "label": "Presence cannot be targeted, voted, or accused",
+        "section": "Levers"
+      },
+      {
+        "count": null,
+        "covered": true,
+        "evidence": [
+          "BUILD_LEDGER.md"
+        ],
+        "id": "secret_elo",
+        "label": "Secret Elo as truthfulness, words against hands",
+        "section": "Secret Elo"
+      },
+      {
+        "count": null,
+        "covered": true,
+        "evidence": [
+          "BUILD_LEDGER.md"
+        ],
+        "id": "trinity_names",
+        "label": "Trinity names for Elo, narrator, and steward",
+        "section": "Secret Elo"
+      },
+      {
+        "count": null,
+        "covered": true,
+        "evidence": [
+          "BUILD_LEDGER.md",
+          "BUILD_LEDGER.md"
+        ],
+        "id": "saboteur_prodigal",
+        "label": "Mid-game saboteur and a prodigal seat",
+        "section": "Saboteur"
+      },
+      {
+        "count": null,
+        "covered": true,
+        "evidence": [
+          "BUILD_LEDGER.md"
+        ],
+        "id": "clients_send_intents",
+        "label": "Clients send intents, not state",
+        "section": "State boundaries"
+      },
+      {
+        "count": null,
+        "covered": true,
+        "evidence": [
+          "README.md"
+        ],
+        "id": "server_clock",
+        "label": "Clock is server-owned",
+        "section": "State boundaries"
+      },
+      {
+        "count": null,
+        "covered": true,
+        "evidence": [
+          "public/engine/rules.js"
+        ],
+        "id": "secrets_stay_off_client",
+        "label": "Server-only secrets stay off the client view",
+        "section": "State boundaries"
+      },
+      {
+        "count": null,
+        "covered": true,
+        "evidence": [
+          "public/engine/core.js"
+        ],
+        "id": "bot_on_disconnect",
+        "label": "A bot takes a live seat that disconnects",
+        "section": "State boundaries"
+      },
+      {
+        "count": null,
+        "covered": true,
+        "evidence": [
+          "BUILD_LEDGER.md"
+        ],
+        "id": "outbreak",
+        "label": "Outbreak is a simultaneous broadcast",
+        "section": "State boundaries"
+      },
+      {
+        "count": null,
+        "covered": true,
+        "evidence": [
+          "BUILD_LEDGER.md"
+        ],
+        "id": "delta_sync",
+        "label": "Refresh is a public snapshot plus a private delta",
+        "section": "State boundaries"
+      },
+      {
+        "count": null,
+        "covered": true,
+        "evidence": [
+          "public/engine/constants.js"
+        ],
+        "id": "imposter_cap",
+        "label": "Imposter count starts at one and stacks to a cap",
+        "section": "Invariants"
+      },
+      {
+        "count": null,
+        "covered": true,
+        "evidence": [
+          "README.md"
+        ],
+        "id": "sacrifice_idempotent",
+        "label": "Sacrifice is idempotent",
+        "section": "Invariants"
+      },
+      {
+        "count": null,
+        "covered": true,
+        "evidence": [
+          "server/dev.mjs"
+        ],
+        "id": "unguessable_codes",
+        "label": "Room codes are not guessable",
+        "section": "Invariants"
+      },
+      {
+        "count": null,
+        "covered": true,
+        "evidence": [
+          "BUILD_LEDGER.md"
+        ],
+        "id": "ledger_append_only",
+        "label": "Ledger appends and does not mutate",
+        "section": "Ledger"
+      },
+      {
+        "count": null,
+        "covered": true,
+        "evidence": [
+          "BUILD_LEDGER.md"
+        ],
+        "id": "heat_does_not_flash",
+        "label": "Heat simmers and cannot flash",
+        "section": "Levers"
+      },
+      {
+        "count": null,
+        "covered": true,
+        "evidence": [
+          "BUILD_LEDGER.md",
+          "BUILD_LEDGER.md"
+        ],
+        "id": "rating_ladder",
+        "label": "Rating ladder from A-minus through S-plus, decimals to hundredths",
+        "section": "Rating"
+      },
+      {
+        "count": null,
+        "covered": true,
+        "evidence": [
+          "BUILD_LEDGER.md"
+        ],
+        "id": "sealed_x",
+        "label": "X is sealed and discoverable, not climbed",
+        "section": "Rating"
+      },
+      {
+        "count": null,
+        "covered": true,
+        "evidence": [
+          "BUILD_LEDGER.md"
+        ],
+        "id": "sunrise_screen",
+        "label": "Sunrise loading screen",
+        "section": "Sunrise"
+      },
+      {
+        "count": null,
+        "covered": false,
+        "evidence": [],
+        "id": "tier_colors",
+        "label": "Yellow, red, blue, and pink tier colors",
+        "section": "Sunrise"
+      },
+      {
+        "count": null,
+        "covered": true,
+        "evidence": [
+          "BUILD_LEDGER.md"
+        ],
+        "id": "fracture_or_desync",
+        "label": "Desync or a Rome-to-1775 fracture",
+        "section": "Sunrise"
+      },
+      {
+        "count": null,
+        "covered": true,
+        "evidence": [
+          "test/game.test.mjs"
+        ],
+        "id": "sees_you",
+        "label": "The game admits it sees the player",
+        "section": "Sunrise"
+      },
+      {
+        "count": null,
+        "covered": true,
+        "evidence": [
+          "src/codes.js"
+        ],
+        "id": "host_only",
+        "label": "Only the host creates and configures the room",
+        "section": "Entrance"
+      },
+      {
+        "count": null,
+        "covered": true,
+        "evidence": [
+          "BUILD_LEDGER.md"
+        ],
+        "id": "flashlight",
+        "label": "Flashlight cursor",
+        "section": "Entrance"
+      },
+      {
+        "count": null,
+        "covered": false,
+        "evidence": [],
+        "id": "bells",
+        "label": "Bells stack when someone joins",
+        "section": "Entrance"
+      },
+      {
+        "count": null,
+        "covered": true,
+        "evidence": [
+          "BUILD_LEDGER.md"
+        ],
+        "id": "builder_marks",
+        "label": "Builder checkmarks learned by playing",
+        "section": "Entrance"
+      },
+      {
+        "count": null,
+        "covered": true,
+        "evidence": [
+          "BUILD_LEDGER.md",
+          "BUILD_LEDGER.md",
+          "public/engine/constants.js"
+        ],
+        "id": "trail_economy",
+        "label": "Weight, sacrifice, trade, and a destination",
+        "section": "Oregon"
+      },
+      {
+        "count": null,
+        "covered": true,
+        "evidence": [
+          "BUILD_LEDGER.md"
+        ],
+        "id": "oregon_named",
+        "label": "Names the Oregon Trail frame",
+        "section": "Oregon"
+      },
+      {
+        "count": null,
+        "covered": true,
+        "evidence": [
+          "BUILD_LEDGER.md"
+        ],
+        "id": "peace_four",
+        "label": "Peace victory from four independent sacrifices",
+        "section": "Milestones"
+      },
+      {
+        "count": null,
+        "covered": true,
+        "evidence": [
+          "BUILD_LEDGER.md"
+        ],
+        "id": "dupr_five",
+        "label": "Five DUPR-mapped tiers",
+        "section": "Entrance"
+      },
+      {
+        "count": null,
+        "covered": true,
+        "evidence": [
+          "BUILD_LEDGER.md"
+        ],
+        "id": "invite_leave_on_read",
+        "label": "Invitees accept or leave the invite on read",
+        "section": "Entrance"
+      },
+      {
+        "count": null,
+        "covered": false,
+        "evidence": [],
+        "id": "edge_conflicts",
+        "label": "Conflicting intents or a stale round are rejected",
+        "section": "Edge cases"
+      }
+    ],
+    "coverage": 0.8913,
+    "covered": 41,
+    "extra_surfaces": [],
+    "gap_score": 10.9,
+    "rubric_sha256": "sha256:8aeb68c400f809a9a609b9f67caac430344f6ebd2a9832c94edcae5d7e3bdb02",
+    "spec_sha256": "sha256:1e2c01b465b9b3e62fa898e75d6b829291e5f24a0f0bf8ae89db1a336ee10b88",
+    "total": 46
+  },
+  "total_bytes": 388040,
+  "total_lines": 8270,
+  "tree_sha256": "sha256:d9b906eb52711ba4ca3465db7969d25aa0d6b34d01aac991ae2c81418e312a8c"
+}

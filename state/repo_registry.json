@@ -19,6 +19,29 @@
       "state": "tracked"
     }
   },
+  "prompt_versions": [
+    {
+      "file": "reference/lmos_public.md",
+      "model": "claude",
+      "sha256": "1e2c01b465b9b3e62fa898e75d6b829291e5f24a0f0bf8ae89db1a336ee10b88",
+      "status": "pinned",
+      "version": "PV-0.9.0-full"
+    },
+    {
+      "file": "reference/lmos_public.md",
+      "model": "grok",
+      "sha256": "1e2c01b465b9b3e62fa898e75d6b829291e5f24a0f0bf8ae89db1a336ee10b88",
+      "status": "pinned",
+      "version": "PV-0.9.0-full"
+    },
+    {
+      "file": "pending",
+      "model": "chatgpt",
+      "sha256": "pending",
+      "status": "text-pending",
+      "version": "PV-0.10-lite"
+    }
+  ],
   "repos": {
     "1435079605": {
       "attribution": "confirmed",
@@ -31,7 +54,7 @@
       "current_full_name": "gosupark27/lmos_public_claude",
       "description": "Handshake / Living Mirror OS public source.",
       "detected_at": "2026-10-27T01:56:07.023Z",
-      "head": "46018f12b4d208c79da82c0888b51541f6c85fba",
+      "head": "3a3cd7e97db24df091c0b1cfd90b06542ba1870a",
       "html_url": "https://github.com/gosupark27/lmos_public_claude",
       "model_label": "claude",
       "model_slot": "tracked",
@@ -42,10 +65,11 @@
         "gosupark27/lmos_public_claude"
       ],
       "node_id": "R_kgDOVYmTtQ",
-      "note": "Josh confirmed repo_id 1435079605 is the claude build. GitHub full_name is gosupark27/lmos_public_claude. node_id is R_kgDOVYmTtQ. README heading is # lmos-public-claude.",
-      "pushed_at": "2026-10-27T01:47:05Z",
-      "readme_heading": "# lmos-public-claude",
+      "note": "Josh confirmed repo_id 1435079605 is the claude build. GitHub full_name is gosupark27/lmos_public_claude. node_id is R_kgDOVYmTtQ. README heading is # Handshake.",
+      "pushed_at": "2026-10-27T02:25:26Z",
+      "readme_heading": "# Handshake",
       "remote_commit_authors": [
+        "Claude",
         "JJ Park"
       ],
       "renames": [
@@ -76,8 +100,8 @@
       ],
       "repo_id": "1435079605",
       "sealed_repo_name": "gosupark27/lmos-public-claude",
-      "snapshot_id": "2026-10-27T01-56-07.023Z__46018f12b4d208c79da82c0888b51541f6c85fba",
-      "updated_at": "2026-10-27T02:00:16Z"
+      "snapshot_id": "2026-10-27T02-28-10.359Z__3a3cd7e97db24df091c0b1cfd90b06542ba1870a",
+      "updated_at": "2026-10-27T02:25:31Z"
     },
     "1435127338": {
       "attribution": "assigned",
@@ -88,7 +112,7 @@
       "current_full_name": "gosupark27/lmos_public_grok",
       "description": "",
       "detected_at": "2026-10-27T01:57:04.540Z",
-      "head": "2787eed5fe99ff44a1b459c7aea9b0f9af524637",
+      "head": "a5bf80de5c7a1b02ca70dd860569704992d57c3b",
       "html_url": "https://github.com/gosupark27/lmos_public_grok",
       "model_label": "grok",
       "model_slot": "tracked",
@@ -96,17 +120,17 @@
         "gosupark27/lmos_public_grok"
       ],
       "node_id": "R_kgDOVYpOKg",
-      "note": "Repo id 1435127338 is the grok slot and is a different id from the other sealed models. GitHub full_name is gosupark27/lmos_public_grok. README heading is # lmos-public-claude.",
-      "pushed_at": "2026-10-27T02:19:31Z",
-      "readme_heading": "# lmos-public-claude",
+      "note": "Repo id 1435127338 is the grok slot and is a different id from the other sealed models. GitHub full_name is gosupark27/lmos_public_grok. README heading is # Handshake.",
+      "pushed_at": "2026-10-27T02:30:16Z",
+      "readme_heading": "# Handshake",
       "remote_commit_authors": [
         "JJ Park"
       ],
       "renames": [],
       "repo_id": "1435127338",
       "sealed_repo_name": "gosupark27/lmos_public_grok",
-      "snapshot_id": "2026-10-27T02-19-36.777Z__2787eed5fe99ff44a1b459c7aea9b0f9af524637",
-      "updated_at": "2026-10-27T02:19:36Z"
+      "snapshot_id": "2026-10-27T02-30-20.240Z__a5bf80de5c7a1b02ca70dd860569704992d57c3b",
+      "updated_at": "2026-10-27T02:30:20Z"
     },
     "1435128289": {
       "attribution": "pending",

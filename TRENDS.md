@@ -20,11 +20,16 @@ One row per sealed snapshot. This file is rebuilt from manifests. It is a projec
 | 2026-10-27T02:00:18.087Z | grok | 26 | 3247 | 2 | 622 | 0 | 37.0 | 0.2174 | 78.3 | 3 | claude |
 | 2026-10-27T02:19:02.998Z | grok | 67 | 11031 | 41 | 7784 | 0 | 18.7 | 0.8478 | 15.2 | 4 | claude |
 | 2026-10-27T02:19:36.777Z | grok | 72 | 11739 | 5 | 708 | 0 | 16.1 | 0.8478 | 15.2 | 4 | claude |
+| 2026-10-27T02:28:10.359Z | claude | 54 | 8270 | 151 | 8257 | 14195 | 98.8 | 0.8913 | 10.9 | 0 | grok |
+| 2026-10-27T02:28:10.359Z | grok | 72 | 11662 | 9 | 262 | 339 | 98.8 | 0.8478 | 15.2 | 4 | claude |
+| 2026-10-27T02:30:20.240Z | grok | 72 | 11775 | 3 | 222 | 109 | 98.8 | 0.8478 | 15.2 | 4 | claude |
 
 `grok` `e5f7e8d1b232` is PARTIAL. HEAD is still an Add original source batch commit. Batches seen: 0–17. repeated batches [8].
 `grok` `2787eed5fe99` is PARTIAL. HEAD is still an Add original source batch commit. Batches seen: 0–18. repeated batches [8].
+`grok` `bc6aef95e1df` is PARTIAL. HEAD `Restore original migrations/0002_rooms.sql` is not a batch commit. Batches seen: 0–18. repeated batches [0, 1, 2, 8].
+`grok` `a5bf80de5c7a` is PARTIAL. HEAD `Restore original migrations/auth/0001_auth.sql` is not a batch commit. Batches seen: 0–18. repeated batches [0, 1, 2, 8].
 
-Sealed models: claude, grok. Mean pairwise divergence 16.1. PARTIAL: grok is still receiving batch commits.
+Sealed models: claude, grok. Mean pairwise divergence 98.8. PARTIAL: grok batch history still repeats or skips.
 
 ## Identity
 
@@ -58,8 +63,20 @@ One repo id keeps one model. These rows are slug changes, including names that o
 - `2026-10-27T02:00:18.087Z`: `gosupark27/lmos-public-claude` → `gosupark27/lmos_public_claude` (repo 1435079605)
 - `2026-10-27T02:08:59Z`: `gosupark27/lms_public_chatgpt` → `gosupark27/lmos_public_chatgpt` (repo 1435128289)
 
-- `1435079605`: Josh confirmed repo_id 1435079605 is the claude build. GitHub full_name is gosupark27/lmos_public_claude. node_id is R_kgDOVYmTtQ. README heading is # lmos-public-claude.
-- `1435127338`: Repo id 1435127338 is the grok slot and is a different id from the other sealed models. GitHub full_name is gosupark27/lmos_public_grok. README heading is # lmos-public-claude.
+- `1435079605`: Josh confirmed repo_id 1435079605 is the claude build. GitHub full_name is gosupark27/lmos_public_claude. node_id is R_kgDOVYmTtQ. README heading is # Handshake.
+- `1435127338`: Repo id 1435127338 is the grok slot and is a different id from the other sealed models. GitHub full_name is gosupark27/lmos_public_grok. README heading is # Handshake.
 - `1435128289`: Slot chatgpt is pending. gosupark27/lmos_public_chatgpt (repo_id 1435128289) advertises no commits and was not scored.
+
+## Prompt versions
+
+Each model ran a named prompt. The SHA-256 is the pinned spec file when that file is in this tracker. `pending` means the text is not here yet.
+
+| model | prompt | file | sha256 | status |
+| --- | --- | --- | --- | --- |
+| claude | PV-0.9.0-full | reference/lmos_public.md | `1e2c01b4…0b88` | pinned |
+| grok | PV-0.9.0-full | reference/lmos_public.md | `1e2c01b4…0b88` | pinned |
+| chatgpt | PV-0.10-lite | pending | `pending` | text-pending |
+
+claude, grok ran PV-0.9.0-full (`reference/lmos_public.md`). chatgpt is assigned PV-0.10-lite, the lightweight prompt, and that text is still pending. ChatGPT versus Claude or Grok is a big prompt against a lightweight prompt. Model and prompt are confounded. It is not a model-versus-model comparison.
 
 CSV: `trends/snapshots.csv`.

@@ -409,6 +409,14 @@ def test_source_fields_and_alias_lines() -> None:
         fail(line)
     if cap.parse_sources("# ALIASES 1435079605 acme/a acme/b\n") != ([], []):
         fail("alias line parsed as a source")
+    prompts = cap.parse_prompts(
+        "# PROMPT claude PV-0.9.0-full sha256=abc file=reference/lmos_public.md status=pinned\n"
+        "# PROMPT chatgpt PV-0.10-lite sha256=pending file=pending status=text-pending\n"
+    )
+    if [item["version"] for item in prompts] != ["PV-0.9.0-full", "PV-0.10-lite"]:
+        fail(f"prompt lines did not parse: {prompts}")
+    if cap.parse_sources("# PROMPT claude PV-0.9.0-full sha256=abc file=reference/lmos_public.md status=pinned\n") != ([], []):
+        fail("prompt line parsed as a source")
     hops = cap.parse_hops(text)
     if hops != [{"repo_id": "1435079605", "old": "acme/a", "new": "acme/b", "observed_at": "2026-10-27T01:59:48Z"}]:
         fail(f"hop parse failed: {hops}")
@@ -540,6 +548,35 @@ def test_confirmed_attribution_does_not_reopen_uncertainty() -> None:
         print("confirmed attribution ok")
 
 
+def test_dashdash_hunk_lines_roundtrip() -> None:
+    old = {
+        "migrations/auth/0001_auth.sql": (
+            "-- Better Auth schema (camelCase)\n"
+            "--\n"
+            "-- Generated. Do not edit.\n"
+            "create table \"user\" ();\n"
+        ).encode(),
+        "keep.txt": b"same\n",
+    }
+    new = {
+        "migrations/auth/0001_auth.sql": b"CREATE TABLE auth_user ();\nCREATE TABLE auth_session ();\n",
+        "keep.txt": b"same\n",
+    }
+    patch = cap.text_patch(old, new)
+    if "\n\n---\n" in patch or "\n\n--- Generated" in patch:
+        fail("normalize_diff inserted a blank line into a -- comment hunk")
+    if "--- Better Auth schema" not in patch:
+        fail(f"removed -- comment missing from patch:\n{patch}")
+    rebuilt = cap.rebuild_bytes(old, patch, [], {})
+    if rebuilt != new:
+        fail(f"dashdash hunk did not round-trip: {rebuilt}")
+    chunk = cap.split_patch(patch)["migrations/auth/0001_auth.sql"]
+    stats = cap.line_stats_from_chunk(chunk, False)
+    if stats["removed"] != 4 or stats["added"] != 2:
+        fail(f"line stats dropped -- comment lines: {stats}")
+    print("dashdash hunk ok")
+
+
 def test_partial_batch_sequence() -> None:
     info = cap.partial_upload(
         [
@@ -555,6 +592,18 @@ def test_partial_batch_sequence() -> None:
         fail(f"batch span wrong: {info}")
     if cap.partial_upload(["Implement the game", "Add original source (batch-01.json)"]):
         fail("a non-batch HEAD with a contiguous history should not be partial")
+    restored = cap.partial_upload(
+        [
+            "Restore original migrations/0002_rooms.sql",
+            "Add original source (batch-00.json)",
+            "Add original source (batch-00.json)",
+            "Add original source (batch-01.json)",
+        ]
+    )
+    if not restored or restored.get("head_is_batch"):
+        fail(f"a restore commit should not count as a batch HEAD: {restored}")
+    if "HEAD is still" in restored["reason"] or "batch numbers repeat" not in restored["reason"]:
+        fail(f"restore reason should name the repeat without calling HEAD a batch: {restored['reason']}")
     print("partial ok")
 
 
@@ -565,5 +614,6 @@ if __name__ == "__main__":
     test_identity_rename_does_not_relabel()
     test_source_fields_and_alias_lines()
     test_confirmed_attribution_does_not_reopen_uncertainty()
+    test_dashdash_hunk_lines_roundtrip()
     test_partial_batch_sequence()
     print("all capture tests passed")

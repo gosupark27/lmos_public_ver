@@ -18,7 +18,7 @@ Enabled lines in `config/sources.txt` are fetched. Commented lines in the same s
 | gpt | `gosupark27/lmos_public_gpt` | — | placeholder, not visible |
 | openai | `gosupark27/lmos_public_openai` | — | placeholder, not visible |
 
-`gosupark27/lmos-public-claude`, `gosupark27/lmos-public-grok`, `gosupark27/lmos-public_claude`, and `gosupark27/lmos_public_claude` are one repository (id 1435079605, node `R_kgDOVYmTtQ`). The live slug is `lmos_public_claude`. `lmos-public_claude` mixes a hyphen and an underscore; it still redirects to this id and is not the current name. Do not add a second model line for that id. `lmos_public_chatgpt` is not visible.
+`gosupark27/lmos-public-claude`, `gosupark27/lmos-public-grok`, `gosupark27/lmos-public_claude`, and `gosupark27/lmos_public_claude` are one repository (id 1435079605, node `R_kgDOVYmTtQ`). The live slug is `lmos_public_claude`. `lmos-public-grok` redirects to that Claude id. It is not the Grok slot. The Grok slot is `gosupark27/lmos_public_grok` (id 1435127338). `lmos-public_claude` mixes a hyphen and an underscore; it still redirects to the Claude id and is not the current name. Do not add a second model line for id 1435079605.
 
 Repo 1435127338 (`lmos_public_grok`, node `R_kgDOVYpOKg`) is the Grok slot. It is a different id from Claude. Its commits are batch uploads, and an open batch sequence is sealed as PARTIAL.
 
@@ -96,6 +96,7 @@ One JSON object per line. Times are ISO-8601 UTC. This is the shape of a file ev
 | `MODEL_ATTRIBUTION_CORRECTED` | Josh confirmed the label for a repo id. Earlier uncertain events stay in the log. The sealed directory is not moved. |
 | `LABEL_MISMATCH_RESOLVED` | The current GitHub slug now matches `lmos_public_<model>`. The earlier mismatch event stays in the log. |
 | `REPO_DISCOVERED` | A repo id was seen for a slot and has no commits yet, so it was not sealed. |
+| `PROMPT_VERSION_RECORDED` | The prompt version assigned to a model. `sha256` is `pending` when that text is not in the tracker yet. |
 
 Hashes use the prefix `sha256:`. `hash_before` is null when the path was created. `hash_after` is null when it was removed.
 
@@ -146,4 +147,4 @@ Each source line may carry `repo_id=<GitHub id>`, `node_id=<node id>`, and `attr
 
 The label in `config/sources.txt` is the one Josh assigned. Capture will not move `snapshots/claude` or rewrite a sealed manifest when the slug or the README heading changes. A rename appends `REPO_RENAMED`. A naming question appends `LABEL_MISMATCH`. `attribution=confirmed` appends `MODEL_ATTRIBUTION_CORRECTED` once and does not append another `MODEL_ATTRIBUTION_UNCERTAIN` for that confirmation.
 
-Repo id 1435079605 is Claude's build. Josh confirmed that. The live slug is `lmos_public_claude` and the README heading is `# lmos-public-claude`. The slug was also `lmos-public-grok` and, briefly, `lmos-public_claude` (hyphen then underscore). Those names are aliases of this id. Repo id 1435127338 (`lmos_public_grok`) is the Grok slot. It is not repo 1435079605. `lms_public_chatgpt` was renamed to `lmos_public_chatgpt` (id 1435128289, updated_at 2026-10-27T02:08:59Z). The live ChatGPT slug matches `lmos_public_chatgpt`. The repo still has no commits, so the slot is not sealed.
+Repo id 1435079605 is Claude's build. Josh confirmed that. The live slug is `lmos_public_claude`. The seal at `3a3cd7e97db2` replaced the tree with a Handshake build: README heading `# Handshake`, package name `handshake`. The earlier seal's heading was `# lmos-public-claude`. The slug was also `lmos-public-grok` and, briefly, `lmos-public_claude` (hyphen then underscore). Those names are aliases of this id. Repo id 1435127338 (`lmos_public_grok`) is the Grok slot. It is not repo 1435079605. `lms_public_chatgpt` was renamed to `lmos_public_chatgpt` (id 1435128289, updated_at 2026-10-27T02:08:59Z). The live ChatGPT slug matches `lmos_public_chatgpt`. The repo still has no commits, so the slot is not sealed. Claude and Grok are recorded on prompt `PV-0.9.0-full`. ChatGPT is assigned `PV-0.10-lite`, whose text is not in this tracker yet. A ChatGPT-versus-Claude comparison confounds model and prompt.
