@@ -392,9 +392,159 @@ def test_identity_rename_does_not_relabel() -> None:
         print("identity ok")
 
 
+def test_source_fields_and_alias_lines() -> None:
+    text = (
+        "claude acme/widget repo_id=1435079605 node_id=R_kgDOVYmTtQ attribution=confirmed\n"
+        "# grok acme/other repo_id=9 node_id=R_x attribution=pending\n"
+        "# ALIASES 1435079605 acme/a acme/b\n"
+        "# ALIAS_HOP 1435079605 acme/a acme/b observed_at=2026-10-27T01:59:48Z\n"
+    )
+    enabled, placeholders = cap.parse_sources(text)
+    if enabled[0].node_id != "R_kgDOVYmTtQ" or enabled[0].attribution != "confirmed" or enabled[0].repo_id != "1435079605":
+        fail(f"confirmed source fields dropped: {enabled[0]}")
+    if placeholders[0].attribution != "pending" or placeholders[0].node_id != "R_x":
+        fail(f"pending source fields dropped: {placeholders[0]}")
+    line = cap.format_source("claude", "acme/widget", "1435079605", "R_kgDOVYmTtQ", "confirmed")
+    if line != "claude acme/widget repo_id=1435079605 node_id=R_kgDOVYmTtQ attribution=confirmed":
+        fail(line)
+    if cap.parse_sources("# ALIASES 1435079605 acme/a acme/b\n") != ([], []):
+        fail("alias line parsed as a source")
+    hops = cap.parse_hops(text)
+    if hops != [{"repo_id": "1435079605", "old": "acme/a", "new": "acme/b", "observed_at": "2026-10-27T01:59:48Z"}]:
+        fail(f"hop parse failed: {hops}")
+    print("source fields ok")
+
+
+def test_confirmed_attribution_does_not_reopen_uncertainty() -> None:
+    with tempfile.TemporaryDirectory() as tmp:
+        root = Path(tmp) / "tracker"
+        sha = "b" * 40
+        snap_id = f"2026-10-27T00-00-00.000Z__{sha}"
+        snap = root / "snapshots" / "alpha" / snap_id
+        (snap / "baseline" / "README.md").parent.mkdir(parents=True)
+        (snap / "baseline" / "README.md").write_text("# acme-alpha\n", encoding="utf-8")
+        (snap / "baseline" / "public" / "__grok").mkdir(parents=True)
+        (snap / "baseline" / "public" / "__grok" / "app.txt").write_text("scaffold\n", encoding="utf-8")
+        manifest = {
+            "model": "alpha",
+            "repo": "acme/old-name",
+            "repo_id": "10",
+            "repo_url": "https://github.com/acme/old-name",
+            "snapshot_id": snap_id,
+            "captured_at": "2026-10-27T00:00:00.000Z",
+            "baseline": True,
+            "branch": "main",
+            "commit": {
+                "sha": sha,
+                "author": "JJ Park",
+                "subject": "initial",
+                "committed_at": "2026-10-27T00:00:00Z",
+                "url": f"https://github.com/acme/old-name/commit/{sha}",
+            },
+        }
+        (snap / "manifest.json").write_text(json.dumps(manifest), encoding="utf-8")
+        (snap / ".complete").write_text("done\n", encoding="utf-8")
+        manifest_bytes = (snap / "manifest.json").read_bytes()
+        sources = root / "config" / "sources.txt"
+        sources.parent.mkdir(parents=True)
+        sources.write_text(
+            "alpha acme/old-name repo_id=10 node_id=N1 attribution=confirmed\n"
+            "# ALIASES 10 acme/old-name acme/mid-name acme/new_name\n"
+            "# ALIAS_HOP 10 acme/old-name acme/mid_name observed_at=2026-10-27T01:59:48Z\n"
+            "# grok acme/other repo_id=11 attribution=pending\n",
+            encoding="utf-8",
+        )
+        identity = {
+            "id": "10",
+            "node_id": "N1",
+            "full_name": "acme/new_name",
+            "html_url": "https://github.com/acme/new_name",
+            "pushed_at": "2026-10-27T00:00:00Z",
+            "created_at": "2026-10-27T00:00:00Z",
+            "updated_at": "2026-10-27T02:00:16Z",
+            "description": "test",
+        }
+
+        def lookup(target: str):
+            if target in ("acme/old-name", "acme/new_name"):
+                return identity
+            return None
+
+        def lookup_by_id(repo_id: str):
+            if repo_id == "10":
+                return identity
+            return None
+
+        def name_status(full_name: str):
+            if full_name == "acme/new_name":
+                return {"status": 200, "location": None, "identity": identity}
+            if full_name in ("acme/old-name", "acme/mid_name"):
+                return {"status": 301, "location": "https://api.github.com/repositories/10", "identity": None}
+            return {"status": 404, "location": None, "identity": None}
+
+        when = "2026-10-27T03:00:00.000Z"
+        status = cap.apply_identity_audit(
+            root,
+            sources,
+            set(),
+            when,
+            lookup=lookup,
+            head_of=lambda target: None,
+            lookup_by_id=lookup_by_id,
+            name_status=name_status,
+        )
+        if not status["changed"]:
+            fail("confirmed audit wrote nothing")
+        kinds = [item["event_type"] for item in events(root)]
+        if "MODEL_ATTRIBUTION_UNCERTAIN" in kinds:
+            fail(f"confirmation reopened uncertainty: {kinds}")
+        corrected = [item for item in events(root) if item["event_type"] == "MODEL_ATTRIBUTION_CORRECTED"]
+        if len(corrected) != 1 or corrected[0]["model"] != "alpha" or corrected[0]["detail"]["repo_id"] != "10":
+            fail(f"missing correction: {corrected}")
+        hop = next(
+            item
+            for item in events(root)
+            if item["event_type"] == "REPO_RENAMED" and item["detail"]["old_name"] == "acme/old-name" and item["detail"]["new_name"] == "acme/mid_name"
+        )
+        if hop["timestamp"] != "2026-10-27T01:59:48Z":
+            fail(f"hop timestamp was not the observed time: {hop['timestamp']}")
+        text = sources.read_text(encoding="utf-8")
+        if "node_id=N1" not in text or "attribution=confirmed" not in text:
+            fail(f"confirmed source line lost node_id or attribution: {text}")
+        if "attribution=pending" not in text:
+            fail(f"pending line was enabled: {text}")
+        registry = json.loads((root / "state" / "repo_registry.json").read_text(encoding="utf-8"))
+        if registry["repos"]["10"]["attribution"] != "confirmed" or registry["repos"]["10"]["counts_as_model"] is not True:
+            fail(f"registry did not confirm the repo: {registry['repos']['10']}")
+        if registry["model_slots"]["alpha"]["count"] != 1 or registry["model_slots"]["grok"]["count"] != 0:
+            fail(f"slots wrong: {registry['model_slots']}")
+        if (snap / "manifest.json").read_bytes() != manifest_bytes:
+            fail("confirmed audit rewrote the sealed manifest")
+        before = events(root)
+        source_bytes = sources.read_bytes()
+        registry_bytes = (root / "state" / "repo_registry.json").read_bytes()
+        again = cap.apply_identity_audit(
+            root,
+            sources,
+            cap.load_event_ids(root),
+            "2026-10-27T04:00:00.000Z",
+            lookup=lookup,
+            head_of=lambda target: None,
+            lookup_by_id=lookup_by_id,
+            name_status=name_status,
+        )
+        if again["changed"] or events(root) != before or sources.read_bytes() != source_bytes:
+            fail("second confirmed audit was not idempotent")
+        if (root / "state" / "repo_registry.json").read_bytes() != registry_bytes:
+            fail("second confirmed audit rewrote the registry")
+        print("confirmed attribution ok")
+
+
 if __name__ == "__main__":
     test_roundtrip_and_idempotency()
     test_enable_refuses_missing_and_accepts_local()
     test_unavailable_is_logged_once()
     test_identity_rename_does_not_relabel()
+    test_source_fields_and_alias_lines()
+    test_confirmed_attribution_does_not_reopen_uncertainty()
     print("all capture tests passed")

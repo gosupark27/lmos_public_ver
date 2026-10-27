@@ -12,21 +12,23 @@ Enabled lines in `config/sources.txt` are fetched. Commented lines in the same s
 
 | model | repo | repo id | state |
 | --- | --- | --- | --- |
-| claude | [gosupark27/lmos_public_claude](https://github.com/gosupark27/lmos_public_claude) | 1435079605 | enabled. Same id was also `lmos-public-claude` and `lmos-public-grok`. Label stays `claude`. |
-| grok | [gosupark27/lmos_public_grok](https://github.com/gosupark27/lmos_public_grok) | 1435127338 | enabled. Partial copy of repo 1435079605, still arriving as `batch-NN` commits. Shared paths match byte for byte. Label stays `grok`. |
-| chatgpt | [gosupark27/lms_public_chatgpt](https://github.com/gosupark27/lms_public_chatgpt) | 1435128289 | placeholder. Empty, no commits. The spelling is `lms`, not `lmos`. |
+| claude | [gosupark27/lmos_public_claude](https://github.com/gosupark27/lmos_public_claude) | 1435079605 | confirmed. Node `R_kgDOVYmTtQ`. Josh says this is Claude's build. |
+| grok | — | — | pending. No confirmed repo id. |
+| chatgpt | [gosupark27/lmos_public_chatgpt](https://github.com/gosupark27/lmos_public_chatgpt) | 1435128289 | pending. Empty, no commits. Created as `lms_public_chatgpt`; slug is now `lmos_public_chatgpt`. |
 | gpt | `gosupark27/lmos_public_gpt` | — | placeholder, not visible |
 | openai | `gosupark27/lmos_public_openai` | — | placeholder, not visible |
 
-`gosupark27/lmos-public-claude`, `gosupark27/lmos-public-grok`, and `gosupark27/lmos_public_claude` are the same repository (id 1435079605). The current slug is `lmos_public_claude`. Do not add a second model line for that id. `lmos_public_chatgpt` is not visible.
+`gosupark27/lmos-public-claude`, `gosupark27/lmos-public-grok`, `gosupark27/lmos-public_claude`, and `gosupark27/lmos_public_claude` are one repository (id 1435079605, node `R_kgDOVYmTtQ`). The live slug is `lmos_public_claude`. `lmos-public_claude` mixes a hyphen and an underscore; it still redirects to this id and is not the current name. Do not add a second model line for that id. `lmos_public_chatgpt` is not visible.
 
-When a placeholder repo exists:
+Repo 1435127338 (`lmos_public_grok`, node `R_kgDOVYpOKg`) is a different id. Its sealed files match 1435079605 byte for byte. That history stays under `snapshots/grok` and does not fill the Grok slot.
+
+When Josh points a pending slot at a distinct repo id:
 
 ```bash
-python3 scripts/capture.py --enable grok
+python3 scripts/capture.py --enable <model>
 ```
 
-That is the whole change. The command uncomments one line and seals the new HEAD. See `scripts/README.md`.
+That uncomments one line and seals the new HEAD. See `scripts/README.md`.
 
 ## Layout
 
@@ -91,6 +93,7 @@ One JSON object per line. Times are ISO-8601 UTC. This is the shape of a file ev
 | `REPO_RENAMED` | The GitHub slug for a known repo id changed. `detail` has `old_name`, `new_name`, `repo_id`, and `detected_at`. The sealed label is not changed. |
 | `LABEL_MISMATCH` | The assigned label, the current slug, or the README heading disagree, or two lines resolved to one repo id. The sealed label is not changed. |
 | `MODEL_ATTRIBUTION_UNCERTAIN` | The tree does not identify one model cleanly. `outcome` is `uncertain`. The sealed label is left as Josh assigned it. |
+| `MODEL_ATTRIBUTION_CORRECTED` | Josh confirmed the label for a repo id. Earlier uncertain events stay in the log. The sealed directory is not moved. |
 
 Hashes use the prefix `sha256:`. `hash_before` is null when the path was created. `hash_after` is null when it was removed.
 
@@ -137,8 +140,8 @@ Run it whenever a source repo moves. An unchanged HEAD does not seal another sna
 
 ## Names and labels
 
-Each source line may end with `repo_id=<GitHub id>`. The id is the key. The slug is the current name. `state/repo_registry.json` maps an id to every name seen for it.
+Each source line may carry `repo_id=<GitHub id>`, `node_id=<node id>`, and `attribution=confirmed` or `attribution=pending`. Capture resolves `repo_id` with `GET /repositories/{id}`. The slug is only the current name. `state/repo_registry.json` maps an id to every name seen for it.
 
-The label in `config/sources.txt` is the one Josh assigned. Capture will not move `snapshots/claude` or rewrite a sealed manifest when the slug or the README heading changes. It appends `REPO_RENAMED`, `LABEL_MISMATCH`, or `MODEL_ATTRIBUTION_UNCERTAIN` and waits for Josh to confirm a relabel.
+The label in `config/sources.txt` is the one Josh assigned. Capture will not move `snapshots/claude` or rewrite a sealed manifest when the slug or the README heading changes. A rename appends `REPO_RENAMED`. A naming question appends `LABEL_MISMATCH`. `attribution=confirmed` appends `MODEL_ATTRIBUTION_CORRECTED` once and does not append another `MODEL_ATTRIBUTION_UNCERTAIN` for that confirmation.
 
-Repo id 1435079605 is the only full tree. Its current slug is `lmos_public_claude` and its README heading is `# lmos-public-claude`. Between those, the slug was `lmos-public-grok` with no extra commit. Repo id 1435127338 (`lmos_public_grok`) is a second GitHub id receiving that same tree in `batch-NN` commits. Every file present there matches 1435079605 byte for byte, so the divergence score is missing files, not a second interpretation of the spec. `lms_public_chatgpt` (id 1435128289) has no commits. `lmos_public_chatgpt` is not visible.
+Repo id 1435079605 is Claude's build. Josh confirmed that. The live slug is `lmos_public_claude` and the README heading is `# lmos-public-claude`. The slug was also `lmos-public-grok` and, briefly, `lmos-public_claude` (hyphen then underscore). Those names are aliases of this id. Repo id 1435127338 (`lmos_public_grok`) is a different id whose sealed files match 1435079605 byte for byte. The Grok slot is pending and counts no repository. `lms_public_chatgpt` was renamed to `lmos_public_chatgpt` (id 1435128289, updated_at 2026-10-27T02:08:59Z). It still has no commits. The ChatGPT slot is pending.

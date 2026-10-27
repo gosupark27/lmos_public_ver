@@ -23,16 +23,40 @@ Sealed models: claude, grok. Mean pairwise divergence 37.0. grok is a byte-ident
 
 ## Identity
 
-Repository id is the GitHub id and does not change when the slug changes. The model column above is the label Josh assigned. A rename or a mismatch does not relabel `snapshots/<model>`.
+Repository id is the GitHub id and does not change when the slug changes. Capture reads `GET /repositories/{id}` and keeps one model for that id. A rename appends `REPO_RENAMED` and does not relabel `snapshots/<model>`.
 
-| repo_id | label | current name | commits | attribution | names |
-| --- | --- | --- | --- | --- | --- |
-| 1435079605 | claude | gosupark27/lmos_public_claude | yes | uncertain | gosupark27/lmos-public-claude, gosupark27/lmos-public-grok, gosupark27/lmos_public_claude |
-| 1435127338 | grok | gosupark27/lmos_public_grok | yes | uncertain | gosupark27/lmos_public_grok |
-| 1435128289 | chatgpt | gosupark27/lms_public_chatgpt | no | no_commits | gosupark27/lms_public_chatgpt |
+| repo_id | node_id | label | current name | commits | attribution | counts | names |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| 1435079605 | R_kgDOVYmTtQ | claude | gosupark27/lmos_public_claude | yes | confirmed | yes | gosupark27/lmos-public-claude, gosupark27/lmos-public-grok, gosupark27/lmos-public_claude, gosupark27/lmos_public_claude |
+| 1435127338 | R_kgDOVYpOKg | grok | gosupark27/lmos_public_grok | yes | pending | no | gosupark27/lmos_public_grok |
+| 1435128289 | R_kgDOVYpR4Q | chatgpt | gosupark27/lmos_public_chatgpt | no | pending | no | gosupark27/lmos_public_chatgpt, gosupark27/lms_public_chatgpt |
 
-- `1435079605`: Assigned label claude left unchanged. GitHub full_name is gosupark27/lmos_public_claude. README heading is # lmos-public-claude. Conclusion: uncertain.
-- `1435127338`: Assigned label grok left unchanged. GitHub full_name is gosupark27/lmos_public_grok. README heading is # lmos-public-claude. Conclusion: uncertain.
-- `1435128289`: gosupark27/lms_public_chatgpt (repo_id 1435128289) advertises no commits. It is not a build and it was not scored.
+## Model slots
+
+A slot counts a repository when `attribution=confirmed` on that repo id. A pending slot stays empty until a different repo id is confirmed.
+
+| model | state | repos | repo_id |
+| --- | --- | --- | --- |
+| claude | tracked | 1 | 1435079605 |
+| grok | pending | 0 | — |
+| chatgpt | pending | 0 | — |
+
+Claude: 1 repo tracked; Grok: none; ChatGPT: none.
+
+## Rename timeline
+
+One repo id keeps one model. These rows are slug changes, including names that only remain as redirects.
+
+- `2026-10-27T01:56:07.023Z`: `gosupark27/lmos-public-claude` → `gosupark27/lmos-public-grok` (repo 1435079605)
+- `2026-10-27T01:59:48Z`: `gosupark27/lmos-public-grok` → `gosupark27/lmos-public_claude` (repo 1435079605)
+- `2026-10-27T02:00:16Z`: `gosupark27/lmos-public_claude` → `gosupark27/lmos_public_claude` (repo 1435079605)
+- `2026-10-27T02:00:18.087Z`: `gosupark27/lmos-public-claude` → `gosupark27/lmos_public_claude` (repo 1435079605)
+- `2026-10-27T02:08:59Z`: `gosupark27/lms_public_chatgpt` → `gosupark27/lmos_public_chatgpt` (repo 1435128289)
+
+Seals labeled grok are history for repo 1435127338 (gosupark27/lmos_public_grok). The grok slot is pending and counts zero repositories.
+
+- `1435079605`: Josh confirmed repo_id 1435079605 is the claude build. GitHub full_name is gosupark27/lmos_public_claude. node_id is R_kgDOVYmTtQ. README heading is # lmos-public-claude.
+- `1435127338`: Slot grok is pending. repo_id 1435127338 (gosupark27/lmos_public_grok) has commits and was not sealed on this run. It counts as that model only after Josh confirms this distinct repo id.
+- `1435128289`: Slot chatgpt is pending. gosupark27/lmos_public_chatgpt (repo_id 1435128289) advertises no commits and was not scored.
 
 CSV: `trends/snapshots.csv`.

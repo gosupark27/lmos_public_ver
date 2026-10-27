@@ -18,7 +18,7 @@ Python 3.11 or newer. The script uses the standard library plus `git`, `diff`, a
 
 ## Idempotency
 
-An unchanged commit does not clone the tree and does not seal another snapshot. The first observation of a GitHub rename or a label question appends one event and can write `state/repo_registry.json`. Repeating that observation writes nothing. The probe is `git ls-remote` for GitHub and `git rev-parse` for a local checkout. The GitHub id is read from the API and stored as `repo_id=` on the source line. A sealed model label is not rewritten from that id.
+An unchanged commit does not clone the tree and does not seal another snapshot. The first observation of a GitHub rename or a label question appends one event and can write `state/repo_registry.json`. Repeating that observation writes nothing. The probe is `git ls-remote` for GitHub and `git rev-parse` for a local checkout. When a line has `repo_id=`, capture resolves it with `GET /repositories/{id}` and follows that canonical `full_name`, so a rename does not open a new model. `node_id=` is checked against the same payload. `attribution=confirmed` records Josh's label and does not append another uncertain-attribution event. `attribution=pending` leaves the slot empty. A sealed model label is not rewritten from that id.
 
 If a seal is interrupted before `.complete`, the next run either finishes appending the already-written event excerpt or deletes the partial snapshot and captures again. Event ids are deterministic per commit, so a replay does not duplicate lines.
 
@@ -27,10 +27,10 @@ If a seal is interrupted before `.complete`, the next run either finishes append
 Placeholders are commented lines in `config/sources.txt`:
 
 ```
-# grok gosupark27/lmos_public_grok repo_id=1435127338
+# grok gosupark27/lmos_public_grok repo_id=1435127338 node_id=R_kgDOVYpOKg attribution=pending
 ```
 
-`repo_id` is optional and, once known, required for honesty. Two lines with the same id are one repository. The later one is commented out and a `LABEL_MISMATCH` is appended. A commented `PROBE owner/repo` line is checked for existence and is not a model.
+`repo_id` is optional and, once known, required for honesty. `node_id` is the same repository's GraphQL node id. Two lines with the same id are one repository. The later one is commented out and a `LABEL_MISMATCH` is appended. A commented `PROBE owner/repo` line is checked for existence and is not a model. `# ALIASES <repo_id> owner/repo ...` lists previous names. `# ALIAS_HOP <repo_id> old new observed_at=<time>` asks capture to verify both names and append `REPO_RENAMED` once.
 
 One command, once that repo exists:
 

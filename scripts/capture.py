@@ -28,7 +28,11 @@ from pathlib import Path
 SCHEMA = "lmos.tracker.v1"
 SENSOR = "lmos-tracker/capture.py"
 SOURCE_LINE = re.compile(
-    r"^(?P<model>[a-z][a-z0-9_-]{0,31})\s+(?P<target>\S+)(?:\s+repo_id=(?P<repo_id>\d+))?\s*$"
+    r"^(?P<model>[a-z][a-z0-9_-]{0,31})\s+(?P<target>\S+)"
+    r"(?:\s+repo_id=(?P<repo_id>\d+))?"
+    r"(?:\s+node_id=(?P<node_id>\S+))?"
+    r"(?:\s+attribution=(?P<attribution>[a-z][a-z0-9_-]*))?"
+    r"\s*$"
 )
 GITHUB_REPO = re.compile(r"^[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+$")
 EVENT_FIELDS = (
@@ -60,6 +64,8 @@ class Source:
     target: str
     enabled: bool
     repo_id: str | None = None
+    node_id: str | None = None
+    attribution: str | None = None
 
 
 @dataclass
@@ -85,6 +91,7 @@ class Tree:
     author: str
     subject: str
     repo_id: str | None = None
+    node_id: str | None = None
     files: dict[str, Rec] = field(default_factory=dict)
 
 
@@ -168,15 +175,28 @@ def parse_sources(text: str) -> tuple[list[Source], list[Source]]:
             match.group("target"),
             enabled=not commented,
             repo_id=match.group("repo_id"),
+            node_id=match.group("node_id"),
+            attribution=match.group("attribution"),
         )
         (placeholders if commented else enabled).append(source)
     return enabled, placeholders
 
 
-def format_source(model: str, target: str, repo_id: str | None) -> str:
+def format_source(
+    model: str,
+    target: str,
+    repo_id: str | None,
+    node_id: str | None = None,
+    attribution: str | None = None,
+) -> str:
+    parts = [model, target]
     if repo_id:
-        return f"{model} {target} repo_id={repo_id}"
-    return f"{model} {target}"
+        parts.append(f"repo_id={repo_id}")
+    if node_id:
+        parts.append(f"node_id={node_id}")
+    if attribution:
+        parts.append(f"attribution={attribution}")
+    return " ".join(parts)
 
 
 def uncomment_model(text: str, model: str) -> tuple[str, bool]:
@@ -187,7 +207,15 @@ def uncomment_model(text: str, model: str) -> tuple[str, bool]:
         if stripped.startswith("#"):
             match = SOURCE_LINE.match(stripped[1:].strip())
             if match and match.group("model") == model:
-                lines.append(format_source(match.group("model"), match.group("target"), match.group("repo_id")))
+                lines.append(
+                    format_source(
+                        match.group("model"),
+                        match.group("target"),
+                        match.group("repo_id"),
+                        match.group("node_id"),
+                        match.group("attribution"),
+                    )
+                )
                 changed = True
                 continue
         lines.append(raw)
@@ -261,6 +289,7 @@ def read_tree_from_git(source: Source, dest: Path) -> Tree:
         author=author,
         subject=subject,
         repo_id=source.repo_id,
+        node_id=source.node_id,
         files=files,
     )
 
@@ -1111,6 +1140,7 @@ def capture_model(root: Path, tree: Tree, captured_at: str, known_ids: set[str])
         "repo": tree.repo,
         "repo_url": tree.repo_url,
         "repo_id": tree.repo_id,
+        "node_id": tree.node_id,
         "branch": tree.branch,
         "baseline": baseline,
         "baseline_path": f"snapshots/{tree.model}/{snapshot_id}/baseline" if baseline else None,
@@ -1829,6 +1859,14 @@ def latest_pair_summary(root: Path) -> str | None:
     return best
 
 
+def counts_as_model(item: dict) -> bool:
+    if "counts_as_model" in item:
+        return bool(item["counts_as_model"])
+    if item.get("attribution") in ("pending", "no_commits"):
+        return False
+    return bool(item.get("commits"))
+
+
 def identity_lines(root: Path) -> list[str]:
     path = root / "state" / "repo_registry.json"
     if not path.exists():
@@ -1840,24 +1878,79 @@ def identity_lines(root: Path) -> list[str]:
     lines = [
         "## Identity",
         "",
-        "Repository id is the GitHub id and does not change when the slug changes. The model column above is the label Josh assigned. A rename or a mismatch does not relabel `snapshots/<model>`.",
+        "Repository id is the GitHub id and does not change when the slug changes. Capture reads `GET /repositories/{id}` and keeps one model for that id. A rename appends `REPO_RENAMED` and does not relabel `snapshots/<model>`.",
         "",
-        "| repo_id | label | current name | commits | attribution | names |",
-        "| --- | --- | --- | --- | --- | --- |",
+        "| repo_id | node_id | label | current name | commits | attribution | counts | names |",
+        "| --- | --- | --- | --- | --- | --- | --- | --- |",
     ]
     for repo_id in sorted(repos):
         item = repos[repo_id]
         lines.append(
-            "| {repo_id} | {label} | {name} | {commits} | {attr} | {names} |".format(
+            "| {repo_id} | {node} | {label} | {name} | {commits} | {attr} | {counts} | {names} |".format(
                 repo_id=item.get("repo_id") or repo_id,
+                node=item.get("node_id") or "",
                 label=item.get("model_label") or "",
                 name=item.get("current_full_name") or "",
                 commits="yes" if item.get("commits") else "no",
                 attr=item.get("attribution") or "",
+                counts="yes" if counts_as_model(item) else "no",
                 names=", ".join(item.get("names") or []),
             )
         )
     lines.append("")
+    slots = registry.get("model_slots") or {}
+    if slots:
+        lines.extend(
+            [
+                "## Model slots",
+                "",
+                "A slot counts a repository when `attribution=confirmed` on that repo id. A pending slot stays empty until a different repo id is confirmed.",
+                "",
+                "| model | state | repos | repo_id |",
+                "| --- | --- | --- | --- |",
+            ]
+        )
+        order = [name for name in ("claude", "grok", "chatgpt") if name in slots]
+        order.extend(sorted(name for name in slots if name not in order))
+        phrases = []
+        for name in order:
+            item = slots[name]
+            count = int(item.get("count") or 0)
+            lines.append(
+                f"| {name} | {item.get('state') or ''} | {count} | {item.get('repo_id') or '—'} |"
+            )
+            display = {"chatgpt": "ChatGPT", "claude": "Claude", "grok": "Grok"}.get(name, name.capitalize())
+            if item.get("state") == "tracked" and count:
+                phrases.append(f"{display}: {count} repo tracked" if count == 1 else f"{display}: {count} repos tracked")
+            else:
+                phrases.append(f"{display}: none")
+        lines.append("")
+        lines.append("; ".join(phrases) + ".")
+        lines.append("")
+    timeline = []
+    for repo_id in sorted(repos):
+        for row in repos[repo_id].get("renames") or []:
+            timeline.append((row.get("detected_at") or "", repo_id, row))
+    if timeline:
+        lines.append("## Rename timeline")
+        lines.append("")
+        lines.append("One repo id keeps one model. These rows are slug changes, including names that only remain as redirects.")
+        lines.append("")
+        for _, repo_id, row in sorted(timeline, key=lambda item: (item[0], item[1], item[2].get("old_name") or "")):
+            lines.append(
+                f"- `{row.get('detected_at')}`: `{row.get('old_name')}` → `{row.get('new_name')}` (repo {repo_id})"
+            )
+        lines.append("")
+    for repo_id in sorted(repos):
+        item = repos[repo_id]
+        if item.get("model_slot") == "pending" and item.get("snapshot_id"):
+            label = item.get("model_label") or "that label"
+            lines.append(
+                f"Seals labeled {label} are history for repo {repo_id} ({item.get('current_full_name')}). "
+                f"The {label} slot is pending and counts zero repositories."
+            )
+    if any(item.get("model_slot") == "pending" and item.get("snapshot_id") for item in repos.values()):
+        lines.append("")
     for repo_id in sorted(repos):
         note = repos[repo_id].get("note")
         if note:
@@ -1867,6 +1960,11 @@ def identity_lines(root: Path) -> list[str]:
 
 
 PROBE_LINE = re.compile(r"^#\s+PROBE\s+(?P<target>\S+)\s*$")
+ALIAS_LINE = re.compile(r"^#\s+ALIASES\s+(?P<repo_id>\d+)\s+(?P<names>.+?)\s*$")
+HOP_LINE = re.compile(
+    r"^#\s+ALIAS_HOP\s+(?P<repo_id>\d+)\s+(?P<old>\S+)\s+(?P<new>\S+)"
+    r"(?:\s+observed_at=(?P<observed>\S+))?\s*$"
+)
 MODEL_TOKENS = ("chatgpt", "claude", "openai", "grok", "gpt")
 REGISTRY_SCHEMA = "lmos.repo_registry.v1"
 EMPTY_LINE_STATS = {"added": 0, "removed": 0, "binary": False}
@@ -1903,38 +2001,127 @@ def memo_lookup(lookup):
     return wrapped
 
 
-def github_identity(target: str) -> dict | None:
-    """Return the canonical GitHub repo record. HTTP 404 is absence. Other errors raise."""
-    url = f"https://api.github.com/repos/{target}"
-    request = urllib.request.Request(
-        url,
-        headers={
-            "Accept": "application/vnd.github+json",
-            "User-Agent": "lmos-tracker",
-            "X-GitHub-Api-Version": "2022-11-28",
-        },
-    )
+class _NoRedirect(urllib.request.HTTPRedirectHandler):
+    def redirect_request(self, req, fp, code, msg, headers, newurl):
+        return None
+
+
+def github_headers() -> dict[str, str]:
+    headers = {
+        "Accept": "application/vnd.github+json",
+        "User-Agent": "lmos-tracker",
+        "X-GitHub-Api-Version": "2022-11-28",
+    }
     token = os.environ.get("GITHUB_TOKEN") or os.environ.get("GH_TOKEN")
     if token:
-        request.add_header("Authorization", f"Bearer {token}")
+        headers["Authorization"] = f"Bearer {token}"
+    return headers
+
+
+def parse_github_repo(payload: dict) -> dict:
+    return {
+        "id": str(payload["id"]),
+        "node_id": payload.get("node_id"),
+        "name": payload.get("name"),
+        "full_name": payload["full_name"],
+        "html_url": payload.get("html_url") or f"https://github.com/{payload['full_name']}",
+        "pushed_at": payload.get("pushed_at"),
+        "created_at": payload.get("created_at"),
+        "updated_at": payload.get("updated_at"),
+        "description": payload.get("description") or "",
+        "size": payload.get("size"),
+    }
+
+
+def github_get_json(url: str) -> dict | None:
+    request = urllib.request.Request(url, headers=github_headers())
     try:
         with urllib.request.urlopen(request, timeout=30) as response:
             payload = json.loads(response.read().decode())
     except urllib.error.HTTPError as exc:
         if exc.code == 404:
             return None
-        raise RuntimeError(f"{target}: HTTP {exc.code}") from exc
+        raise RuntimeError(f"{url}: HTTP {exc.code}") from exc
     except urllib.error.URLError as exc:
-        raise RuntimeError(f"{target}: {exc.reason}") from exc
-    return {
-        "id": str(payload["id"]),
-        "full_name": payload["full_name"],
-        "html_url": payload.get("html_url") or f"https://github.com/{payload['full_name']}",
-        "pushed_at": payload.get("pushed_at"),
-        "created_at": payload.get("created_at"),
-        "description": payload.get("description") or "",
-        "size": payload.get("size"),
-    }
+        raise RuntimeError(f"{url}: {exc.reason}") from exc
+    if "id" not in payload or "full_name" not in payload:
+        return None
+    return parse_github_repo(payload)
+
+
+def github_identity(target: str) -> dict | None:
+    """Return the canonical GitHub repo record. HTTP 404 is absence. Other errors raise."""
+    return github_get_json(f"https://api.github.com/repos/{target}")
+
+
+def github_identity_by_id(repo_id: str) -> dict | None:
+    """Resolve a repository by its permanent id. A rename keeps this URL stable."""
+    return github_get_json(f"https://api.github.com/repositories/{repo_id}")
+
+
+def github_name_status(full_name: str) -> dict:
+    """Return 200 for the current name, 301 for an old name, or 404 when it is absent."""
+    url = f"https://api.github.com/repos/{full_name}"
+    opener = urllib.request.build_opener(_NoRedirect)
+    request = urllib.request.Request(url, headers=github_headers())
+    try:
+        with opener.open(request, timeout=30) as response:
+            payload = json.loads(response.read().decode())
+            return {"status": response.status, "location": None, "identity": parse_github_repo(payload)}
+    except urllib.error.HTTPError as exc:
+        location = exc.headers.get("Location") if exc.headers else None
+        if exc.code in (301, 302, 307, 308):
+            return {"status": exc.code, "location": location, "identity": None}
+        if exc.code == 404:
+            return {"status": 404, "location": location, "identity": None}
+        raise RuntimeError(f"{full_name}: HTTP {exc.code}") from exc
+    except urllib.error.URLError as exc:
+        raise RuntimeError(f"{full_name}: {exc.reason}") from exc
+
+
+def alias_belongs(status: dict, repo_id: str) -> bool:
+    if status.get("status") == 200 and status.get("identity") and str(status["identity"]["id"]) == str(repo_id):
+        return True
+    if status.get("status") in (301, 302, 307, 308):
+        location = (status.get("location") or "").rstrip("/")
+        return location.endswith(f"/repositories/{repo_id}")
+    return False
+
+
+def parse_aliases(text: str) -> dict[str, list[str]]:
+    found: dict[str, list[str]] = {}
+    for raw in text.splitlines():
+        match = ALIAS_LINE.match(raw.strip())
+        if not match:
+            continue
+        names = match.group("names").split()
+        bucket = found.setdefault(match.group("repo_id"), [])
+        for name in names:
+            if name not in bucket:
+                bucket.append(name)
+    return found
+
+
+def parse_hops(text: str) -> list[dict]:
+    found = []
+    for raw in text.splitlines():
+        match = HOP_LINE.match(raw.strip())
+        if not match:
+            continue
+        found.append(
+            {
+                "repo_id": match.group("repo_id"),
+                "old": match.group("old"),
+                "new": match.group("new"),
+                "observed_at": match.group("observed"),
+            }
+        )
+    return found
+
+
+def mixed_slug(full_name: str) -> bool:
+    slug = full_name.split("/", 1)[-1]
+    return "-" in slug and "_" in slug
 
 
 def github_recent_commits(target: str, limit: int = 30) -> list[dict]:
@@ -2309,9 +2496,212 @@ def render_single_cross(payload: dict) -> str:
         for row in payload["not_found"]:
             lines.append(f"- `{row['target']}`")
         lines.append("")
-    lines.append("The sealed model label is unchanged until Josh confirms a relabel.")
+    if any(row.get("attribution") == "confirmed" for row in payload.get("content_repos") or []):
+        label = payload["content_repos"][0]["label"]
+        lines.append(f"Josh confirmed the sealed label. It stays {label}.")
+    else:
+        lines.append("The sealed model label is unchanged until Josh confirms a relabel.")
     lines.append("")
     return "\n".join(lines)
+
+
+def apply_alias_hops(
+    events: list[dict],
+    renames: list[dict],
+    names: set[str],
+    hops: list[dict],
+    repo_id: str,
+    ident: dict,
+    source: Source,
+    manifest: dict | None,
+    name_status,
+    captured_at: str,
+) -> None:
+    for hop in hops:
+        if hop["repo_id"] != repo_id:
+            continue
+        old_name = hop["old"]
+        new_name = hop["new"]
+        names.add(old_name)
+        names.add(new_name)
+        if any(row.get("old_name") == old_name and row.get("new_name") == new_name for row in renames):
+            continue
+        if name_status is None:
+            continue
+        try:
+            old_status = name_status(old_name)
+            new_status = name_status(new_name)
+        except Exception as exc:
+            print(f"alias hop skipped {old_name} -> {new_name}: {exc}", file=sys.stderr)
+            continue
+        if not alias_belongs(old_status, repo_id) or not alias_belongs(new_status, repo_id):
+            print(f"alias hop not verified {old_name} -> {new_name}", file=sys.stderr)
+            continue
+        observed = hop.get("observed_at") or captured_at
+        renames.append(
+            {
+                "old_name": old_name,
+                "new_name": new_name,
+                "detected_at": observed,
+                "repo_id": repo_id,
+            }
+        )
+        events.append(
+            identity_event(
+                timestamp=observed,
+                event_id=f"evt-rename-{repo_id}-{short_hash([old_name, new_name])}",
+                event_type="REPO_RENAMED",
+                severity="warning",
+                outcome="success",
+                model=source.model,
+                repo=ident.get("full_name") or new_name,
+                repo_url=ident.get("html_url"),
+                commit=manifest["commit"]["sha"] if manifest else None,
+                snapshot_id=manifest["snapshot_id"] if manifest else None,
+                message=(
+                    f"GitHub repo id {repo_id} was {old_name} and then {new_name}. "
+                    f"Observed at {observed}. The current canonical name is {ident.get('full_name')}."
+                ),
+                detail={
+                    "old_name": old_name,
+                    "new_name": new_name,
+                    "repo_id": repo_id,
+                    "node_id": ident.get("node_id"),
+                    "detected_at": observed,
+                    "observed_at": observed,
+                    "current_full_name": ident.get("full_name"),
+                    "current_updated_at": ident.get("updated_at"),
+                    "old_http_status": old_status.get("status"),
+                    "old_location": old_status.get("location"),
+                    "new_http_status": new_status.get("status"),
+                    "new_location": new_status.get("location"),
+                    "label_left_unchanged": source.model,
+                },
+            )
+        )
+
+
+def append_confirmed_attribution(
+    events: list[dict],
+    root: Path,
+    repo_id: str,
+    source: Source,
+    ident: dict,
+    manifest: dict,
+    assessment: dict | None,
+    heading: str | None,
+    names: set[str],
+    detected_at: str,
+) -> None:
+    seals = []
+    for item in all_manifests(root):
+        if str(item.get("repo_id") or "") == repo_id:
+            seals.append(
+                {
+                    "model": item.get("model"),
+                    "snapshot_id": item.get("snapshot_id"),
+                    "commit": (item.get("commit") or {}).get("sha"),
+                }
+            )
+    foreign = [row for row in seals if row["model"] != source.model]
+    fingerprints = assessment["fingerprint_paths"] if assessment else []
+    message = (
+        f"Josh confirmed repo_id {repo_id} (node_id {source.node_id}) is the {source.model} build. "
+        "An earlier slug that named another model was accidental and is this same repository. "
+        f"Seals of this repo id stay under snapshots/{source.model}. "
+    )
+    if foreign:
+        shown = ", ".join(f"{row['model']} {row['snapshot_id']}" for row in foreign)
+        message += f"Seals of this repo id under other labels stay on disk and are reattributed by this event: {shown}. "
+    else:
+        message += f"No seal of repo_id {repo_id} is stored under another model. "
+    message += (
+        "Earlier MODEL_ATTRIBUTION_UNCERTAIN events remain in the log. "
+        "Grok harness files remain in the tree and do not change the label. "
+        "The Grok and ChatGPT slots stay empty until a different repo id is confirmed."
+    )
+    events.append(
+        identity_event(
+            timestamp=detected_at,
+            event_id=f"evt-attrib-corrected-{repo_id}-{source.model}",
+            event_type="MODEL_ATTRIBUTION_CORRECTED",
+            severity="notice",
+            outcome="corrected",
+            model=source.model,
+            repo=ident.get("full_name"),
+            repo_url=ident.get("html_url"),
+            commit=manifest["commit"]["sha"],
+            snapshot_id=manifest["snapshot_id"],
+            message=message,
+            detail={
+                "repo_id": repo_id,
+                "node_id": source.node_id,
+                "assigned_label": source.model,
+                "confirmed_by": "Josh",
+                "current_full_name": ident.get("full_name"),
+                "readme_heading": heading,
+                "package_name": assessment.get("package_name") if assessment else None,
+                "fingerprint_paths": fingerprints,
+                "word_counts_outside_heading_and_spec": assessment.get("word_counts_outside_heading_and_spec") if assessment else None,
+                "content_markers": assessment.get("content_markers") if assessment else None,
+                "seals_of_this_repo_id": seals,
+                "reattributed_seals": foreign,
+                "history_deleted": False,
+                "grok_slot": "pending",
+                "chatgpt_slot": "pending",
+            },
+        )
+    )
+    slug = (ident.get("full_name") or "").split("/", 1)[-1]
+    expected = f"lmos_public_{source.model}"
+    mixed = sorted(name for name in names if mixed_slug(name))
+    heading_text = (heading or "").lstrip("#").strip()
+    heading_differs = bool(heading_text) and heading_text != slug
+    if not mixed and slug == expected and not heading_differs:
+        return
+    parts = []
+    if mixed:
+        parts.append(
+            "Previous slug "
+            + ", ".join(mixed)
+            + " mixes a hyphen and an underscore and does not match lmos_public_<model>."
+        )
+    if slug == expected:
+        parts.append(f"The live canonical name {ident.get('full_name')} matches {expected}.")
+    else:
+        parts.append(f"The live canonical name {ident.get('full_name')} does not match {expected}.")
+    if heading:
+        parts.append(f"README heading is {heading}.")
+    parts.append("Flag for Josh. The tracker did not rename the source.")
+    key = {"repo_id": repo_id, "mixed": mixed, "current": ident.get("full_name"), "heading": heading, "expected": expected}
+    events.append(
+        identity_event(
+            timestamp=detected_at,
+            event_id=f"evt-label-convention-{repo_id}-{short_hash(key)}",
+            event_type="LABEL_MISMATCH",
+            severity="warning",
+            outcome="flagged",
+            model=source.model,
+            repo=ident.get("full_name"),
+            repo_url=ident.get("html_url"),
+            commit=manifest["commit"]["sha"],
+            snapshot_id=manifest["snapshot_id"],
+            message=" ".join(parts),
+            detail={
+                "repo_id": repo_id,
+                "node_id": source.node_id,
+                "assigned_label": source.model,
+                "current_full_name": ident.get("full_name"),
+                "expected_pattern": expected,
+                "current_matches_pattern": slug == expected,
+                "mixed_aliases": mixed,
+                "readme_heading": heading,
+                "flag_for": "Josh",
+                "source_renamed_by_tracker": False,
+                "detected_at": detected_at,
+            },
+        )
+    )
 
 
 def apply_identity_audit(
@@ -2322,6 +2712,8 @@ def apply_identity_audit(
     lookup=github_identity,
     head_of=None,
     commits_of=None,
+    lookup_by_id=None,
+    name_status=None,
 ) -> dict:
     """Record renames and label questions. Does not relabel a sealed snapshot."""
     text = sources_path.read_text(encoding="utf-8")
@@ -2338,9 +2730,47 @@ def apply_identity_audit(
     identities: dict[str, dict | None] = {}
     for target in interesting:
         identities[target] = lookup(target)
+    aliases = parse_aliases(text)
+    hops = parse_hops(text)
+    events: list[dict] = []
+    for source in enabled + placeholders:
+        if not source.repo_id or lookup_by_id is None:
+            continue
+        found = lookup_by_id(source.repo_id)
+        if not found:
+            continue
+        if source.node_id and found.get("node_id") and source.node_id != found["node_id"]:
+            events.append(
+                identity_event(
+                    timestamp=captured_at,
+                    event_id=f"evt-label-node-{source.model}-{source.repo_id}",
+                    event_type="LABEL_MISMATCH",
+                    severity="warning",
+                    outcome="flagged",
+                    model=source.model,
+                    repo=source.target,
+                    repo_url=found.get("html_url"),
+                    commit=None,
+                    snapshot_id=None,
+                    message=(
+                        f"configured node_id {source.node_id} for repo_id {source.repo_id} "
+                        f"does not match GitHub node_id {found.get('node_id')}. The source line was not retargeted."
+                    ),
+                    detail={
+                        "configured_repo_id": source.repo_id,
+                        "configured_node_id": source.node_id,
+                        "observed_node_id": found.get("node_id"),
+                        "observed_full_name": found.get("full_name"),
+                        "retargeted": False,
+                    },
+                )
+            )
+            continue
+        identities[source.target] = found
+        identities[found["full_name"]] = found
+        source.node_id = found.get("node_id") or source.node_id
     by_model = {source.model: identities.get(source.target) for source in enabled}
     keepers, dupes = claim_sources(enabled, by_model)
-    events: list[dict] = []
     registry = load_registry(root)
     repos: dict[str, dict] = registry.setdefault("repos", {})
     new_text = text
@@ -2474,9 +2904,23 @@ def apply_identity_audit(
                     "html_url": ident.get("html_url"),
                     "created_at": ident.get("created_at"),
                     "pushed_at": ident.get("pushed_at"),
+                    "updated_at": ident.get("updated_at"),
+                    "attribution": source.attribution,
+                    "node_id": ident.get("node_id") or source.node_id,
                 }
             )
-            new_text = replace_source_line(new_text, source.model, f"# {format_source(source.model, ident['full_name'], repo_id)}")
+            new_text = replace_source_line(
+                new_text,
+                source.model,
+                "# "
+                + format_source(
+                    source.model,
+                    ident["full_name"],
+                    repo_id,
+                    ident.get("node_id") or source.node_id,
+                    source.attribution,
+                ),
+            )
             continue
         # A placeholder that grows a real HEAD is reported and left commented.
         unsealed.append(
@@ -2488,6 +2932,52 @@ def apply_identity_audit(
                 "head": head,
             }
         )
+        new_text = replace_source_line(
+            new_text,
+            source.model,
+            "# "
+            + format_source(
+                source.model,
+                ident["full_name"],
+                repo_id,
+                ident.get("node_id") or source.node_id,
+                source.attribution,
+            ),
+        )
+        if source.attribution == "pending":
+            previous = repos.get(repo_id) or {}
+            names = set(previous.get("names") or [])
+            names.add(source.target)
+            names.add(ident["full_name"])
+            repos[repo_id] = {
+                "repo_id": repo_id,
+                "node_id": ident.get("node_id") or source.node_id,
+                "model_label": source.model,
+                "model_slot": "pending",
+                "counts_as_model": False,
+                "names": sorted(names),
+                "current_full_name": ident["full_name"],
+                "html_url": ident.get("html_url"),
+                "head": head,
+                "pushed_at": ident.get("pushed_at"),
+                "created_at": ident.get("created_at") or previous.get("created_at"),
+                "updated_at": ident.get("updated_at"),
+                "description": ident.get("description") or previous.get("description") or "",
+                "detected_at": previous.get("detected_at") or captured_at,
+                "attribution": "pending",
+                "readme_heading": previous.get("readme_heading"),
+                "sealed_repo_name": previous.get("sealed_repo_name"),
+                "snapshot_id": previous.get("snapshot_id"),
+                "commits": True,
+                "renames": previous.get("renames") or [],
+                "note": (
+                    f"Slot {source.model} is pending. repo_id {repo_id} ({ident['full_name']}) "
+                    "has commits and was not sealed on this run. It counts as that model only after "
+                    "Josh confirms this distinct repo id."
+                ),
+                "remote_commit_authors": previous.get("remote_commit_authors") or [],
+                "cross_captured_at": previous.get("cross_captured_at") or {},
+            }
 
     for target in probes:
         ident = identities.get(target)
@@ -2514,7 +3004,12 @@ def apply_identity_audit(
         manifest = load_manifest(latest)
         manifests = model_manifests(root, source.model)
         full_name = ident["full_name"]
-        new_text = replace_source_line(new_text, source.model, format_source(source.model, full_name, repo_id))
+        source.node_id = ident.get("node_id") or source.node_id
+        new_text = replace_source_line(
+            new_text,
+            source.model,
+            format_source(source.model, full_name, repo_id, source.node_id, source.attribution),
+        )
         try:
             files = load_tree_bytes(root, source.model, manifest["snapshot_id"])
         except (OSError, RuntimeError, FileNotFoundError) as exc:
@@ -2529,6 +3024,7 @@ def apply_identity_audit(
         names.update(sealed_names)
         names.add(full_name)
         names.add(source.target)
+        names.update(aliases.get(repo_id, []))
         renames = list(previous.get("renames") or [])
         detected_at = previous.get("detected_at") or captured_at
         rename_detected = None
@@ -2591,8 +3087,21 @@ def apply_identity_audit(
                     },
                 )
             )
+        apply_alias_hops(
+            events,
+            renames,
+            names,
+            hops,
+            repo_id,
+            ident,
+            source,
+            manifest,
+            name_status,
+            captured_at,
+        )
+        confirmed = source.attribution == "confirmed"
         reasons = mismatch_reasons(source.model, full_name, heading)
-        if reasons:
+        if reasons and not confirmed:
             events.append(
                 identity_event(
                     timestamp=detected_at,
@@ -2617,7 +3126,7 @@ def apply_identity_audit(
                     },
                 )
             )
-        if assessment and assessment["conclusion"] == "uncertain":
+        if assessment and assessment["conclusion"] == "uncertain" and not confirmed:
             # The question is the label, the slug, and the heading. A later batch
             # of the same tree must not append a new event just because a word count moved.
             question = {
@@ -2649,23 +3158,49 @@ def apply_identity_audit(
                     detail=assessment,
                 )
             )
-        note = (
-            f"Assigned label {source.model} left unchanged. GitHub full_name is {full_name}. "
-            f"README heading is {heading or 'absent'}. "
-            f"Conclusion: {assessment['conclusion'] if assessment else 'unreadable'}."
-        )
+        if confirmed:
+            append_confirmed_attribution(
+                events,
+                root,
+                repo_id,
+                source,
+                ident,
+                manifest,
+                assessment,
+                heading,
+                names,
+                detected_at,
+            )
+        if confirmed:
+            note = (
+                f"Josh confirmed repo_id {repo_id} is the {source.model} build. "
+                f"GitHub full_name is {full_name}. node_id is {source.node_id or 'unknown'}. "
+                f"README heading is {heading or 'absent'}."
+            )
+            attribution_value = "confirmed"
+        else:
+            note = (
+                f"Assigned label {source.model} left unchanged. GitHub full_name is {full_name}. "
+                f"README heading is {heading or 'absent'}. "
+                f"Conclusion: {assessment['conclusion'] if assessment else 'unreadable'}."
+            )
+            attribution_value = assessment["conclusion"] if assessment else "unreadable"
         repos[repo_id] = {
             "repo_id": repo_id,
+            "node_id": source.node_id,
             "model_label": source.model,
+            "model_slot": "tracked" if confirmed else previous.get("model_slot"),
+            "counts_as_model": True,
             "names": sorted(names),
             "current_full_name": full_name,
             "html_url": ident.get("html_url"),
             "head": manifest["commit"]["sha"],
             "pushed_at": ident.get("pushed_at"),
             "created_at": ident.get("created_at"),
+            "updated_at": ident.get("updated_at"),
             "description": ident.get("description") or "",
             "detected_at": detected_at,
-            "attribution": assessment["conclusion"] if assessment else "unreadable",
+            "attribution": attribution_value,
             "readme_heading": heading,
             "sealed_repo_name": sealed_names[0] if sealed_names else source.target,
             "snapshot_id": manifest["snapshot_id"],
@@ -2685,6 +3220,7 @@ def apply_identity_audit(
                 "html_url": ident.get("html_url"),
                 "pushed_at": ident.get("pushed_at"),
                 "created_at": ident.get("created_at"),
+                "attribution": source.attribution,
             }
         )
 
@@ -2694,24 +3230,51 @@ def apply_identity_audit(
         names = set(previous.get("names") or [])
         names.add(row["target"])
         names.add(row["full_name"])
+        pending = row.get("attribution") == "pending"
+        renames = list(previous.get("renames") or [])
+        apply_alias_hops(
+            events,
+            renames,
+            names,
+            hops,
+            repo_id,
+            {
+                "full_name": row["full_name"],
+                "html_url": row.get("html_url"),
+                "node_id": row.get("node_id"),
+                "updated_at": row.get("updated_at"),
+            },
+            Source(row["model"], row["full_name"], False, repo_id, row.get("node_id"), row.get("attribution")),
+            None,
+            name_status,
+            captured_at,
+        )
         repos[repo_id] = {
             "repo_id": repo_id,
+            "node_id": row.get("node_id"),
             "model_label": row["model"],
+            "model_slot": "pending" if pending else None,
+            "counts_as_model": False,
             "names": sorted(names),
             "current_full_name": row["full_name"],
             "html_url": row.get("html_url"),
             "head": None,
             "pushed_at": row.get("pushed_at"),
             "created_at": row.get("created_at"),
+            "updated_at": row.get("updated_at"),
             "description": "",
             "detected_at": previous.get("detected_at") or captured_at,
-            "attribution": "no_commits",
+            "attribution": "pending" if pending else "no_commits",
             "readme_heading": None,
             "sealed_repo_name": None,
             "snapshot_id": None,
             "commits": False,
-            "renames": previous.get("renames") or [],
-            "note": f"{row['full_name']} (repo_id {repo_id}) advertises no commits. It is not a build and it was not scored.",
+            "renames": renames,
+            "note": (
+                f"Slot {row['model']} is pending. {row['full_name']} (repo_id {repo_id}) advertises no commits and was not scored."
+                if pending
+                else f"{row['full_name']} (repo_id {repo_id}) advertises no commits. It is not a build and it was not scored."
+            ),
             "remote_commit_authors": [],
             "cross_captured_at": previous.get("cross_captured_at") or {},
         }
@@ -2769,6 +3332,8 @@ def apply_identity_audit(
             summary_text += " Empty repositories were listed and not scored: " + ", ".join(
                 item["full_name"] for item in empty_sorted
             ) + "."
+        if row.get("attribution") == "confirmed":
+            summary_text += f" Josh confirmed this id is the {row['label']} build."
         payload = {
             "schema": "lmos.cross_model.v1",
             "captured_at": cross_at,
@@ -2820,6 +3385,24 @@ def apply_identity_audit(
             changed = True
         wrote_cross = True
 
+    if any(source.attribution == "confirmed" for source in keepers):
+        slots: dict[str, dict] = {}
+        for source in keepers:
+            if source.attribution != "confirmed":
+                continue
+            ident = identities.get(source.target)
+            if not ident or (source.repo_id and source.repo_id != str(ident["id"])):
+                continue
+            slots[source.model] = {
+                "state": "tracked",
+                "count": 1,
+                "repo_id": str(ident["id"]),
+                "node_id": ident.get("node_id") or source.node_id,
+            }
+        for source in placeholders:
+            if source.attribution == "pending" and source.model not in slots:
+                slots[source.model] = {"state": "pending", "count": 0, "repo_id": None, "node_id": None}
+        registry["model_slots"] = slots
     registry["schema"] = REGISTRY_SCHEMA
     if write_if_changed(root / "state" / "repo_registry.json", dump_json(registry)):
         changed = True
@@ -2893,17 +3476,41 @@ def capture(root: Path, sources_path: Path, enable: list[str]) -> int:
     repaired = repair_incomplete(root, known)
     captured_at = utc_now()
     lookup = memo_lookup(github_identity)
-    identities = {
-        source.model: lookup(source.target) if is_github_target(source.target) else None for source in enabled
-    }
+    lookup_id = memo_lookup(github_identity_by_id)
+    statuses = memo_lookup(github_name_status)
+    identities: dict[str, dict | None] = {}
+    for source in enabled:
+        if source.repo_id and is_github_target(source.target):
+            ident = lookup_id(source.repo_id)
+            if ident and source.node_id and ident.get("node_id") and source.node_id != ident["node_id"]:
+                print(
+                    f"node_id mismatch for {source.model}: configured {source.node_id}, GitHub {ident.get('node_id')}. Not retargeted.",
+                    file=sys.stderr,
+                )
+            elif ident:
+                source.repo_id = str(ident["id"])
+                source.node_id = ident.get("node_id") or source.node_id
+                source.target = ident["full_name"]
+            identities[source.model] = ident
+            continue
+        ident = lookup(source.target) if is_github_target(source.target) else None
+        if ident and (not source.repo_id or source.repo_id == str(ident["id"])):
+            source.repo_id = str(ident["id"])
+            source.node_id = ident.get("node_id") or source.node_id
+            source.target = ident["full_name"]
+        identities[source.model] = ident
     keepers, dupes = claim_sources(enabled, identities)
     for model, keeper in dupes.items():
         print(f"skip {model}: same GitHub repo as {keeper}")
     new_seal = False
     for source in keepers:
         ident = identities.get(source.model)
-        if ident and (not source.repo_id or source.repo_id == str(ident["id"])):
+        node_ok = not (
+            source.node_id and ident and ident.get("node_id") and source.node_id != ident.get("node_id")
+        )
+        if ident and node_ok and (not source.repo_id or source.repo_id == str(ident["id"])):
             source.repo_id = str(ident["id"])
+            source.node_id = ident.get("node_id") or source.node_id
             source.target = ident["full_name"]
         try:
             remote_sha = probe_head(source)
@@ -2945,6 +3552,8 @@ def capture(root: Path, sources_path: Path, enable: list[str]) -> int:
         captured_at,
         lookup=lookup,
         commits_of=github_recent_commits,
+        lookup_by_id=lookup_id,
+        name_status=statuses,
     )
     if new_seal or repaired or needs_cross(root) or (all_manifests(root) and not (root / "TRENDS.md").exists()):
         # A single-repository audit already wrote the cross record. Writing the

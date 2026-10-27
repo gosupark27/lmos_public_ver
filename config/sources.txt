@@ -1,34 +1,45 @@
-# model_id owner/repo [repo_id=N]
-# model_id is the label Josh assigned. repo_id is the immutable GitHub id.
-# Two lines that resolve to the same repo_id are one repository. The later line is not sealed.
-# A rename updates the owner/repo text and appends REPO_RENAMED. It does not change the label.
+# model_id owner/repo [repo_id=N] [node_id=TOKEN] [attribution=word]
+# model_id is the label. repo_id and node_id are the immutable GitHub ids.
+# Capture resolves repo_id with GET /repositories/{id}. A rename updates full_name
+# and appends REPO_RENAMED. It does not open a second model.
+# attribution=confirmed means Josh named this id as that model.
+# attribution=pending means the slot stays empty until a different repo id is confirmed.
 #
-# Repo 1435079605 was created as gosupark27/lmos-public-claude (2026-10-27T00:38:41Z).
-# The slug was then gosupark27/lmos-public-grok. It is now gosupark27/lmos_public_claude.
-# No commit moved the slug. The sealed label stays claude. Do not point another model
-# line at repo_id 1435079605.
+# Repo 1435079605 (node R_kgDOVYmTtQ) was created 2026-10-27T00:38:41Z as
+# gosupark27/lmos-public-claude. Slug history, same id:
+#   lmos-public-claude -> lmos-public-grok (commit defee4d at 2026-10-27T01:32:40Z)
+#   lmos-public-grok -> lmos-public_claude (observed 2026-10-27T01:59:48Z). That mixed
+#     spelling still returns HTTP 301 to this id. It does not match lmos_public_<model>.
+#   current name lmos_public_claude (HTTP 200, updated_at 2026-10-27T02:00:16Z)
+# Josh confirmed this id is Claude's build. The grok slug was accidental.
+# Do not point another model line at repo_id 1435079605.
 
-claude gosupark27/lmos_public_claude repo_id=1435079605
+claude gosupark27/lmos_public_claude repo_id=1435079605 node_id=R_kgDOVYmTtQ attribution=confirmed
 
-# Distinct repo id, sealed under the label grok. Commits are "Add original source
-# (batch-NN.json)". Every file sealed so far matches repo 1435079605 byte for byte.
-# That is a partial copy, not a finished second build. The README heading in the
-# copy is "# lmos-public-claude".
-grok gosupark27/lmos_public_grok repo_id=1435127338
+# ALIASES 1435079605 gosupark27/lmos-public-claude gosupark27/lmos-public-grok gosupark27/lmos-public_claude gosupark27/lmos_public_claude
+# ALIAS_HOP 1435079605 gosupark27/lmos-public-grok gosupark27/lmos-public_claude observed_at=2026-10-27T01:59:48Z
+# ALIAS_HOP 1435079605 gosupark27/lmos-public_claude gosupark27/lmos_public_claude observed_at=2026-10-27T02:00:16Z
 
-# Empty. Advertises no commits, so it is not scored.
-# chatgpt gosupark27/lms_public_chatgpt repo_id=1435128289
+# Repo 1435127338 is a different id. Its commits are "Add original source (batch-NN.json)".
+# Files sealed from it match 1435079605 byte for byte. It is not Josh's Grok build.
+# The Grok slot stays pending until a genuinely different repo id is confirmed.
+# Historical seals remain under snapshots/grok. They are not deleted and they are not a second model.
+# grok gosupark27/lmos_public_grok repo_id=1435127338 node_id=R_kgDOVYpOKg attribution=pending
+
+# Empty. Created as gosupark27/lms_public_chatgpt. The slug is now
+# gosupark27/lmos_public_chatgpt (updated_at 2026-10-27T02:08:59Z). Still no commits.
+# The ChatGPT slot stays pending.
+# chatgpt gosupark27/lmos_public_chatgpt repo_id=1435128289 node_id=R_kgDOVYpR4Q attribution=pending
+
+# ALIASES 1435128289 gosupark27/lms_public_chatgpt gosupark27/lmos_public_chatgpt
+# ALIAS_HOP 1435128289 gosupark27/lms_public_chatgpt gosupark27/lmos_public_chatgpt observed_at=2026-10-27T02:08:59Z
 
 # Names that 404 for the connected account. PROBE lines are checked and are not model lines.
-# The chatgpt placeholder above is the empty repo that does exist. Its spelling is lms, not lmos.
-# PROBE gosupark27/lmos_public_claude
-# PROBE gosupark27/lmos_public_chatgpt
 # PROBE gosupark27/lmos-public-chatgpt
 # PROBE gosupark27/lmos_public_gpt
 # PROBE gosupark27/lmos_public_openai
 # PROBE gosupark27/lmos-public-gpt
 # PROBE gosupark27/lmos-public-openai
-# PROBE gosupark27/lmos-public-claude
 # PROBE gosupark27/lms_public_claude
 # PROBE gosupark27/lms_public_grok
 
