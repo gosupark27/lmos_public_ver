@@ -670,16 +670,20 @@ def load_tree_bytes(root: Path, model: str, snapshot_id: str) -> dict[str, bytes
     if chain[-1].name != snapshot_id:
         raise FileNotFoundError(snapshot_id)
     files: dict[str, bytes] = {}
-    for index, path in enumerate(chain):
+    saw_baseline = False
+    for path in chain:
         manifest = load_manifest(path)
-        if index == 0:
-            if not manifest.get("baseline"):
-                raise RuntimeError(f"{model} has no baseline at the start of the chain")
+        if manifest.get("baseline"):
+            # A later full snapshot starts a new chain. Earlier trees stay on disk.
+            files = {}
             base = path / "baseline"
             for file_path in walk_files(base):
                 rel = file_path.relative_to(base).as_posix()
                 files[rel] = file_path.read_bytes()
+            saw_baseline = True
             continue
+        if not saw_baseline:
+            raise RuntimeError(f"{model} has no baseline at the start of the chain")
         patch_path = root / "deltas" / "over_time" / model / f"{path.name}.patch"
         summary_path = root / "deltas" / "over_time" / model / f"{path.name}.json"
         summary = json.loads(summary_path.read_text(encoding="utf-8"))
@@ -1001,7 +1005,7 @@ def render_over_time(payload: dict) -> str:
         f"Parent `{payload['parent_snapshot_id'] or 'none'}`.",
         f"Kind: {'baseline' if payload['baseline'] else 'delta'}.",
         "",
-        "A baseline is the only full byte copy for this model. Later snapshots store a unified text patch. Binary changes are stored as raw blobs named by sha256. Rebuild with `load_tree_bytes` in `scripts/capture.py`.",
+        "A baseline stores a full byte copy. Later snapshots store a unified text patch unless a later seal is itself a baseline. Binary changes are stored as raw blobs named by sha256. Rebuild with `load_tree_bytes` in `scripts/capture.py`.",
         "",
         f"Files added {payload['files_added']}, removed {payload['files_removed']}, modified {payload['files_modified']}.",
         f"Line stats: +{payload['lines_added']} / -{payload['lines_removed']}.",
@@ -1236,6 +1240,242 @@ def capture_model(root: Path, tree: Tree, captured_at: str, known_ids: set[str])
         + (" PARTIAL" if tree.completeness == "partial" else "")
     )
     return {"snapshot_id": snapshot_id, "skipped": False, "manifest": manifest, "tree": tree}
+
+
+def seal_genuine_baseline(
+    root: Path,
+    tree: Tree,
+    captured_at: str,
+    known_ids: set[str],
+    *,
+    git_diff: dict,
+    build: dict,
+    reclassify: dict,
+) -> dict:
+    """Store a full tree and mark it as the first genuine build for this label.
+
+    Earlier snapshots stay where they are. Their events are not rewritten.
+    """
+    for snap in sealed_snapshots(root, tree.model):
+        if not is_complete(snap):
+            continue
+        previous = load_manifest(snap)
+        if previous.get("genuine_build") and previous["commit"]["sha"] == tree.commit:
+            return {"snapshot_id": previous["snapshot_id"], "skipped": True}
+    snapshot_id = f"{stamp_of(captured_at)}__{tree.commit}"
+    snap_dir = snapshot_root(root, tree.model) / snapshot_id
+    if snap_dir.exists():
+        raise RuntimeError(f"snapshot path already exists: {snap_dir}")
+    snap_dir.mkdir(parents=True)
+    write_baseline(snap_dir, tree.files)
+    spec = score_tree(root, tree)
+    count, total_lines, total_bytes = totals(tree.files)
+    per_file = []
+    for path, rec in tree.files.items():
+        stats = {"added": rec.lines or 0, "removed": 0, "binary": rec.binary}
+        per_file.append(
+            {
+                "op": "add",
+                "path": path,
+                "lines": rec.lines,
+                "added": stats["added"],
+                "removed": 0,
+                "sha256": rec.sha,
+                "hash_before": None,
+                "hash_after": rec.sha,
+                "binary": rec.binary,
+            }
+        )
+    over = {
+        "schema": "lmos.over_time.v1",
+        "captured_at": captured_at,
+        "model": tree.model,
+        "snapshot_id": snapshot_id,
+        "commit": tree.commit,
+        "parent_snapshot_id": None,
+        "baseline": True,
+        "genuine_build": True,
+        "patch": None,
+        "files_added": count,
+        "files_removed": 0,
+        "files_modified": 0,
+        "lines_added": total_lines,
+        "lines_removed": 0,
+        "directories": directory_rollup(tree.files),
+        "files": per_file,
+        "binary": [],
+    }
+    over_base = root / "deltas" / "over_time" / tree.model
+    write_if_changed(over_base / f"{snapshot_id}.json", dump_json(over))
+    write_if_changed(over_base / f"{snapshot_id}.md", render_over_time(over))
+    manifest = {
+        "schema": "lmos.snapshot.v1",
+        "captured_at": captured_at,
+        "snapshot_id": snapshot_id,
+        "model": tree.model,
+        "repo": tree.repo,
+        "repo_url": tree.repo_url,
+        "repo_id": tree.repo_id,
+        "node_id": tree.node_id,
+        "branch": tree.branch,
+        "baseline": True,
+        "genuine_build": True,
+        "baseline_path": f"snapshots/{tree.model}/{snapshot_id}/baseline",
+        "parent_snapshot_id": None,
+        "invalidates_cross_model_through": reclassify["through_commit"],
+        "reclassification_quote": reclassify["quote"],
+        "git_diff_from_previous": git_diff,
+        "build": build,
+        "commit": {
+            "sha": tree.commit,
+            "url": tree.commit_url,
+            "committed_at": tree.committed_at,
+            "author": tree.author,
+            "subject": tree.subject,
+        },
+        "file_count": count,
+        "total_lines": total_lines,
+        "total_bytes": total_bytes,
+        "tree_sha256": fingerprint(tree.files),
+        "completeness": "complete",
+        "partial_detail": None,
+        "delta": {
+            "files_added": count,
+            "files_removed": 0,
+            "files_modified": 0,
+            "lines_added": total_lines,
+            "lines_removed": 0,
+        },
+        "spec": spec,
+        "files": file_rows(tree.files, spec.get("spec_sha256")),
+    }
+    (snap_dir / "manifest.json").write_text(dump_json(manifest), encoding="utf-8")
+    common = dict(
+        timestamp=captured_at,
+        model=tree.model,
+        repo=tree.repo,
+        repo_url=tree.repo_url,
+        commit=tree.commit,
+        commit_url=tree.commit_url,
+        branch=tree.branch,
+        snapshot_id=snapshot_id,
+    )
+    short = tree.commit[:12]
+    events = [
+        make_event(
+            event_id=f"evt-{tree.model}-genuine-{short}-0001",
+            event_type="SNAPSHOT_CAPTURED",
+            severity="info",
+            outcome="success",
+            path=None,
+            hash_before=None,
+            hash_after=manifest["tree_sha256"],
+            line_stats={"added": total_lines, "removed": 0, "binary": False},
+            message=(
+                f"Sealed {tree.model} at {short} as the first genuine build baseline. "
+                f"Full tree stored ({count} files, {total_lines} lines)."
+            ),
+            detail={
+                "baseline": True,
+                "genuine_build": True,
+                "parent_snapshot_id": None,
+                "file_count": count,
+                "total_lines": total_lines,
+                "total_bytes": total_bytes,
+                "git_diff_from_previous": git_diff,
+                "subject": tree.subject,
+                "committed_at": tree.committed_at,
+                "completeness": "complete",
+            },
+            **common,
+        ),
+        make_event(
+            event_id=f"evt-{tree.model}-genuine-{short}-0002",
+            event_type="BASELINE_ESTABLISHED",
+            severity="info",
+            outcome="success",
+            path=manifest["baseline_path"],
+            hash_before=None,
+            hash_after=manifest["tree_sha256"],
+            line_stats={"added": total_lines, "removed": 0, "binary": False},
+            message=(
+                f"Stored the full tree for {short} and marked it as {tree.model}'s first genuine build baseline. "
+                f"Earlier seals through {reclassify['through_commit'][:12]} stay on disk."
+            ),
+            detail={"files": count, "genuine_build": True, "through_commit": reclassify["through_commit"]},
+            **common,
+        ),
+        make_event(
+            event_id=f"evt-label-confirmed-{tree.repo_id}-{short}",
+            event_type="LABEL_MISMATCH_CONFIRMED",
+            severity="warning",
+            outcome="confirmed",
+            path=None,
+            hash_before=None,
+            hash_after=None,
+            line_stats={"added": 0, "removed": 0, "binary": False},
+            message=(
+                f"Commit {short} on repo {tree.repo_id} says the files it removed were "
+                f"{reclassify['quote']} "
+                f"Snapshots of this repo through {reclassify['through_commit'][:12]} are that content. "
+                "They stay under snapshots/"
+                f"{tree.model}. They are not this genuine baseline. "
+                "Earlier events were not rewritten."
+            ),
+            detail=reclassify,
+            **common,
+        ),
+        make_event(
+            event_id=f"evt-build-{short}",
+            event_type="BUILD_METADATA_RECORDED",
+            severity="info",
+            outcome="recorded",
+            path=build.get("ledger_path"),
+            hash_before=None,
+            hash_after=None,
+            line_stats={"added": 0, "removed": 0, "binary": False},
+            message=(
+                f"Build {build.get('version')} at {short} reports spec hash {build.get('spec_hash')} "
+                f"({build.get('prompt_version')}). "
+                f"Flagged contradictions: {', '.join(build.get('flagged') or [])}. "
+                f"Tests claimed passing: {build.get('tests_claimed')}. The tracker did not run them."
+            ),
+            detail=build,
+            **common,
+        ),
+        make_event(
+            event_id=f"evt-{tree.model}-genuine-{short}-0003",
+            event_type="SPEC_COMPARED",
+            severity="info",
+            outcome="success" if spec.get("total") else "not_applicable",
+            path="reference/lmos_public.md",
+            hash_before=None,
+            hash_after=spec.get("spec_sha256"),
+            line_stats={"added": 0, "removed": 0, "binary": False},
+            message=f"Spec evidence {spec.get('covered')}/{spec.get('total')} (gap {spec.get('gap_score')})",
+            detail={
+                "covered": spec.get("covered"),
+                "total": spec.get("total"),
+                "coverage": spec.get("coverage"),
+                "gap_score": spec.get("gap_score"),
+                "rubric_sha256": spec.get("rubric_sha256"),
+                "uncovered": [item["id"] for item in spec.get("concepts", []) if not item["covered"]],
+                "extra_surfaces": [item["id"] for item in spec.get("extra_surfaces", [])],
+                "genuine_build": True,
+            },
+            **common,
+        ),
+    ]
+    excerpt = snap_dir / "seal" / "events.jsonl"
+    excerpt.parent.mkdir(parents=True, exist_ok=True)
+    excerpt.write_text("".join(dump_event(event) + "\n" for event in events), encoding="utf-8")
+    append_events(root, events, known_ids)
+    (snap_dir / ".complete").write_text(captured_at + "\n", encoding="utf-8")
+    print(
+        f"sealed {tree.model} {short} files={count} lines={total_lines} "
+        f"baseline=true genuine=true spec_gap={spec.get('gap_score')}"
+    )
+    return {"snapshot_id": snapshot_id, "skipped": False, "manifest": manifest}
 
 
 def snapshot_events(tree: Tree, manifest: dict, per_file: list[dict], captured_at: str) -> list[dict]:
@@ -1697,6 +1937,7 @@ def write_cross(root: Path, captured_at: str, placeholders: list[Source], known_
                 f"{pair['identical_count']} shared paths match and {missing} paths exist only in {larger}. "
                 "The score is missing files, not conflicting edits."
             )
+        genuine = [item for item in latest if item.get("genuine_build")]
         partial_models = [item for item in latest if item.get("completeness") == "partial"]
         if partial_models:
             bits = []
@@ -1707,6 +1948,12 @@ def write_cross(root: Path, captured_at: str, placeholders: list[Source], known_
                 else:
                     bits.append(f"{item['model']} batch history still repeats or skips")
             summary += " PARTIAL: " + "; ".join(bits) + "."
+        for item in genuine:
+            cutoff = item.get("invalidates_cross_model_through") or ""
+            summary += (
+                f" {item['model']} {item['commit']['sha'][:12]} is the first genuine build baseline."
+                f" A {item['model']}-versus-peer score that uses a snapshot through {cutoff[:12]} is invalid."
+            )
     model_rows = []
     for manifest in latest:
         model_rows.append(
@@ -1833,7 +2080,9 @@ def write_trends(root: Path) -> None:
                 "file_count": manifest["file_count"],
                 "total_lines": manifest["total_lines"],
                 "total_bytes": manifest["total_bytes"],
-                "files_changed_since_last": delta["files_added"] + delta["files_removed"] + delta["files_modified"],
+                "files_changed_since_last": (
+                    delta["files_added"] + delta["files_removed"] + delta["files_modified"] + int(delta.get("files_renamed") or 0)
+                ),
                 "lines_added": delta["lines_added"],
                 "lines_removed": delta["lines_removed"],
                 "cross_model_divergence": "" if score is None else score,
@@ -1925,6 +2174,7 @@ def write_trends(root: Path) -> None:
         )
     if any(item.get("completeness") == "partial" for item in manifests):
         md.append("")
+    md.extend(genuine_baseline_lines(manifests))
     pair_summary = latest_pair_summary(root)
     if pair_summary:
         md.append(pair_summary)
@@ -1935,6 +2185,57 @@ def write_trends(root: Path) -> None:
     md.append("")
     write_if_changed(root / "trends" / "snapshots.csv", csv_text)
     write_if_changed(root / "TRENDS.md", "\n".join(md))
+
+
+def genuine_baseline_lines(manifests: list[dict]) -> list[str]:
+    lines: list[str] = []
+    for manifest in manifests:
+        if not manifest.get("genuine_build"):
+            continue
+        commit = manifest["commit"]["sha"]
+        cutoff = manifest.get("invalidates_cross_model_through") or ""
+        quote = manifest.get("reclassification_quote") or ""
+        git_diff = manifest.get("git_diff_from_previous") or {}
+        build = manifest.get("build") or {}
+        lines.append("## Genuine baseline")
+        lines.append("")
+        lines.append(
+            f"`{manifest['model']}` `{commit[:12]}` is the first genuine build baseline for repo {manifest.get('repo_id')}. "
+            "It is a full tree, not a patch on the earlier seals."
+        )
+        if quote:
+            lines.append("")
+            lines.append(f"The commit message says: {quote}")
+        if cutoff:
+            lines.append("")
+            lines.append(
+                f"Snapshots of this repo through `{cutoff[:12]}` are the content that commit removed. "
+                f"Any {manifest['model']}-versus-Grok conclusion drawn from those snapshots is invalid. "
+                "The old events were not rewritten, and those snapshot directories were not moved."
+            )
+        if git_diff.get("files_changed") is not None:
+            lines.append("")
+            lines.append(
+                f"`git diff --find-renames {str(git_diff.get('from_commit') or '')[:12]}..{commit[:12]}` "
+                f"changes {git_diff.get('files_changed')} files: "
+                f"{git_diff.get('added')} added, {git_diff.get('removed')} removed, "
+                f"{git_diff.get('modified')} modified, {git_diff.get('renamed')} renamed "
+                f"({git_diff.get('rename_from')} → {git_diff.get('rename_to')}), "
+                f"{git_diff.get('insertions')} insertions, {git_diff.get('deletions')} deletions."
+            )
+        if build.get("version"):
+            lines.append("")
+            lines.append(
+                f"Build {build.get('version')} reports spec hash `{build.get('spec_hash')}` "
+                f"({build.get('prompt_version')}). "
+                f"Flagged contradictions: {', '.join(build.get('flagged') or [])}. "
+                f"Decision labels in the ledger: {', '.join(build.get('decision_labels') or [])}. "
+                f"Tests claimed passing: {build.get('tests_claimed')}. "
+                "The tracker did not run them. "
+                f"Stack recorded from the ledger and package.json: {build.get('stack')}."
+            )
+        lines.append("")
+    return lines
 
 
 def latest_pair_summary(root: Path) -> str | None:

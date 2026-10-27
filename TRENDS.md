@@ -23,13 +23,28 @@ One row per sealed snapshot. This file is rebuilt from manifests. It is a projec
 | 2026-10-27T02:28:10.359Z | claude | 54 | 8270 | 151 | 8257 | 14195 | 98.8 | 0.8913 | 10.9 | 0 | grok |
 | 2026-10-27T02:28:10.359Z | grok | 72 | 11662 | 9 | 262 | 339 | 98.8 | 0.8478 | 15.2 | 4 | claude |
 | 2026-10-27T02:30:20.240Z | grok | 72 | 11775 | 3 | 222 | 109 | 98.8 | 0.8478 | 15.2 | 4 | claude |
+| 2026-10-27T02:36:21.013Z | claude | 54 | 8270 | 54 | 8270 | 0 | 98.8 | 0.8913 | 10.9 | 0 | grok |
+| 2026-10-27T02:36:29.084Z | grok | 86 | 13342 | 20 | 1720 | 153 | 98.9 | 0.8478 | 15.2 | 5 | claude |
 
 `grok` `e5f7e8d1b232` is PARTIAL. HEAD is still an Add original source batch commit. Batches seen: 0–17. repeated batches [8].
 `grok` `2787eed5fe99` is PARTIAL. HEAD is still an Add original source batch commit. Batches seen: 0–18. repeated batches [8].
 `grok` `bc6aef95e1df` is PARTIAL. HEAD `Restore original migrations/0002_rooms.sql` is not a batch commit. Batches seen: 0–18. repeated batches [0, 1, 2, 8].
 `grok` `a5bf80de5c7a` is PARTIAL. HEAD `Restore original migrations/auth/0001_auth.sql` is not a batch commit. Batches seen: 0–18. repeated batches [0, 1, 2, 8].
+`grok` `842c2a1cb56a` is PARTIAL. HEAD `Restore original src/lib/multiplayer/p2p.ts` is not a batch commit. Batches seen: 0–18. repeated batches [0, 1, 2, 8].
 
-Sealed models: claude, grok. Mean pairwise divergence 98.8. PARTIAL: grok batch history still repeats or skips.
+## Genuine baseline
+
+`claude` `3a3cd7e97db2` is the first genuine build baseline for repo 1435079605. It is a full tree, not a patch on the earlier seals.
+
+The commit message says: "the Grok-generated build that was renamed to lmos-public-claude."
+
+Snapshots of this repo through `46018f12b4d2` are the content that commit removed. Any claude-versus-Grok conclusion drawn from those snapshots is invalid. The old events were not rewritten, and those snapshot directories were not moved.
+
+`git diff --find-renames 46018f12b4d2..3a3cd7e97db2` changes 150 files: 50 added, 96 removed, 3 modified, 1 renamed (docs/lmos_public.md → SPEC.md), 8102 insertions, 14040 deletions.
+
+Build 1.0.0 reports spec hash `1e2c01b465b9b3e62fa898e75d6b829291e5f24a0f0bf8ae89db1a336ee10b88` (PV-0.9.0-full). Flagged contradictions: F1, F2, F3, F4, F5, F6, F7, F8. Decision labels in the ledger: DECIDED, INFERRED, FLAGGED. Tests claimed passing: 27. The tracker did not run them. Stack recorded from the ledger and package.json: Cloudflare Worker, one Durable Object per room, WebSockets, vanilla JS client, no package dependencies.
+
+Sealed models: claude, grok. Mean pairwise divergence 98.9. PARTIAL: grok batch history still repeats or skips. claude 3a3cd7e97db2 is the first genuine build baseline. A claude-versus-peer score that uses a snapshot through 46018f12b4d2 is invalid.
 
 ## Identity
 
@@ -64,7 +79,7 @@ One repo id keeps one model. These rows are slug changes, including names that o
 - `2026-10-27T02:08:59Z`: `gosupark27/lms_public_chatgpt` → `gosupark27/lmos_public_chatgpt` (repo 1435128289)
 
 - `1435079605`: Josh confirmed repo_id 1435079605 is the claude build. GitHub full_name is gosupark27/lmos_public_claude. node_id is R_kgDOVYmTtQ. README heading is # Handshake.
-- `1435127338`: Repo id 1435127338 is the grok slot and is a different id from the other sealed models. GitHub full_name is gosupark27/lmos_public_grok. README heading is # Handshake.
+- `1435127338`: Repo id 1435127338 is the grok slot and is a different id from the other sealed models. GitHub full_name is gosupark27/lmos_public_grok. README heading is # lmos_public_grok.
 - `1435128289`: Slot chatgpt is pending. gosupark27/lmos_public_chatgpt (repo_id 1435128289) advertises no commits and was not scored.
 
 ## Prompt versions

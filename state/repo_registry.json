@@ -100,7 +100,7 @@
       ],
       "repo_id": "1435079605",
       "sealed_repo_name": "gosupark27/lmos-public-claude",
-      "snapshot_id": "2026-10-27T02-28-10.359Z__3a3cd7e97db24df091c0b1cfd90b06542ba1870a",
+      "snapshot_id": "2026-10-27T02-36-21.013Z__3a3cd7e97db24df091c0b1cfd90b06542ba1870a",
       "updated_at": "2026-10-27T02:25:31Z"
     },
     "1435127338": {
@@ -112,7 +112,7 @@
       "current_full_name": "gosupark27/lmos_public_grok",
       "description": "",
       "detected_at": "2026-10-27T01:57:04.540Z",
-      "head": "a5bf80de5c7a1b02ca70dd860569704992d57c3b",
+      "head": "842c2a1cb56abc9f72841e05b987991473cb0510",
       "html_url": "https://github.com/gosupark27/lmos_public_grok",
       "model_label": "grok",
       "model_slot": "tracked",
@@ -120,17 +120,17 @@
         "gosupark27/lmos_public_grok"
       ],
       "node_id": "R_kgDOVYpOKg",
-      "note": "Repo id 1435127338 is the grok slot and is a different id from the other sealed models. GitHub full_name is gosupark27/lmos_public_grok. README heading is # Handshake.",
-      "pushed_at": "2026-10-27T02:30:16Z",
-      "readme_heading": "# Handshake",
+      "note": "Repo id 1435127338 is the grok slot and is a different id from the other sealed models. GitHub full_name is gosupark27/lmos_public_grok. README heading is # lmos_public_grok.",
+      "pushed_at": "2026-10-27T02:36:14Z",
+      "readme_heading": "# lmos_public_grok",
       "remote_commit_authors": [
         "JJ Park"
       ],
       "renames": [],
       "repo_id": "1435127338",
       "sealed_repo_name": "gosupark27/lmos_public_grok",
-      "snapshot_id": "2026-10-27T02-30-20.240Z__a5bf80de5c7a1b02ca70dd860569704992d57c3b",
-      "updated_at": "2026-10-27T02:30:20Z"
+      "snapshot_id": "2026-10-27T02-36-29.084Z__842c2a1cb56abc9f72841e05b987991473cb0510",
+      "updated_at": "2026-10-27T02:36:18Z"
     },
     "1435128289": {
       "attribution": "pending",

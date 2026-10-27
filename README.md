@@ -83,7 +83,7 @@ One JSON object per line. Times are ISO-8601 UTC. This is the shape of a file ev
 | event_type | when it is written |
 | --- | --- |
 | `SNAPSHOT_CAPTURED` | A new source commit was sealed. Totals are in `detail` and `line_stats`. |
-| `BASELINE_ESTABLISHED` | First seal for that model. Full bytes were stored. |
+| `BASELINE_ESTABLISHED` | A full byte copy was stored. The first seal of a model does this. A later seal does it again when that commit is the first genuine build. |
 | `FILE_ADDED` | Path exists now and did not in the parent seal. |
 | `FILE_REMOVED` | Path existed in the parent and does not now. |
 | `FILE_MODIFIED` | Same path, different sha256. |
@@ -97,6 +97,8 @@ One JSON object per line. Times are ISO-8601 UTC. This is the shape of a file ev
 | `LABEL_MISMATCH_RESOLVED` | The current GitHub slug now matches `lmos_public_<model>`. The earlier mismatch event stays in the log. |
 | `REPO_DISCOVERED` | A repo id was seen for a slot and has no commits yet, so it was not sealed. |
 | `PROMPT_VERSION_RECORDED` | The prompt version assigned to a model. `sha256` is `pending` when that text is not in the tracker yet. |
+| `LABEL_MISMATCH_CONFIRMED` | A later commit message identifies earlier trees of this repo id as a different model's content. Those snapshots stay on disk. Earlier events are not rewritten. |
+| `BUILD_METADATA_RECORDED` | Build version, spec hash, flagged contradictions, and a test count taken from the tree. A test count is claimed unless the tracker ran the tests. |
 
 Hashes use the prefix `sha256:`. `hash_before` is null when the path was created. `hash_after` is null when it was removed.
 
@@ -147,4 +149,4 @@ Each source line may carry `repo_id=<GitHub id>`, `node_id=<node id>`, and `attr
 
 The label in `config/sources.txt` is the one Josh assigned. Capture will not move `snapshots/claude` or rewrite a sealed manifest when the slug or the README heading changes. A rename appends `REPO_RENAMED`. A naming question appends `LABEL_MISMATCH`. `attribution=confirmed` appends `MODEL_ATTRIBUTION_CORRECTED` once and does not append another `MODEL_ATTRIBUTION_UNCERTAIN` for that confirmation.
 
-Repo id 1435079605 is Claude's build. Josh confirmed that. The live slug is `lmos_public_claude`. The seal at `3a3cd7e97db2` replaced the tree with a Handshake build: README heading `# Handshake`, package name `handshake`. The earlier seal's heading was `# lmos-public-claude`. The slug was also `lmos-public-grok` and, briefly, `lmos-public_claude` (hyphen then underscore). Those names are aliases of this id. Repo id 1435127338 (`lmos_public_grok`) is the Grok slot. It is not repo 1435079605. `lms_public_chatgpt` was renamed to `lmos_public_chatgpt` (id 1435128289, updated_at 2026-10-27T02:08:59Z). The live ChatGPT slug matches `lmos_public_chatgpt`. The repo still has no commits, so the slot is not sealed. Claude and Grok are recorded on prompt `PV-0.9.0-full`. ChatGPT is assigned `PV-0.10-lite`, whose text is not in this tracker yet. A ChatGPT-versus-Claude comparison confounds model and prompt.
+Repo id 1435079605 is the Claude slot. Josh confirmed that. The live slug is `lmos_public_claude`. Commit `3a3cd7e97db2` says the files it removed were the Grok-generated build that was renamed to `lmos-public-claude`. Seals through `46018f1` are that content. The full snapshot of `3a3cd7e97db2` is Claude's first genuine baseline: README heading `# Handshake`, package name `handshake`. The slug was also `lmos-public-grok` and, briefly, `lmos-public_claude` (hyphen then underscore). Those names are aliases of this id. Repo id 1435127338 (`lmos_public_grok`) is the Grok slot. It is not repo 1435079605. `lms_public_chatgpt` was renamed to `lmos_public_chatgpt` (id 1435128289, updated_at 2026-10-27T02:08:59Z). The live ChatGPT slug matches `lmos_public_chatgpt`. The repo still has no commits, so the slot is not sealed. Claude and Grok are recorded on prompt `PV-0.9.0-full`. ChatGPT is assigned `PV-0.10-lite`, whose text is not in this tracker yet. A ChatGPT-versus-Claude comparison confounds model and prompt.

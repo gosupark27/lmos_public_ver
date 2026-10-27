@@ -548,6 +548,49 @@ def test_confirmed_attribution_does_not_reopen_uncertainty() -> None:
         print("confirmed attribution ok")
 
 
+def test_later_baseline_restarts_the_chain() -> None:
+    with tempfile.TemporaryDirectory() as tmp:
+        root = Path(tmp)
+
+        def put(stamp: str, captured: str, filename: str, body: str) -> None:
+            snap = root / "snapshots" / "m" / stamp
+            (snap / "baseline").mkdir(parents=True)
+            (snap / "baseline" / filename).write_text(body, encoding="utf-8")
+            (snap / "manifest.json").write_text(
+                json.dumps({"captured_at": captured, "baseline": True, "snapshot_id": stamp}),
+                encoding="utf-8",
+            )
+            (snap / ".complete").write_text("ok\n", encoding="utf-8")
+
+        first_id = "2026-10-27T01-00-00.000Z__aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+        second_id = "2026-10-27T02-00-00.000Z__bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+        put(first_id, "2026-10-27T01:00:00.000Z", "old.txt", "old\n")
+        put(second_id, "2026-10-27T02:00:00.000Z", "new.txt", "new\n")
+        if cap.load_tree_bytes(root, "m", first_id) != {"old.txt": b"old\n"}:
+            fail("first baseline rebuild changed")
+        if cap.load_tree_bytes(root, "m", second_id) != {"new.txt": b"new\n"}:
+            fail("later baseline did not restart the chain")
+        text = "\n".join(
+            cap.genuine_baseline_lines(
+                [
+                    {
+                        "genuine_build": True,
+                        "model": "claude",
+                        "repo_id": "1435079605",
+                        "commit": {"sha": "3" * 40},
+                        "invalidates_cross_model_through": "4" * 40,
+                        "reclassification_quote": "the Grok-generated build",
+                        "git_diff_from_previous": {},
+                        "build": {},
+                    }
+                ]
+            )
+        )
+        if "invalid" not in text or "Grok-generated" not in text:
+            fail(f"genuine baseline note missing: {text}")
+        print("baseline restart ok")
+
+
 def test_dashdash_hunk_lines_roundtrip() -> None:
     old = {
         "migrations/auth/0001_auth.sql": (
@@ -614,6 +657,7 @@ if __name__ == "__main__":
     test_identity_rename_does_not_relabel()
     test_source_fields_and_alias_lines()
     test_confirmed_attribution_does_not_reopen_uncertainty()
+    test_later_baseline_restarts_the_chain()
     test_dashdash_hunk_lines_roundtrip()
     test_partial_batch_sequence()
     print("all capture tests passed")
